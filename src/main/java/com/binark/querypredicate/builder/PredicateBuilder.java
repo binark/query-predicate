@@ -6,10 +6,10 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 
 /**
- * @author kenany (armelknyobe@gmail.com)
- *
  * The predicate builder interface. Each predicate builder class should implement this interface and override its methods
  * @param <F> The filter type. Should implements {@link Filter}
+ *
+ * @author kenany (armelknyobe@gmail.com)
  */
 public interface PredicateBuilder<F extends Filter> {
 

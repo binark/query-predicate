@@ -1,9 +1,15 @@
 package com.binark.querypredicate.management;
 
 import com.binark.querypredicate.builder.BaseFilterPredicateBuilder;
+import com.binark.querypredicate.builder.BooleanFilterPredicateBuilder;
+import com.binark.querypredicate.builder.ComparableFilterPredicateBuilder;
+import com.binark.querypredicate.builder.NumericFilterPredicateBuilder;
 import com.binark.querypredicate.builder.PredicateBuilder;
 import com.binark.querypredicate.builder.StringFilterPredicateBuilder;
 import com.binark.querypredicate.filter.BaseFilter;
+import com.binark.querypredicate.filter.BooleanFilter;
+import com.binark.querypredicate.filter.ComparableFilter;
+import com.binark.querypredicate.filter.NumericFilter;
 import com.binark.querypredicate.filter.StringFilter;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,5 +59,8 @@ final class BasePredicateBuilderStorage implements PredicateBuilderStorage {
     private void initializeStorage() {
         predicateBuilderMap.put(BaseFilter.class.getSimpleName(), new BaseFilterPredicateBuilder());
         predicateBuilderMap.put(StringFilter.class.getSimpleName(), new StringFilterPredicateBuilder());
+        predicateBuilderMap.put(BooleanFilter.class.getSimpleName(), new BooleanFilterPredicateBuilder());
+        predicateBuilderMap.put(ComparableFilter.class.getSimpleName(), new ComparableFilterPredicateBuilder());
+        predicateBuilderMap.put(NumericFilter.class.getSimpleName(), new NumericFilterPredicateBuilder());
     }
 }

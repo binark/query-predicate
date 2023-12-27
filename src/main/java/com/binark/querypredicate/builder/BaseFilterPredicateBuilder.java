@@ -14,11 +14,6 @@ import jakarta.persistence.criteria.Predicate;
 public class BaseFilterPredicateBuilder extends AbstractPredicateBuilder<BaseFilter>{
 
     @Override
-    public Predicate buildPredicate(Path path, CriteriaBuilder builder, BaseFilter filter) {
-        return buildBaseFilterPredicate(path, builder, filter, getFieldNameFromAnnotation(filter));
-    }
-
-    @Override
     public Predicate buildPredicate(Path path, CriteriaBuilder builder, BaseFilter filter, String fieldName) {
         return buildBaseFilterPredicate(path, builder, filter, fieldName);
     }

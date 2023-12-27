@@ -1,5 +1,7 @@
 package com.binark.querypredicate.filter;
 
+import java.util.List;
+
 /**
  * @author kenany (armelknyobe@gmail.com)
  *
@@ -13,6 +15,10 @@ public class BaseFilter<T> implements Filter<T>{
     private T isDifferent;
 
     private Boolean isNull;
+
+    private List<T> isIn;
+
+    private List<T> isNotIn;
 
     public T getIsEquals() {
         return isEquals;
@@ -36,6 +42,22 @@ public class BaseFilter<T> implements Filter<T>{
 
     public void setNull(Boolean aNull) {
         isNull = aNull;
+    }
+
+    public List<T> getIsIn() {
+        return isIn;
+    }
+
+    public void setIsIn(List<T> isIn) {
+        this.isIn = isIn;
+    }
+
+    public List<T> getIsNotIn() {
+        return isNotIn;
+    }
+
+    public void setIsNotIn(List<T> isNotIn) {
+        this.isNotIn = isNotIn;
     }
 }
 

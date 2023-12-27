@@ -9,16 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author kenany (armelknyobe@gmail.com)
- *
  * The predicate builder for the {@link StringFilter} type
+ *
+ * @author kenany (armelknyobe@gmail.com)
  */
 public class StringFilterPredicateBuilder extends AbstractPredicateBuilder<StringFilter> {
-
-    @Override
-    public Predicate buildPredicate(Path path, CriteriaBuilder builder, StringFilter filter) {
-        return buildPredicate(path, builder, filter, getFieldNameFromAnnotation(filter));
-    }
 
     @Override
     public Predicate buildPredicate(Path path, CriteriaBuilder builder, StringFilter filter, String fieldName) {

@@ -16,6 +16,11 @@ import java.util.List;
  */
 public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements PredicateBuilder<F> {
 
+    @Override
+    public Predicate buildPredicate(Path path, CriteriaBuilder builder, F filter) {
+        return buildPredicate(path, builder, filter, getFieldNameFromAnnotation(filter));
+    }
+
     /**
      * Build the predicate for the base filter type
      *
@@ -41,6 +46,14 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
 
         if (Boolean.FALSE.equals(filter.getNull())) {
             filterPredicates.add(criteriaBuilder.isNotNull(path.get(fieldName)));
+        }
+
+        if (filter.getIsIn() != null) {
+            filterPredicates.add(path.get(fieldName).in(filter.getIsIn()));
+        }
+
+        if (filter.getIsNotIn() != null) {
+            filterPredicates.add(path.get(fieldName).in(filter.getIsNotIn()).not());
         }
 
         return criteriaBuilder.or(filterPredicates.toArray(new Predicate[0]));

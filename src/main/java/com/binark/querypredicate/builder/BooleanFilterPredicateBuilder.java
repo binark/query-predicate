@@ -15,11 +15,6 @@ import java.util.List;
 public class BooleanFilterPredicateBuilder extends AbstractPredicateBuilder<BooleanFilter>{
 
   @Override
-  public Predicate buildPredicate(Path path, CriteriaBuilder builder, BooleanFilter filter) {
-    return buildPredicate(path, builder, filter, getFieldNameFromAnnotation(filter));
-  }
-
-  @Override
   public Predicate buildPredicate(Path path, CriteriaBuilder builder, BooleanFilter filter, String fieldName) {
     List<Predicate> predicates = new ArrayList<>();
     Predicate predicate = buildBaseFilterPredicate(path, builder, filter, fieldName);
