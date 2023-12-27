@@ -5,8 +5,11 @@ import com.binark.querypredicate.builder.PredicateBuilder;
 import com.binark.querypredicate.descriptor.QueryDescriptor;
 import com.binark.querypredicate.filter.Filter;
 import com.binark.querypredicate.management.PredicateBuilderResolver;
-import jakarta.persistence.criteria.*;
-
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +18,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * @author kenany (armelknyobe@gmail.com)
+ *
+ * The query descriptor converter. The goal of that class is to convert a {@link QueryDescriptor} to a {@link List} of {@link Predicate}
+ * following the {@link Filter} rules.
+ * If the query descriptor has a child query descriptor, the join query predicate will be created for that field.
+ *
+ * @param <Q> generic param that should implements {@link QueryDescriptor}
+ */
 public class QueryDescriptorConverter<Q extends QueryDescriptor>{
 
         Logger logger = Logger.getLogger(QueryDescriptorConverter.class.getSimpleName());
@@ -29,11 +41,19 @@ public class QueryDescriptorConverter<Q extends QueryDescriptor>{
                 this.predicateBuilderResolver = predicateBuilderResolver;
         }
 
+        /**
+         * Convert the query descriptor to a {@link List} of {@link Predicate}
+         *
+         * @param root {@link Root} The criteria root
+         * @param builder {@link CriteriaBuilder} The criteria builder
+         * @param queryDescriptor The query descriptor should implement {@link QueryDescriptor}
+         * @return The {@link List} of {@link Predicate} according to the filter rules
+         */
         public List<Predicate> convert(Root root, CriteriaBuilder builder, Q queryDescriptor) {
 
                 List<Predicate> predicates = new ArrayList<>();
 
-                List<Field> queryDescriptorFields = getQueryDescriptorFields(queryDescriptor.getClass());
+                List<Field> queryDescriptorFields = extractQueryDescriptorFields(queryDescriptor.getClass());
 
                 List<Field> filterFields = queryDescriptorFields.stream().filter(field -> Filter.class.isAssignableFrom(field.getType())).collect(Collectors.toList());
 
@@ -55,11 +75,19 @@ public class QueryDescriptorConverter<Q extends QueryDescriptor>{
                 return predicates;
         }
 
+        /**
+         * Create a join predicates for the child query descriptor
+         *
+         * @param joinRoot {@link Join} The criteria join
+         * @param builder {@link CriteriaBuilder} The criteria builder
+         * @param queryDescriptor The child query descriptor
+         * @return The joined {@link List} of {@link Predicate}
+         */
         private List<Predicate> joinDescriptor(Join joinRoot, CriteriaBuilder builder, Q queryDescriptor) {
 
                 List<Predicate> predicates = new ArrayList<>();
 
-                List<Field> queryDescriptorFields = getQueryDescriptorFields(queryDescriptor.getClass());
+                List<Field> queryDescriptorFields = extractQueryDescriptorFields(queryDescriptor.getClass());
 
                 List<Field> filterFields = queryDescriptorFields.stream().filter(field -> Filter.class.isAssignableFrom(field.getType())).collect(Collectors.toList());
 
@@ -81,8 +109,16 @@ public class QueryDescriptorConverter<Q extends QueryDescriptor>{
                 return predicates;
         }
 
-
-        private Predicate getPredicateFromField(Field field, Path root, CriteriaBuilder criteriaBuilder, QueryDescriptor queryDescriptor) {
+        /**
+         * Create a {@link Predicate} for a query descriptor field which is a {@link Filter} type
+         *
+         * @param field {@link Field} The field
+         * @param path {@link Path} The criteria path
+         * @param criteriaBuilder {@link CriteriaBuilder} The criteria builder
+         * @param queryDescriptor The query descriptor
+         * @return The {@link Predicate} the follows the rules of that field
+         */
+        private Predicate getPredicateFromField(Field field, Path path, CriteriaBuilder criteriaBuilder, QueryDescriptor queryDescriptor) {
                 if(Filter.class.isAssignableFrom(field.getType())) {
                         try {
                                 field.setAccessible(true);
@@ -90,9 +126,9 @@ public class QueryDescriptorConverter<Q extends QueryDescriptor>{
                                 if (value != null) {
                                         PredicateBuilder predicateBuilder = predicateBuilderResolver.resolverPredicateBuilder(value.getClass());
                                         if (value.getClass().getAnnotation(EntityFieldName.class) != null) {
-                                                return predicateBuilder.buildPredicate(root, criteriaBuilder, (Filter) value);
+                                                return predicateBuilder.buildPredicate(path, criteriaBuilder, (Filter) value);
                                         } else {
-                                                return predicateBuilder.buildPredicate(root, criteriaBuilder, (Filter) value, field.getName());
+                                                return predicateBuilder.buildPredicate(path, criteriaBuilder, (Filter) value, field.getName());
                                         }
                                 }
 
@@ -105,7 +141,15 @@ public class QueryDescriptorConverter<Q extends QueryDescriptor>{
                 return criteriaBuilder.and();
         }
 
-        private List<Field> getQueryDescriptorFields(Class queryDescriptorClass) {
+        /**
+         * Extract the query descriptor field.
+         * This method will recursively extract the field from the parent query descriptor class, if the current query descriptor if a child.
+         * But It will just return the fields that implements {@link Filter} or {@link QueryDescriptor}
+         *
+         * @param queryDescriptorClass The query descriptor class
+         * @return All query descriptor fields includes parents fields
+         */
+        private List<Field> extractQueryDescriptorFields(Class queryDescriptorClass) {
 
                 Field[] declaredFields = queryDescriptorClass.getDeclaredFields();
                 List<Field> fields = Arrays.asList(declaredFields);
@@ -113,7 +157,7 @@ public class QueryDescriptorConverter<Q extends QueryDescriptor>{
                 Class<?> superclass = queryDescriptorClass.getSuperclass();
 
                 if (QueryDescriptor.class.isAssignableFrom(superclass)) {
-                        fields.addAll(getQueryDescriptorFields(superclass));
+                        fields.addAll(extractQueryDescriptorFields(superclass));
                 }
 
                 return fields.stream()

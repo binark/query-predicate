@@ -1,5 +1,10 @@
 package com.binark.querypredicate.filter;
 
+/**
+ * @author kenany (armelknyobe@gmail.com)
+ *
+ * The string filter type class
+ */
 public class StringFilter extends BaseFilter<String>{
 
     private String contains;

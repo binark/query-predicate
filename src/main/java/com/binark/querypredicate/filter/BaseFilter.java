@@ -1,5 +1,11 @@
 package com.binark.querypredicate.filter;
 
+/**
+ * @author kenany (armelknyobe@gmail.com)
+ *
+ * The base filter type class
+ * @param <T>
+ */
 public class BaseFilter<T> implements Filter<T>{
 
     private T isEquals;
