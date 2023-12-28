@@ -1,9 +1,9 @@
 package com.binark.querypredicate.filter;
 
 /**
- * @author kenany (armelknyobe@gmail.com)
- *
  * The boolean filter type class
+ *
+ * @author kenany (armelknyobe@gmail.com)
  */
 public class BooleanFilter extends BaseFilter<Boolean>{
 

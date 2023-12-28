@@ -65,7 +65,11 @@ public class QueryDescriptorConverter<Q extends QueryDescriptor>{
                         field.setAccessible(true);
                     try {
                             Q subQueryDescriptorValue = (Q)field.get(queryDescriptor);
-                            predicates.addAll(joinDescriptor(root.join(field.getName()), builder, subQueryDescriptorValue));
+                            if (subQueryDescriptorValue != null) {
+                                    predicates.addAll(
+                                        joinDescriptor(root.join(field.getName()), builder,
+                                            subQueryDescriptorValue));
+                            }
                     } catch (IllegalAccessException e) {
                             e.printStackTrace();
                     }
