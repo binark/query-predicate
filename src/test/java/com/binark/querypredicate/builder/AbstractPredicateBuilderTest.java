@@ -8,12 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.binark.querypredicate.annotation.EntityFieldName;
 import com.binark.querypredicate.utils.TestFilter;
+import com.binark.querypredicate.utils.TestObject;
 import com.binark.querypredicate.utils.TestQueryDescriptor;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
 import org.hibernate.query.criteria.internal.expression.LiteralExpression;
@@ -47,7 +49,7 @@ class AbstractPredicateBuilderTest {
 
   @Test
   void buildBaseFilterPredicate_Is_Equals() {
-    String value = "equals";
+    TestObject value = new TestObject("equals");
     Mockito.when(path.getJavaType()).thenReturn(String.class);
     TestFilter testFilter = new TestFilter();
     testFilter.setIsEquals(value);
@@ -67,7 +69,7 @@ class AbstractPredicateBuilderTest {
 
   @Test
   void buildBaseFilterPredicate_Is_Different() {
-    String value = "different";
+    TestObject value = new TestObject("different");
     Mockito.when(path.getJavaType()).thenReturn(String.class);
     TestFilter testFilter = new TestFilter();
     testFilter.setIsDifferent(value);
@@ -115,7 +117,7 @@ class AbstractPredicateBuilderTest {
 
   @Test
   void buildBaseFilterPredicate_Is_In() {
-    List<String> values = Arrays.asList("abc", "xyz");
+    List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
     TestFilter testFilter = new TestFilter();
     testFilter.setIsIn(values);
     List<Predicate> predicates = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
@@ -126,15 +128,16 @@ class AbstractPredicateBuilderTest {
 
     InPredicate inPredicate = (InPredicate) predicates.get(0);
 
-    List<LiteralExpression<String>> predicateValues = inPredicate.getValues();
+    List<LiteralExpression<TestObject>> predicateValues = inPredicate.getValues();
     assertEquals(values.size(), predicateValues.size());
-    List<String> inValues = predicateValues.stream().map(LiteralExpression::getLiteral).toList();
-    assertLinesMatch(values, inValues);
+    List<TestObject> inValues = predicateValues.stream().map(LiteralExpression::getLiteral).toList();
+    assertLinesMatch(values.stream().map(TestObject::getName).collect(Collectors.toList()), inValues.stream()
+        .map(TestObject::getName).collect(Collectors.toList()));
   }
 
   @Test
   void buildBaseFilterPredicate_Is_Not_In() {
-    List<String> values = Arrays.asList("abc", "xyz");
+    List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
     TestFilter testFilter = new TestFilter();
     testFilter.setIsNotIn(values);
     List<Predicate> predicates = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
