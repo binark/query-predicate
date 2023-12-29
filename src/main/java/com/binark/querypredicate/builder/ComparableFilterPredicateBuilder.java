@@ -5,7 +5,6 @@ import com.binark.querypredicate.filter.Range;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,13 +13,19 @@ import java.util.List;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class ComparableFilterPredicateBuilder<F extends ComparableFilter> extends AbstractPredicateBuilder<F>{
+public abstract class ComparableFilterPredicateBuilder<F extends ComparableFilter> extends AbstractPredicateBuilder<F>{
 
-  @Override
-  public Predicate buildPredicate(Path path, CriteriaBuilder builder, F filter, String fieldName) {
-    List<Predicate> predicates = new ArrayList<>();
-    Predicate predicate = buildBaseFilterPredicate(path, builder, filter, fieldName);
-    predicates.add(predicate);
+  /**
+   * Build a predicates list for filters that implements {@link ComparableFilter}
+   *
+   * @param path The criteria path
+   * @param builder The criteria builder
+   * @param filter The filter, must implement {@link ComparableFilter}
+   * @param fieldName The field name
+   * @return The {@link List} of {@link Predicate} according the filter rules
+   */
+  public List<Predicate> buildComparablePredicate(Path path, CriteriaBuilder builder, F filter, String fieldName) {
+    List<Predicate> predicates = buildBaseFilterPredicate(path, builder, filter, fieldName);
 
     if (filter.getIsGreaterThan() != null) {
       predicates.add(builder.greaterThan(path.get(fieldName), filter.getIsGreaterThan()));
@@ -42,7 +47,7 @@ public class ComparableFilterPredicateBuilder<F extends ComparableFilter> extend
       predicates.add(getBetweenPredicate(path, builder, filter.getIsBetween(), fieldName));
     }
 
-    return builder.or(predicates.toArray(new Predicate[0]));
+    return predicates;
   }
 
   /**

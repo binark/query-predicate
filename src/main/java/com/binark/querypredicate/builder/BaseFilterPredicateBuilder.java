@@ -5,6 +5,7 @@ import com.binark.querypredicate.filter.BaseFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
+import java.util.List;
 
 /**
  * @author kenany (armelknyobe@gmail.com)
@@ -15,6 +16,7 @@ public class BaseFilterPredicateBuilder extends AbstractPredicateBuilder<BaseFil
 
     @Override
     public Predicate buildPredicate(Path path, CriteriaBuilder builder, BaseFilter filter, String fieldName) {
-        return buildBaseFilterPredicate(path, builder, filter, fieldName);
+        List<Predicate> predicates = buildBaseFilterPredicate(path, builder, filter, fieldName);
+        return predicates.size() == 1 ? predicates.get(0) : builder.or(predicates.toArray(new Predicate[0]));
     }
 }

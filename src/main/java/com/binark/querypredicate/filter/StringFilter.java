@@ -5,14 +5,14 @@ package com.binark.querypredicate.filter;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class StringFilter extends BaseFilter<String>{
+public class StringFilter extends ComparableFilter<String>{
 
     private String contains;
-    private String noContains;
+    private String notContains;
     private String startWith;
     private String endWith;
     private String containsIgnoreCase;
-    private String noContainsIgnoreCase;
+    private String notContainsIgnoreCase;
     private String startWithIgnoreCase;
     private String endWithIgnoreCase;
 
@@ -24,12 +24,12 @@ public class StringFilter extends BaseFilter<String>{
         this.contains = contains;
     }
 
-    public String getNoContains() {
-        return noContains;
+    public String getNotContains() {
+        return notContains;
     }
 
-    public void setNoContains(String noContains) {
-        this.noContains = noContains;
+    public void setNotContains(String notContains) {
+        this.notContains = notContains;
     }
 
     public String getStartWith() {
@@ -72,11 +72,11 @@ public class StringFilter extends BaseFilter<String>{
         this.endWithIgnoreCase = endWithIgnoreCase;
     }
 
-    public String getNoContainsIgnoreCase() {
-        return noContainsIgnoreCase;
+    public String getNotContainsIgnoreCase() {
+        return notContainsIgnoreCase;
     }
 
-    public void setNoContainsIgnoreCase(String noContainsIgnoreCase) {
-        this.noContainsIgnoreCase = noContainsIgnoreCase;
+    public void setNotContainsIgnoreCase(String notContainsIgnoreCase) {
+        this.notContainsIgnoreCase = notContainsIgnoreCase;
     }
 }

@@ -5,7 +5,6 @@ import com.binark.querypredicate.filter.StringFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,21 +12,19 @@ import java.util.List;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class StringFilterPredicateBuilder extends AbstractPredicateBuilder<StringFilter> {
+public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuilder<StringFilter> {
 
     @Override
     public Predicate buildPredicate(Path path, CriteriaBuilder builder, StringFilter filter, String fieldName) {
-        List<Predicate> predicates = new ArrayList<>();
-        Predicate predicate = buildBaseFilterPredicate(path, builder, filter, fieldName);
-        predicates.add(predicate);
+        List<Predicate> predicates = buildComparablePredicate(path, builder, filter, fieldName);
 
         if (filter.getContains() != null) {
             predicates.add(builder.like(path.<String>get(fieldName), "%" + filter.getContains() + "%"));
         }
 
-        if (filter.getNoContains() != null) {
+        if (filter.getNotContains() != null) {
             predicates.add(builder.notLike(
-                path.<String>get(fieldName), "%" + filter.getNoContains() + "%"));
+                path.<String>get(fieldName), "%" + filter.getNotContains() + "%"));
         }
 
         if (filter.getStartWith() != null) {
@@ -42,18 +39,18 @@ public class StringFilterPredicateBuilder extends AbstractPredicateBuilder<Strin
             predicates.add(builder.like(builder.upper(path.<String>get(fieldName)), "%" + filter.getContainsIgnoreCase().toUpperCase() + "%"));
         }
 
-        if (filter.getNoContainsIgnoreCase() != null) {
-            predicates.add(builder.notLike(builder.upper(path.<String>get(fieldName)), "%" + filter.getNoContainsIgnoreCase().toUpperCase() + "%"));
+        if (filter.getNotContainsIgnoreCase() != null) {
+            predicates.add(builder.notLike(builder.upper(path.<String>get(fieldName)), "%" + filter.getNotContainsIgnoreCase().toUpperCase() + "%"));
         }
 
         if (filter.getStartWithIgnoreCase() != null) {
-            predicates.add(builder.like(builder.upper(path.<String>get(fieldName)),  filter.getNoContainsIgnoreCase().toUpperCase() + "%"));
+            predicates.add(builder.like(builder.upper(path.<String>get(fieldName)),  filter.getStartWithIgnoreCase().toUpperCase() + "%"));
         }
 
         if (filter.getEndWithIgnoreCase() != null) {
             predicates.add(builder.like(builder.upper(path.<String>get(fieldName)), "%" + filter.getEndWithIgnoreCase().toUpperCase()));
         }
 
-        return builder.or(predicates.toArray(new Predicate[0]));
+        return predicates.size() == 1 ? predicates.get(0) : builder.or(predicates.toArray(new Predicate[0]));
     }
 }

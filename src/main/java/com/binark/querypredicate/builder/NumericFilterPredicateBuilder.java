@@ -4,7 +4,6 @@ import com.binark.querypredicate.filter.NumericFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,13 +11,21 @@ import java.util.List;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class NumericFilterPredicateBuilder extends ComparableFilterPredicateBuilder<NumericFilter>{
+public abstract class NumericFilterPredicateBuilder extends ComparableFilterPredicateBuilder<NumericFilter>{
 
-  @Override
-  public Predicate buildPredicate(Path path, CriteriaBuilder builder, NumericFilter filter, String fieldName) {
-    List<Predicate> predicates = new ArrayList<>();
-    Predicate predicate = buildBaseFilterPredicate(path, builder, filter, fieldName);
-    predicates.add(predicate);
+  /**
+   * Build a predicates list for filters that implement {@link NumericFilter}.
+   * Just like {@link ComparableFilterPredicateBuilder}, but with the numeric method from {@link CriteriaBuilder}
+   * @see CriteriaBuilder
+   *
+   * @param path The criteria path
+   * @param builder The criteria builder
+   * @param filter The filter, must implement {@link NumericFilter}
+   * @param fieldName The field name
+   * @return The {@link List} of {@link Predicate} according the filter rules
+   */
+  public List<Predicate> buildNumericPredicate(Path path, CriteriaBuilder builder, NumericFilter filter, String fieldName) {
+    List<Predicate> predicates = buildBaseFilterPredicate(path, builder, filter, fieldName);
 
     if (filter.getIsGreaterThan() != null) {
       predicates.add(builder.gt(path.get(fieldName), (Number) filter.getIsGreaterThan()));
@@ -40,7 +47,7 @@ public class NumericFilterPredicateBuilder extends ComparableFilterPredicateBuil
       predicates.add(getBetweenPredicate(path, builder, filter.getIsBetween(), fieldName));
     }
 
-    return builder.or(predicates.toArray(new Predicate[0]));
+    return predicates;
   }
 
 }

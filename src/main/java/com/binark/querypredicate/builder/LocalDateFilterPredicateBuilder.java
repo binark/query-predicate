@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 /**
  * The predicate builder for the {@link LocalDateFilter} type
@@ -18,34 +19,35 @@ public class LocalDateFilterPredicateBuilder extends ComparableFilterPredicateBu
   @Override
   public Predicate buildPredicate(Path path, CriteriaBuilder builder, LocalDateFilter filter,
       String fieldName) {
-    Predicate predicate = super.buildPredicate(path, builder, filter, fieldName);
+    List<Predicate> predicates = super.buildComparablePredicate(path, builder, filter, fieldName);
 
     if (filter.getIsToday() != null) {
       Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
           LocalDate.now(), fieldName);
-      predicate = computeDateBetweenPredicate(filter.getIsToday(), builder, predicate, localDateBetweenPredicate);
+      computeDateBetweenPredicate(filter.getIsToday(), predicates, localDateBetweenPredicate);
     }
 
     if (filter.getIsTomorrow() != null) {
       Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
           LocalDate.now().plusDays(1), fieldName);
-      predicate = computeDateBetweenPredicate(filter.getIsTomorrow(), builder, predicate, localDateBetweenPredicate);
+      computeDateBetweenPredicate(filter.getIsTomorrow(), predicates, localDateBetweenPredicate);
     }
 
     if (filter.getIsYesterday() != null) {
       Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
           LocalDate.now().minusDays(1), fieldName);
-      predicate = computeDateBetweenPredicate(filter.getIsYesterday(), builder, predicate, localDateBetweenPredicate);
+      computeDateBetweenPredicate(filter.getIsYesterday(), predicates, localDateBetweenPredicate);
     }
 
-    return predicate;
+    return predicates.size() == 1 ? predicates.get(0) : builder.or(predicates.toArray(new Predicate[0]));
   }
 
-  private Predicate computeDateBetweenPredicate(Boolean filterRule, CriteriaBuilder builder, Predicate basePredicate, Predicate betweenPredicate) {
+  private void computeDateBetweenPredicate(Boolean filterRule, List<Predicate> basePredicates, Predicate betweenPredicate) {
     if (Boolean.TRUE.equals(filterRule)) {
-      return builder.or(basePredicate, betweenPredicate);
+      basePredicates.add(betweenPredicate);
+    } else {
+      basePredicates.add(betweenPredicate.not());
     }
-    return builder.or(basePredicate, betweenPredicate.not());
   }
 
   private Predicate getLocalDateBetweenPredicate(Path path, CriteriaBuilder builder, LocalDate localDate, String fieldName) {

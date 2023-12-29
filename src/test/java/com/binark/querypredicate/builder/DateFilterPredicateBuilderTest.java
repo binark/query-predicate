@@ -1,6 +1,7 @@
 package com.binark.querypredicate.builder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.binark.querypredicate.filter.DateFilter;
@@ -13,6 +14,7 @@ import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
 import org.hibernate.query.criteria.internal.expression.LiteralExpression;
 import org.hibernate.query.criteria.internal.predicate.BetweenPredicate;
+import org.hibernate.query.criteria.internal.predicate.NegatedPredicateWrapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -22,7 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DateFilterPredicateBuilderTest {
 
-  @Mock(answer = Answers.RETURNS_MOCKS)
+  @Mock(answer = Answers.RETURNS_SELF)
   private Path path;
 
   @Mock(answer = Answers.RETURNS_MOCKS)
@@ -40,9 +42,9 @@ class DateFilterPredicateBuilderTest {
         "today");
 
     assertNotNull(predicate);
+    assertInstanceOf(BetweenPredicate.class, predicate);
 
-    BetweenPredicate betweenPredicate = (BetweenPredicate) predicate.getExpressions().stream()
-        .filter(item -> item instanceof BetweenPredicate).findFirst().get();
+    BetweenPredicate betweenPredicate = (BetweenPredicate) predicate;
 
     assertNotNull(betweenPredicate);
 
@@ -54,6 +56,21 @@ class DateFilterPredicateBuilderTest {
   }
 
   @Test
+  void buildPredicate_not_for_today() {
+    DateFilter dateFilter = new DateFilter();
+    dateFilter.setIsToday(false);
+    Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, dateFilter,
+        "today");
+
+    assertNotNull(predicate);
+    assertInstanceOf(NegatedPredicateWrapper.class, predicate);
+
+    NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) predicate;
+
+    assertNotNull(negatedPredicateWrapper);
+  }
+
+  @Test
   void buildPredicate_for_tomorrow() {
     DateFilter dateFilter = new DateFilter();
     dateFilter.setIsTomorrow(true);
@@ -61,9 +78,9 @@ class DateFilterPredicateBuilderTest {
         "tomorrow");
 
     assertNotNull(predicate);
+    assertInstanceOf(BetweenPredicate.class, predicate);
 
-    BetweenPredicate betweenPredicate = (BetweenPredicate) predicate.getExpressions().stream()
-        .filter(item -> item instanceof BetweenPredicate).findFirst().get();
+    BetweenPredicate betweenPredicate = (BetweenPredicate) predicate;
 
     assertNotNull(betweenPredicate);
 
@@ -75,6 +92,21 @@ class DateFilterPredicateBuilderTest {
   }
 
   @Test
+  void buildPredicate_not_for_tomorrow() {
+    DateFilter dateFilter = new DateFilter();
+    dateFilter.setIsTomorrow(false);
+    Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, dateFilter,
+        "tomorrow");
+
+    assertNotNull(predicate);
+    assertInstanceOf(NegatedPredicateWrapper.class, predicate);
+
+    NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) predicate;
+
+    assertNotNull(negatedPredicateWrapper);
+  }
+
+  @Test
   void buildPredicate_for_yesterday() {
     DateFilter dateFilter = new DateFilter();
     dateFilter.setIsYesterday(true);
@@ -82,9 +114,9 @@ class DateFilterPredicateBuilderTest {
         "yesterday");
 
     assertNotNull(predicate);
+    assertInstanceOf(BetweenPredicate.class, predicate);
 
-    BetweenPredicate betweenPredicate = (BetweenPredicate) predicate.getExpressions().stream()
-        .filter(item -> item instanceof BetweenPredicate).findFirst().get();
+    BetweenPredicate betweenPredicate = (BetweenPredicate) predicate;
 
     assertNotNull(betweenPredicate);
 
@@ -93,6 +125,21 @@ class DateFilterPredicateBuilderTest {
 
     assertEquals(atStartOfDay(new Date(new Date().getTime() - (1000 * 60 * 60 * 24) )), lowerBound.getLiteral());
     assertEquals(atEndOfDay(new Date(new Date().getTime() - (1000 * 60 * 60 * 24) )), upperBound.getLiteral());
+  }
+
+  @Test
+  void buildPredicate_not_for_yesterday() {
+    DateFilter dateFilter = new DateFilter();
+    dateFilter.setIsYesterday(false);
+    Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, dateFilter,
+        "yesterday");
+
+    assertNotNull(predicate);
+    assertInstanceOf(NegatedPredicateWrapper.class, predicate);
+
+    NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) predicate;
+
+    assertNotNull(negatedPredicateWrapper);
   }
 
   private Date atEndOfDay(Date date) {
