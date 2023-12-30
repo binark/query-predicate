@@ -6,7 +6,7 @@ package com.binark.querypredicate.filter;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class ComparableFilter<T extends Comparable> extends BaseFilter<T>{
+public abstract class ComparableFilter<T extends Comparable> extends BaseFilter<T>{
 
   private T isGreaterThan;
 

@@ -2,6 +2,7 @@ package com.binark.querypredicate.management;
 
 import com.binark.querypredicate.annotation.FilterClass;
 import com.binark.querypredicate.builder.PredicateBuilder;
+import com.binark.querypredicate.filter.Filter;
 
 /**
  * The predicate builder registry.
@@ -16,10 +17,12 @@ public class PredicateBuilderRegistry {
 
     public PredicateBuilderRegistry() {
         storage = BasePredicateBuilderStorage.getInstance();
+        storage.initializeStorage();
     }
 
     public PredicateBuilderRegistry(PredicateBuilderStorage storage) {
         this.storage = storage;
+        storage.initializeStorage();
     }
 
     /**
@@ -34,11 +37,15 @@ public class PredicateBuilderRegistry {
 
     /**
      * Register a predicate builder by using the filter class annotation value as name
+     *
      * @see FilterClass
      * @param predicateBuilder The predicate builder to register
      */
     public void registerPredicateBuilder(PredicateBuilder predicateBuilder) {
         FilterClass filterClass = predicateBuilder.getClass().getAnnotation(FilterClass.class);
+        if (filterClass == null) {
+            throw new IllegalArgumentException("You must put the " + FilterClass.class.getSimpleName() + " annotation on the " + predicateBuilder.getClass().getSimpleName() + " class");
+        }
         registerPredicateBuilder(filterClass.value().getSimpleName(), predicateBuilder);
     }
 
@@ -48,7 +55,7 @@ public class PredicateBuilderRegistry {
      * @param filterClass The built-in filter class
      * @param predicateBuilder The new predicate builder to use
      */
-    public void replacePredicateBuilder(Class filterClass, PredicateBuilder predicateBuilder) {
+    public void replacePredicateBuilder(Class<? extends Filter> filterClass, PredicateBuilder predicateBuilder) {
         registerPredicateBuilder(filterClass.getSimpleName(), predicateBuilder);
     }
 }

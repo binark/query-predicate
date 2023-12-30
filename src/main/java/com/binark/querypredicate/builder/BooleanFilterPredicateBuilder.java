@@ -4,7 +4,6 @@ import com.binark.querypredicate.filter.BooleanFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,13 +11,11 @@ import java.util.List;
  *
  * The predicate builder for the {@link BooleanFilter} type
  */
-public class BooleanFilterPredicateBuilder extends AbstractPredicateBuilder<BooleanFilter>{
+public class BooleanFilterPredicateBuilder extends ComparableFilterPredicateBuilder<BooleanFilter>{
 
   @Override
   public Predicate buildPredicate(Path path, CriteriaBuilder builder, BooleanFilter filter, String fieldName) {
-    List<Predicate> predicates = new ArrayList<>();
-    Predicate predicate = buildBaseFilterPredicate(path, builder, filter, fieldName);
-    predicates.add(predicate);
+    List<Predicate> predicates = buildComparablePredicate(path, builder, filter, fieldName);
 
     if (filter.getTrue() != null) {
       predicates.add(builder.isTrue(path.get(fieldName)));
@@ -28,6 +25,6 @@ public class BooleanFilterPredicateBuilder extends AbstractPredicateBuilder<Bool
       predicates.add(builder.isFalse(path.get(fieldName)));
     }
 
-    return builder.or(predicates.toArray(new Predicate[0]));
+    return predicates.size() == 1 ? predicates.get(0) : builder.or(predicates.toArray(new Predicate[0]));
   }
 }

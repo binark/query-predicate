@@ -40,8 +40,8 @@ public class BaseFilter<T> implements Filter<T>{
         return isNull;
     }
 
-    public void setNull(Boolean aNull) {
-        isNull = aNull;
+    public void setNull(Boolean isNull) {
+        this.isNull = isNull;
     }
 
     public List<T> getIsIn() {
