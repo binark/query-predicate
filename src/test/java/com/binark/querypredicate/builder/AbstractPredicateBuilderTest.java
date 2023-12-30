@@ -130,7 +130,8 @@ class AbstractPredicateBuilderTest {
 
     List<LiteralExpression<TestObject>> predicateValues = inPredicate.getValues();
     assertEquals(values.size(), predicateValues.size());
-    List<TestObject> inValues = predicateValues.stream().map(LiteralExpression::getLiteral).toList();
+    List<TestObject> inValues = predicateValues.stream().map(LiteralExpression::getLiteral).collect(
+        Collectors.toList());
     assertLinesMatch(values.stream().map(TestObject::getName).collect(Collectors.toList()), inValues.stream()
         .map(TestObject::getName).collect(Collectors.toList()));
   }

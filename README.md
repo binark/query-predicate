@@ -1,8 +1,13 @@
 # QUERY PREDICATE
 
+QUERY PREDICATE is a package that builds JPA criteria predicates for the queries you want to perform.   
+The goal is to describe the query conditions in a Java class and let the query predicate convert it to the JPA criteria predicate. So that you could use it to perform SQL queries. This package is built with **Java version 11**
+
 ## 1. INSTALLATION
 
-In your maven pom.xml file
+Just add the dependency in your maven pom.xml file
+
+### For Jakarta EE 9 +
 
 ```
 <dependency>
@@ -12,12 +17,19 @@ In your maven pom.xml file
 </dependency>
 ```
 
+### For Java EE and Jakarta EE 8 -
+
+```
+<dependency>
+    <groupId>com.binark</groupId>
+    <artifactId>query-predicate-jee</artifactId>
+    <version>${version}</version>
+</dependency>
+```
+
 The latest version of query predicate is **1.0.0**
 
 ## 2. HOW IT WORKS
-
-QUERY PREDICATE is a package that build JPA criteria predicates for the queries you want to perform.   
-The goal is to describe how the queries conditions in a Java class and let the query predicate convert it to the JPA criteria predicate. So that you could use it to perform sql queries.
 
 A short example:
 
@@ -45,7 +57,7 @@ query.select(root).where(predicates.stream().toArray());
 
 ### 2.1 Query descriptor
 
-A query descriptor is a representation of the query you want to perform for an entity. It contains the fields that is the conditions for the query. Each field should match with an entity field. Query predicate doesn't take care about the entity field names, it doesn't know the entity for which you want to build predicates. So if you use the wrong entity names, it will always generate predicates but the query will fail because of unknown field. Each query descriptor should implement the **QueryDescriptor** interface.
+A query descriptor is a representation of the query you want to perform for an entity. It contains the fields that are the conditions for the query. Each field should match with an entity field. Query predicate doesn't take care about the entity field names, it doesn't know the entity for which you want to build predicates. So if you use the wrong entity names, it will always generate predicates but the query will fail because of an unknown field. Each query descriptor should implement the **QueryDescriptor** interface.
 
 A shirt example:
 
@@ -70,7 +82,7 @@ class SimpleQueryDescriptor implements QueryDescriptor {
 
 ### 2.2 Filters
 
-The filter is a class that the query condition for a particular entity field. The name of the filter attribute in the query descriptor should match with the attribute name in the entity, but there is a way to do it differently.
+The filter is a class that the query condition for a particular entity field. The name of the filter attribute in the query descriptor should match the attribute name in the entity, but there is a way to do it differently.
 
 ```java
 import com.binark.querypredicate.filter.DateFilter;
@@ -90,15 +102,15 @@ List<Predicate> predicates = converter.convert(root, cb, queryDescriptor);
 query.select(root).where(predicates.stream().toArray());
 ```
 
-The query above will find all the rows that have a _lastName_ that starts with "foo" (non case-sensitive) and have _birthday_ for today. The query predicate doesn't take care about filters that have null value, they are simply ignored. So the query above will not use _id_ as a parameter. Anyway, if yoy want to perform a query with a null field condition, you should set the _isNull_ filter attribute to true
+The query above will find all the rows that have a _lastName_ that starts with "foo" (non-case-sensitive) and have _birthday_ for today. The query predicate doesn't take care about filters that have null value, they are simply ignored. So the query above will not use _id_ as a parameter. Anyway, if you want to perform a query with a null field condition, you should set the _isNull_ filter attribute to true
 
 ```java
 StringFilter lastName = new StringFilter();
 lastName.setIsNull(true);
 ```
-This will find all records that have null value have lastName
+This will find all records that have a null value as lastName
 
-You can pass several conditions in a filter. When it happens, the converter treat those conditions with a **OR** operator
+You can pass several conditions in a filter. When it happens, the converter treats those conditions with an **OR** operator
 
 ```java
 StringFilter lastName = new StringFilter();
@@ -106,7 +118,7 @@ lastName.setStartWithIgnoreCase("foo");
 lastName.setContains("bar");
 ```
 
-This will find all records that have _lastName_ that starts with "foo" (non case-sensitive) or _lastName_ that contains "bar" (case sensitive) 
+This will find all records that have _lastName_ that starts with "foo" (non-case-sensitive) or _lastName_ that contains "bar" (case-sensitive) 
 
 ### 2.3 Field mapping
 
@@ -146,7 +158,7 @@ class SimpleQueryDescriptor implements QueryDescriptor {
 }
 ```
 
-If you convert this query descriptor, the converter will produce two predicates with condition for the _lastName_ instead of one predicate with two expressions with an OR operator.
+If you convert this query descriptor, the converter will produce two predicates with conditions for the _lastName_ instead of one predicate with two expressions with an OR operator.
 
 ### 2.4 Join predicate
 
@@ -166,7 +178,7 @@ class SimpleQueryDescriptor implements QueryDescriptor {
 }
 ```
 
-If you convert that query descriptor, the converter will understand that your entity has an association field with name _fieldName_, then it will generate a join predicate for that field.
+If you convert that query descriptor, the converter will understand that your entity has an association field with name _fieldName_, and then it will generate a join predicate for that field.
 
 **limitations:**  
 The _EntityFieldName_ annotation doesn't work with a field of type query descriptor, it only works for filter  
@@ -186,7 +198,7 @@ class MyFilter extends BaseFilter {
 }
 ```
 
-There is not a restriction for the fields in your filter. You should at least implements the **Filter** interface. But it is recommended to extends the **BaseFilter** class or another top level filter class to inherit its fields. Anyway if you want to create a custom filter from scratch, follow the example below
+There is no restriction for the fields in your filter. You should at least implement the **Filter**** interface. But it is recommended to extend the **BaseFilter**** class or another top-level filter class to inherit its fields. Anyway, if you want to create a custom filter from scratch, follow the example below
 
 ```java
 import com.binark.querypredicate.filter.Filter;
@@ -196,11 +208,11 @@ class MyFilter implements Filter {
 }
 ```
 
-If you use that filter in a query descriptor like that, the converter will not find the predicate builder that use that filter. And will throw an exception: _"There is no predicate builder registered for the filter MyFilter"_. So you should also create a predicate builder for your filter
+If you use that filter in a query descriptor like that, the converter will not find the predicate builder that uses that filter. And will throw an exception: _"There is no predicate builder registered for the filter MyFilter"_. So you should also create a predicate builder for your filter
 
 ### 3.2 CUSTOM PREDICATE BUILDER
 
-When you create a custom filter, you should create a custom predicate builder that will use that filter. If your filter implements the **Filter** interface, your predicate builder should implement the **PredicateBuilder** interface, and you are responsible to implement all the process from scratch. If your filter extends another filter, your predicate builder should extend the predicate builder for the parent filter so that your builder will reuse the parent features.
+When you create a custom filter, you should create a custom predicate builder that will use that filter. If your filter implements the **Filter** interface, your predicate builder should implement the **PredicateBuilder** interface, and you are responsible for implementing all the processes from scratch. If your filter extends another filter, your predicate builder should extend the predicate builder for the parent filter so that your builder will reuse the parent features.
 
 ```java
 import com.binark.querypredicate.annotation.FilterClass;
