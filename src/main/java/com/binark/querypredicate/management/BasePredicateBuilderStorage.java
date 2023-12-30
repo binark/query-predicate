@@ -53,7 +53,10 @@ final class BasePredicateBuilderStorage implements PredicateBuilderStorage {
         predicateBuilderMap.put(key, predicateBuilder);
     }
 
-    public void initializeStorage() {
+    /**
+     * Initialize the storage with the built-in predicate builder
+     */
+    private void initializeStorage() {
         predicateBuilderMap.put(BaseFilter.class.getSimpleName(), new BaseFilterPredicateBuilder());
         predicateBuilderMap.put(StringFilter.class.getSimpleName(), new StringFilterPredicateBuilder());
         predicateBuilderMap.put(BooleanFilter.class.getSimpleName(), new BooleanFilterPredicateBuilder());

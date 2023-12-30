@@ -17,12 +17,10 @@ public class PredicateBuilderRegistry {
 
     public PredicateBuilderRegistry() {
         storage = BasePredicateBuilderStorage.getInstance();
-        storage.initializeStorage();
     }
 
     public PredicateBuilderRegistry(PredicateBuilderStorage storage) {
         this.storage = storage;
-        storage.initializeStorage();
     }
 
     /**

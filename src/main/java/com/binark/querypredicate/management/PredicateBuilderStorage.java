@@ -24,9 +24,4 @@ public interface PredicateBuilderStorage {
      * @param predicateBuilder The predicate builder to store.
      */
     void addPredicateBuilder(String key, PredicateBuilder predicateBuilder);
-
-    /**
-     * Initialize the storage with the built-in predicate builder
-     */
-    void initializeStorage();
 }
