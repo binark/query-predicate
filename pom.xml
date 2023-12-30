@@ -16,7 +16,7 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <repository.name>query-predicate</repository.name>
-    <repository.owner>kenany92</repository.owner>
+    <repository.owner>binark</repository.owner>
   </properties>
 
   <dependencies>
