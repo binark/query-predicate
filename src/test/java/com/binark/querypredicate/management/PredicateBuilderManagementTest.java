@@ -12,18 +12,18 @@ import com.binark.querypredicate.filter.StringFilter;
 import com.binark.querypredicate.utils.TestFilter;
 import com.binark.querypredicate.utils.TestFilterPredicateBuilder;
 import com.binark.querypredicate.utils.WithoutAnnotationPredicateBuilder;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class PredicateBuilderManagementTest {
 
-  private PredicateBuilderRegistry registry;
+  private PredicateBuilderRegistry registry = new PredicateBuilderRegistry();
 
-  private PredicateBuilderResolver resolver;
+  private PredicateBuilderResolver resolver = new BasePredicateBuilderResolver();
 
-  @BeforeEach
-  void setUp() {
+  @AfterEach
+  void tearDown() {
     registry = new PredicateBuilderRegistry();
     resolver = new BasePredicateBuilderResolver();
   }
