@@ -30,14 +30,16 @@ class PredicateBuilderManagementTest {
 
   @Test
   void registerPredicateBuilder() {
-    PredicateBuilder predicateBuilder = resolver.resolverPredicateBuilder(TestFilter.class);
 
-    Assertions.assertNull(predicateBuilder);
+    IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+        () -> resolver.resolverPredicateBuilder(TestFilter.class));
+
+    assertTrue(illegalArgumentException.getMessage().contains(TestFilter.class.getSimpleName()));
 
     TestFilterPredicateBuilder testFilterPredicateBuilder = new TestFilterPredicateBuilder();
     registry.registerPredicateBuilder(testFilterPredicateBuilder);
 
-    predicateBuilder = resolver.resolverPredicateBuilder(TestFilter.class);
+    PredicateBuilder predicateBuilder = resolver.resolverPredicateBuilder(TestFilter.class);
 
     assertNotNull(predicateBuilder);
     assertEquals(testFilterPredicateBuilder, predicateBuilder);

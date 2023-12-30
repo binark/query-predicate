@@ -18,7 +18,12 @@ public final class BasePredicateBuilderResolver implements PredicateBuilderResol
      * @return The predicate builder
      */
     private PredicateBuilder resolverPredicateBuilder(String name) {
-        return BasePredicateBuilderStorage.getInstance().getPredicateBuilder(name);
+        PredicateBuilder predicateBuilder = BasePredicateBuilderStorage.getInstance()
+            .getPredicateBuilder(name);
+        if (predicateBuilder == null) {
+            throw new IllegalArgumentException("There is no predicate builder registered for the filter: " + name);
+        }
+        return predicateBuilder;
     }
 
     @Override
