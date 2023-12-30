@@ -11,20 +11,20 @@ import java.util.List;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public abstract class NumericFilterPredicateBuilder extends ComparableFilterPredicateBuilder<NumericFilter>{
+public abstract class NumericFilterPredicateBuilder<F extends NumericFilter> extends ComparableFilterPredicateBuilder<F>{
 
   /**
-   * Build a predicates list for filters that implement {@link NumericFilter}.
+   * Build a predicates list for filters that extends {@link NumericFilter}.
    * Just like {@link ComparableFilterPredicateBuilder}, but with the numeric method from {@link CriteriaBuilder}
    * @see CriteriaBuilder
    *
    * @param path The criteria path
    * @param builder The criteria builder
-   * @param filter The filter, must implement {@link NumericFilter}
+   * @param filter The filter, must extends {@link NumericFilter}
    * @param fieldName The field name
    * @return The {@link List} of {@link Predicate} according the filter rules
    */
-  public List<Predicate> buildNumericPredicate(Path path, CriteriaBuilder builder, NumericFilter filter, String fieldName) {
+  public List<Predicate> buildNumericPredicate(Path path, CriteriaBuilder builder, F filter, String fieldName) {
     List<Predicate> predicates = buildBaseFilterPredicate(path, builder, filter, fieldName);
 
     if (filter.getIsGreaterThan() != null) {

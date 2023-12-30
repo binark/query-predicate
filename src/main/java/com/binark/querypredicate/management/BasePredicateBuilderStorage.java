@@ -3,13 +3,21 @@ package com.binark.querypredicate.management;
 import com.binark.querypredicate.builder.BaseFilterPredicateBuilder;
 import com.binark.querypredicate.builder.BooleanFilterPredicateBuilder;
 import com.binark.querypredicate.builder.DateFilterPredicateBuilder;
+import com.binark.querypredicate.builder.DoubleFilterPredicateBuilder;
+import com.binark.querypredicate.builder.FloatFilterPredicateBuilder;
+import com.binark.querypredicate.builder.IntegerFilterPredicateBuilder;
 import com.binark.querypredicate.builder.LocalDateFilterPredicateBuilder;
+import com.binark.querypredicate.builder.LongFilterPredicateBuilder;
 import com.binark.querypredicate.builder.PredicateBuilder;
 import com.binark.querypredicate.builder.StringFilterPredicateBuilder;
 import com.binark.querypredicate.filter.BaseFilter;
 import com.binark.querypredicate.filter.BooleanFilter;
 import com.binark.querypredicate.filter.DateFilter;
+import com.binark.querypredicate.filter.DoubleFilter;
+import com.binark.querypredicate.filter.FloatFilter;
+import com.binark.querypredicate.filter.IntegerFilter;
 import com.binark.querypredicate.filter.LocalDateFilter;
+import com.binark.querypredicate.filter.LongFilter;
 import com.binark.querypredicate.filter.StringFilter;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,5 +67,9 @@ final class BasePredicateBuilderStorage implements PredicateBuilderStorage {
         predicateBuilderMap.put(BooleanFilter.class.getSimpleName(), new BooleanFilterPredicateBuilder());
         predicateBuilderMap.put(DateFilter.class.getSimpleName(), new DateFilterPredicateBuilder());
         predicateBuilderMap.put(LocalDateFilter.class.getSimpleName(), new LocalDateFilterPredicateBuilder());
+        predicateBuilderMap.put(IntegerFilter.class.getSimpleName(), new IntegerFilterPredicateBuilder());
+        predicateBuilderMap.put(LongFilter.class.getSimpleName(), new LongFilterPredicateBuilder());
+        predicateBuilderMap.put(FloatFilter.class.getSimpleName(), new FloatFilterPredicateBuilder());
+        predicateBuilderMap.put(DoubleFilter.class.getSimpleName(), new DoubleFilterPredicateBuilder());
     }
 }
