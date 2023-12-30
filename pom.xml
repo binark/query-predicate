@@ -6,7 +6,7 @@
 
   <groupId>com.binark</groupId>
   <artifactId>query-predicate</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.0-beta</version>
 
   <name>query-predicate</name>
   <packaging>jar</packaging>
