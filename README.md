@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/binark/query-predicate.svg)](https://jitpack.io/#binark/query-predicate)
+
 # QUERY PREDICATE
 
 QUERY PREDICATE is a package that builds JPA criteria predicates for the queries you want to perform.   
