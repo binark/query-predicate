@@ -6,6 +6,11 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import java.util.List;
 
+/**
+ * <p>The predicate builder for the {@link DoubleFilter} type. Extends all features from {@link NumericFilterPredicateBuilder}</p>
+ *
+ * @author kenany (armelknyobe@gmail.com)
+ */
 public class DoubleFilterPredicateBuilder extends NumericFilterPredicateBuilder<DoubleFilter>{
 
   @Override

@@ -33,10 +33,17 @@ public class QueryDescriptorConverter<Q extends QueryDescriptor> {
 
   private final PredicateBuilderResolver predicateBuilderResolver;
 
+  /**
+   * Default constructor
+   */
   public QueryDescriptorConverter() {
     predicateBuilderResolver = new BasePredicateBuilderResolver();
   }
 
+  /**
+   * Constructor with a custom predicate builder resolver
+   * @param predicateBuilderResolver The custom predicate builder resolver implementation
+   */
   public QueryDescriptorConverter(PredicateBuilderResolver predicateBuilderResolver) {
     this.predicateBuilderResolver = predicateBuilderResolver;
   }

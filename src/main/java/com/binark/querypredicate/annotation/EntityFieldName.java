@@ -13,5 +13,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface EntityFieldName {
+
+    /**
+     * The entity field name
+     * @return The entity field name
+     */
     public String value();
 }

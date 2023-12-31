@@ -8,8 +8,10 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.List;
 
 /**
+ * <p>
  * The predicate builder for the {@link ComparableFilter} type
- * @param <F>
+ * </p>
+ * @param <F> The filter type, should extends {@link ComparableFilter}
  *
  * @author kenany (armelknyobe@gmail.com)
  */

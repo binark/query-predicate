@@ -13,5 +13,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FilterClass {
+
+    /**
+     * The filter class
+     * @return The filter class
+     */
     public Class value();
 }
