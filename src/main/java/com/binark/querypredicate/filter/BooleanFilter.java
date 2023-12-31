@@ -10,19 +10,35 @@ public class BooleanFilter extends ComparableFilter<Boolean>{
   private Boolean isTrue;
   private Boolean isFalse;
 
+  /**
+   * The getter of is true
+   * @return a boolean
+   */
   public Boolean getTrue() {
     return isTrue;
   }
 
-  public void setTrue(Boolean aTrue) {
-    isTrue = aTrue;
+  /**
+   * The setter of is true
+   * @param  isTrue boolean
+   */
+  public void setTrue(Boolean isTrue) {
+    isTrue = isTrue;
   }
 
+  /**
+   * The getter of is false
+   * @return a boolean
+   */
   public Boolean getFalse() {
     return isFalse;
   }
 
-  public void setFalse(Boolean aFalse) {
-    isFalse = aFalse;
+  /**
+   * The setter of is false
+   * @param  isFalse boolean
+   */
+  public void setFalse(Boolean isFalse) {
+    isFalse = isFalse;
   }
 }

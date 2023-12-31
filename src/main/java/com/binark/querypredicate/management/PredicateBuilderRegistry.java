@@ -15,11 +15,18 @@ public class PredicateBuilderRegistry {
 
     private final PredicateBuilderStorage storage;
 
+    /**
+     * Default constructor
+     */
     public PredicateBuilderRegistry() {
         storage = BasePredicateBuilderStorage.getInstance();
         storage.initializeStorage();
     }
 
+    /**
+     * Constructor with a custom predicate builder storage
+     * @param storage a custom predicate builder storage implementation.
+     */
     public PredicateBuilderRegistry(PredicateBuilderStorage storage) {
         this.storage = storage;
         storage.initializeStorage();

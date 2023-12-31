@@ -6,15 +6,19 @@
 
   <groupId>com.binark</groupId>
   <artifactId>query-predicate</artifactId>
-  <version>1.0.0-beta</version>
+  <version>1.0.0</version>
 
   <name>query-predicate</name>
+  <description>This project helps users to build JPA query predicates easily.</description>
+  <url>https://github.com/binark/query-predicate</url>
   <packaging>jar</packaging>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
+    <repository.name>query-predicate</repository.name>
+    <repository.owner>binark</repository.owner>
   </properties>
 
   <dependencies>
@@ -45,6 +49,34 @@
 
   <build>
     <finalName>query-predicate</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
@@ -89,5 +121,27 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <developers>
+    <developer>
+      <name>NYOBE KENDECK Armel</name>
+      <email>armelknyobe@gmail.com</email>
+      <organization>Binark</organization>
+      <organizationUrl>https://github.com/binark</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/binark/query-predicate.git</connection>
+    <developerConnection>scm:git:ssh://github.com/binark/query-predicate.git</developerConnection>
+    <url>https://github.com/binark/query-predicate/tree/main</url>
+  </scm>
+
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
 
 </project>

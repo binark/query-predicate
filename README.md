@@ -5,26 +5,66 @@ The goal is to describe the query conditions in a Java class and let the query p
 
 ## 1. INSTALLATION
 
-Just add the dependency in your maven pom.xml file
+## 1.1 Add the repository
 
-### For Jakarta EE 9 +
+* Maven
+
+``` 
+<repositories>
+	<repository>
+	    <id>jitpack.io</id>
+		<url>https://jitpack.io</url>
+	</repository>
+</repositories>
+```
+
+* Gradle
+
+```
+repositories {
+	mavenCentral()
+	maven { url 'https://jitpack.io' }
+}
+```
+
+## 1.2 Add the dependency
+
+* Maven
+
+For Jakarta EE 9 +
 
 ```
 <dependency>
-    <groupId>com.binark</groupId>
-    <artifactId>query-predicate</artifactId>
-    <version>${version}</version>
+	    <groupId>com.github.binark</groupId>
+	    <artifactId>query-predicate</artifactId>
+	    <version>${version}</version>
 </dependency>
 ```
 
-### For Java EE and Jakarta EE 8 -
-
+For Java EE and Jakarta EE 8 -
 ```
 <dependency>
-    <groupId>com.binark</groupId>
+    <groupId>com.github.binark</groupId>
     <artifactId>query-predicate-jee</artifactId>
     <version>${version}</version>
 </dependency>
+```
+
+* Gradle
+
+For Jakarta EE 9 +
+
+```
+dependencies {
+    implementation 'com.github.binark:query-predicate:${version}'
+}
+```
+
+For Java EE and Jakarta EE 8 -
+```
+dependencies {
+    implementation 'com.github.binark:query-predicate-jee:${version}'
+}
 ```
 
 The latest version of query predicate is **1.0.0**
@@ -48,7 +88,7 @@ QueryDescriptorConverter converter = new QueryDescriptorConverter<>();
 
 EntityManager entityManager = entityManagerFactory.createEntityManager();
 CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-CriteriaQuery<Foo> query = criteriaBuilder.createQuery(Foo.class);
+CriteriaQuery<Foo> query = cb.createQuery(Foo.class);
 Root<Foo> root = query.from(Foo.class);
 
 List<Predicate> predicates = converter.convert(root, cb, queryDescriptor);

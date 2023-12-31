@@ -7,7 +7,7 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.List;
 
 /**
- * The predicate builder for the {@link NumericFilter} type
+ * <p>The predicate builder for the {@link NumericFilter} type</p>
  *
  * @author kenany (armelknyobe@gmail.com)
  */
