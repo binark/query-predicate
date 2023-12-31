@@ -3,38 +3,67 @@ package com.binark.querypredicate.builder;
 import com.binark.querypredicate.annotation.EntityFieldName;
 import com.binark.querypredicate.filter.BaseFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author kenany (armelknyobe@gmail.com)
+ *
+ * Abstract predicate builder for the base filter type
+ * @param <F> {@link BaseFilter}
+ */
 public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements PredicateBuilder<F> {
 
-    protected Predicate buildBaseFilterPredicate(Path root, CriteriaBuilder criteriaBuilder, F filter, String fieldName) {
+    /**
+     * Build the predicate for the base filter type
+     *
+     * @param path {@link Path} The criteria path
+     * @param criteriaBuilder {@link CriteriaBuilder} The criteria builder
+     * @param filter extends {@link BaseFilter} The filter type
+     * @param fieldName The entity field name
+     * @return {@link List} of {@link Predicate} The query predicate list according the filter class
+     */
+    protected List<Predicate> buildBaseFilterPredicate(Path path, CriteriaBuilder criteriaBuilder, F filter, String fieldName) {
         List<Predicate> filterPredicates = new ArrayList<>();
         if (filter.getIsEquals() != null) {
-            filterPredicates.add(criteriaBuilder.equal(root.get(fieldName), filter.getIsEquals()));
+            filterPredicates.add(criteriaBuilder.equal(path.get(fieldName), filter.getIsEquals()));
         }
 
         if (filter.getIsDifferent() != null) {
-            filterPredicates.add(criteriaBuilder.notEqual(root.get(fieldName), filter.getIsDifferent()));
+            filterPredicates.add(criteriaBuilder.notEqual(path.get(fieldName), filter.getIsDifferent()));
         }
 
         if (Boolean.TRUE.equals(filter.getNull())) {
-            filterPredicates.add(criteriaBuilder.isNull(root.get(fieldName)));
+            filterPredicates.add(criteriaBuilder.isNull(path.get(fieldName)));
         }
 
         if (Boolean.FALSE.equals(filter.getNull())) {
-            filterPredicates.add(criteriaBuilder.isNotNull(root.get(fieldName)));
+            filterPredicates.add(criteriaBuilder.isNotNull(path.get(fieldName)));
         }
 
-        return criteriaBuilder.or(filterPredicates.toArray(new Predicate[0]));
+        if (filter.getIsIn() != null) {
+            In inExpressions = criteriaBuilder.in(path.get(fieldName));
+            filterPredicates.add(inExpressions.in(filter.getIsIn().stream().toArray()));
+        }
+
+        if (filter.getIsNotIn() != null) {
+            In inExpressions = criteriaBuilder.in(path.get(fieldName));
+            filterPredicates.add(inExpressions.in(filter.getIsNotIn().stream().toArray()).not());
+        }
+
+        return filterPredicates;
     }
 
-    protected String getFieldNameFromAnnotation(F filter) {
-        EntityFieldName entityFieldName = filter.getClass().getAnnotation(EntityFieldName.class);
+    @Override
+    public String getFieldNameFromAnnotation(Field field) {
+        EntityFieldName entityFieldName = field.getAnnotation(EntityFieldName.class);
+        if (entityFieldName == null) {
+            throw new IllegalArgumentException("Missing " + EntityFieldName.class.getSimpleName() + " annotation on the field " + field.getName());
+        }
         return entityFieldName.value();
     }
 }
