@@ -1,4 +1,4 @@
-[![](https://jitpack.io/v/binark/query-predicate.svg)](https://jitpack.io/#binark/query-predicate)
+[![](https://img.shields.io/nexus/r/io.github.binark/query-predicate?server=https%3A%2F%2Fs01.oss.sonatype.org%2F&style=flat&logo=mvn&label=query-predicate)](https://mvnrepository.com/artifact/io.github.binark/query-predicate)
 
 # QUERY PREDICATE
 
@@ -7,77 +7,52 @@ The goal is to describe the query conditions in a Java class and let the query p
 
 ## 1. INSTALLATION
 
-## 1.1 Add the repository
 
-* Maven
+## 1.2 Maven
 
-``` 
-<repositories>
-	<repository>
-	    <id>jitpack.io</id>
-		<url>https://jitpack.io</url>
-	</repository>
-</repositories>
-```
-
-* Gradle
-
-```
-repositories {
-	mavenCentral()
-	maven { url 'https://jitpack.io' }
-}
-```
-
-## 1.2 Add the dependency
-
-* Maven
-
-For Jakarta EE 9 +
+* For Jakarta EE 9 +
 
 ```
 <dependency>
-	    <groupId>com.github.binark</groupId>
+	    <groupId>io.github.binark</groupId>
 	    <artifactId>query-predicate</artifactId>
 	    <version>${version}</version>
 </dependency>
 ```
 
-For Java EE and Jakarta EE 8 -
+* For Java EE and Jakarta EE 8 -
 ```
 <dependency>
-    <groupId>com.github.binark</groupId>
+    <groupId>io.github.binark</groupId>
     <artifactId>query-predicate-jee</artifactId>
     <version>${version}</version>
 </dependency>
 ```
 
-* Gradle
+## 1.3 Maven
 
-For Jakarta EE 9 +
+* For Jakarta EE 9 +
 
 ```
 dependencies {
-    implementation 'com.github.binark:query-predicate:${version}'
+    implementation 'io.github.binark:query-predicate:${version}'
 }
 ```
 
-For Java EE and Jakarta EE 8 -
+* For Java EE and Jakarta EE 8 -
 ```
 dependencies {
-    implementation 'com.github.binark:query-predicate-jee:${version}'
+    implementation 'io.github.binark:query-predicate-jee:${version}'
 }
 ```
 
-The latest version of query predicate is **1.0.0**
+The latest version of query predicate is **1.1.0**
 
 ## 2. HOW IT WORKS
 
 A short example:
 
 ```java
-import com.binark.querypredicate.descriptor.QueryDescriptor;
-import com.binark.querypredicate.descriptor.converter.QueryDescriptorConverter;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -104,11 +79,6 @@ A query descriptor is a representation of the query you want to perform for an e
 A shirt example:
 
 ```java
-import com.binark.querypredicate.descriptor.QueryDescriptor;
-import com.binark.querypredicate.filter.DateFilter;
-import com.binark.querypredicate.filter.LongFilter;
-import com.binark.querypredicate.filter.StringFilter;
-
 class SimpleQueryDescriptor implements QueryDescriptor {
 
   private LongFilter id;
@@ -117,7 +87,7 @@ class SimpleQueryDescriptor implements QueryDescriptor {
 
   private DateFilter birthday;
   
-  ... 
+  ...
   // getters an setters
 }
 ```
@@ -127,8 +97,8 @@ class SimpleQueryDescriptor implements QueryDescriptor {
 The filter is a class that the query condition for a particular entity field. The name of the filter attribute in the query descriptor should match the attribute name in the entity, but there is a way to do it differently.
 
 ```java
-import com.binark.querypredicate.filter.DateFilter;
-import com.binark.querypredicate.filter.StringFilter;
+import jakarta.persistence.criteria.Predicate;
+import java.util.List;
 
 StringFilter lastName = new StringFilter();
 lastName.setStartWithIgnoreCase("foo");
@@ -167,10 +137,6 @@ This will find all records that have _lastName_ that starts with "foo" (non-case
 If you want to map a query descriptor field and entity field with a different name, you should use the **EntityFieldName** annotation
 
 ```java
-import com.binark.querypredicate.annotation.EntityFieldName;
-import com.binark.querypredicate.descriptor.QueryDescriptor;
-import com.binark.querypredicate.filter.StringFilter;
-
 class SimpleQueryDescriptor implements QueryDescriptor {
 
   @EntityFieldName("lastName")
@@ -184,10 +150,6 @@ class SimpleQueryDescriptor implements QueryDescriptor {
 You could use this annotation if you want to map many query descriptor fields to the same entity field
 
 ```java
-import com.binark.querypredicate.annotation.EntityFieldName;
-import com.binark.querypredicate.descriptor.QueryDescriptor;
-import com.binark.querypredicate.filter.StringFilter;
-
 class SimpleQueryDescriptor implements QueryDescriptor {
 
   @EntityFieldName("lastName")
@@ -207,13 +169,10 @@ If you convert this query descriptor, the converter will produce two predicates 
 There is a way to get a join predicate with query predicate. You just need to a query descriptor as a field of another query descriptor.
 
 ```java
-import com.binark.querypredicate.descriptor.QueryDescriptor;
-import com.binark.querypredicate.filter.StringFilter;
-
 class SimpleQueryDescriptor implements QueryDescriptor {
 
   private StringFilter lastName;
-  
+
   private OtherQueryDescriptor fieldName;
   ...
   // getters an setters
@@ -233,8 +192,6 @@ Query predicate allows you to create your custom filters and predicate builders.
 ### 3.1 CUSTOM FILTER
 
 ```java
-import com.binark.querypredicate.filter.BaseFilter;
-
 class MyFilter extends BaseFilter {
   // fields
 }
@@ -243,8 +200,6 @@ class MyFilter extends BaseFilter {
 There is no restriction for the fields in your filter. You should at least implement the **Filter**** interface. But it is recommended to extend the **BaseFilter**** class or another top-level filter class to inherit its fields. Anyway, if you want to create a custom filter from scratch, follow the example below
 
 ```java
-import com.binark.querypredicate.filter.Filter;
-
 class MyFilter implements Filter {
   // fields
 }
@@ -257,8 +212,6 @@ If you use that filter in a query descriptor like that, the converter will not f
 When you create a custom filter, you should create a custom predicate builder that will use that filter. If your filter implements the **Filter** interface, your predicate builder should implement the **PredicateBuilder** interface, and you are responsible for implementing all the processes from scratch. If your filter extends another filter, your predicate builder should extend the predicate builder for the parent filter so that your builder will reuse the parent features.
 
 ```java
-import com.binark.querypredicate.annotation.FilterClass;
-import com.binark.querypredicate.builder.BaseFilterPredicateBuilder;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import java.nio.file.Path;
 import java.util.List;
@@ -267,7 +220,7 @@ import java.util.function.Predicate;
 @FilterClass(MyFilter.clss)
 class MyFilterPredicateBuilder extends BaseFilterPredicateBuilder<MyFilter> {
 
-  Predicate buildPredicate(Path path, CriteriaBuilder builder, MyFilter filter, String fieldName) {
+  public Predicate buildPredicate(Path path, CriteriaBuilder builder, MyFilter filter, String fieldName) {
     List<Predicate> predicates = buildBaseFilterPredicate(path, builder, filter, fieldName);
     // you custom predicate builder actions
 
@@ -279,17 +232,14 @@ class MyFilterPredicateBuilder extends BaseFilterPredicateBuilder<MyFilter> {
 The _buildBaseFilterPredicate_ method comes from the **AbstractPredicateBuilder** which **BaseFilterPredicateBuilder** extends.
 
 ```java
-import com.binark.querypredicate.annotation.FilterClass;
-import com.binark.querypredicate.builder.PredicateBuilder;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.function.Predicate;
 
 @FilterClass(MyFilter.clss)
 class MyFilterPredicateBuilder implements PredicateBuilder<MyFilter> {
 
-  Predicate buildPredicate(Path path, CriteriaBuilder builder, MyFilter filter, String fieldName) {
+  public Predicate buildPredicate(Path path, CriteriaBuilder builder, MyFilter filter, String fieldName) {
     // you custom predicate builder actions
 
     return predicate;
@@ -306,8 +256,6 @@ You always need to put the **FilterClass** annotation with the filter class valu
 Query predicate has a predicate builder registry that you should use to register your custom predicate builder, otherwise the converter will not find it.
 
 ```java
-import com.binark.querypredicate.management.PredicateBuilderRegistry;
-
 PredicateBuilderRegistry registry = new PredicateBuilderRegistry();
 registry.registerPredicateBuilder(new MyFilterPredicateBuilder());
 ```
