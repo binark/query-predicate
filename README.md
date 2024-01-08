@@ -1,4 +1,4 @@
-![Sonatype Nexus (Releases)](https://img.shields.io/nexus/r/io.github.binark/query-predicate?server=https%3A%2F%2Fs01.oss.sonatype.org%2F&style=flat&logo=sonar&label=query-predicate)
+[![](https://img.shields.io/nexus/r/io.github.binark/query-predicate?server=https%3A%2F%2Fs01.oss.sonatype.org%2F&style=flat&logo=mvn&label=query-predicate)](https://mvnrepository.com/artifact/io.github.binark/query-predicate)
 
 # QUERY PREDICATE
 
