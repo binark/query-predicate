@@ -4,9 +4,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.binark</groupId>
+  <groupId>io.github.binark</groupId>
   <artifactId>query-predicate</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 
   <name>query-predicate</name>
   <description>This project helps users to build JPA query predicates easily.</description>
@@ -76,6 +76,31 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.13</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>false</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
@@ -122,19 +147,30 @@
     </pluginManagement>
   </build>
 
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
   <developers>
     <developer>
       <name>NYOBE KENDECK Armel</name>
       <email>armelknyobe@gmail.com</email>
       <organization>Binark</organization>
-      <organizationUrl>https://github.com/binark</organizationUrl>
+      <organizationUrl>https://github.com/${repository.owner}</organizationUrl>
     </developer>
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/binark/query-predicate.git</connection>
-    <developerConnection>scm:git:ssh://github.com/binark/query-predicate.git</developerConnection>
-    <url>https://github.com/binark/query-predicate/tree/main</url>
+    <connection>scm:git:git://github.com/${repository.owner}/${repository.name}.git</connection>
+    <developerConnection>scm:git:ssh://github.com/${repository.owner}/${repository.name}.git</developerConnection>
+    <url>https://github.com/${repository.owner}/${repository.name}/tree/main</url>
   </scm>
 
   <licenses>
