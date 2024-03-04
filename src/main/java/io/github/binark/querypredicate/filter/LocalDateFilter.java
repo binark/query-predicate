@@ -8,7 +8,7 @@ import java.time.temporal.Temporal;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class LocalDateFilter<T extends Temporal & Comparable> extends ComparableFilter<T>{
+public class LocalDateFilter<T extends Temporal & Comparable> extends ComparableFilter<T, LocalDateFilter> {
 
   private Boolean isToday;
   private Boolean isTomorrow;
@@ -61,4 +61,24 @@ public class LocalDateFilter<T extends Temporal & Comparable> extends Comparable
   public void setIsYesterday(Boolean isYesterday) {
     this.isYesterday = isYesterday;
   }
+
+    @Override
+    public LocalDateFilter getOr() {
+        return super.getOr();
+    }
+
+    @Override
+    public void setOr(LocalDateFilter or) {
+        super.setOr(or);
+    }
+
+    @Override
+    public LocalDateFilter getAnd() {
+        return super.getAnd();
+    }
+
+    @Override
+    public void setAnd(LocalDateFilter and) {
+        super.setAnd(and);
+    }
 }

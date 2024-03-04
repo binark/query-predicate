@@ -5,6 +5,6 @@ package io.github.binark.querypredicate.filter;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class LongFilter extends NumericFilter<Long>{
+public class LongFilter extends NumericFilter<Long, LongFilter> {
 
 }

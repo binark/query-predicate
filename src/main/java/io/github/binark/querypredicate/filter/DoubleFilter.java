@@ -5,6 +5,6 @@ package io.github.binark.querypredicate.filter;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class DoubleFilter extends NumericFilter<Double>{
+public class DoubleFilter extends NumericFilter<Double, DoubleFilter> {
 
 }

@@ -4,7 +4,6 @@ import io.github.binark.querypredicate.filter.BooleanFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
-import java.util.List;
 
 /**
  * @author kenany (armelknyobe@gmail.com)
@@ -15,16 +14,74 @@ public class BooleanFilterPredicateBuilder extends ComparableFilterPredicateBuil
 
   @Override
   public Predicate buildPredicate(Path path, CriteriaBuilder builder, BooleanFilter filter, String fieldName) {
-    List<Predicate> predicates = buildComparablePredicate(path, builder, filter, fieldName);
+    Predicate predicate = buildComparablePredicate(path, builder, filter, fieldName);
 
-    if (filter.getTrue() != null) {
-      predicates.add(builder.isTrue(path.get(fieldName)));
+    Boolean andTrue = getAndTrue(filter);
+    if (andTrue != null) {
+      if (predicate == null) {
+        predicate = builder.isTrue(path.get(fieldName));
+      } else {
+        predicate = builder.and(predicate, builder.isTrue(path.get(fieldName)));
+      }
     }
 
-    if (filter.getFalse() != null) {
-      predicates.add(builder.isFalse(path.get(fieldName)));
+    Boolean orTrue = getOrTrue(filter);
+    if (orTrue != null) {
+      if (predicate == null) {
+        predicate = builder.isTrue(path.get(fieldName));
+      } else {
+        predicate = builder.or(predicate, builder.isTrue(path.get(fieldName)));
+      }
     }
 
-    return predicates.size() == 1 ? predicates.get(0) : builder.or(predicates.toArray(new Predicate[0]));
+    Boolean andFalse = getAndFalse(filter);
+    if (andFalse != null) {
+      if (predicate == null) {
+        predicate = builder.isFalse(path.get(fieldName));
+      } else {
+        predicate = builder.and(predicate, builder.isFalse(path.get(fieldName)));
+      }
+    }
+
+    Boolean orFalse = getOrFalse(filter);
+    if (orFalse != null) {
+      if (predicate == null) {
+        predicate = builder.isFalse(path.get(fieldName));
+      } else {
+        predicate = builder.or(predicate, builder.isFalse(path.get(fieldName)));
+      }
+    }
+
+    return predicate;
+  }
+
+  private Boolean getAndTrue(BooleanFilter filter) {
+    Boolean value = filter.getTrue();
+    if (value == null && filter.getAnd() != null) {
+      value = filter.getAnd().getTrue();
+    }
+    return value;
+  }
+
+  private Boolean getOrTrue(BooleanFilter filter) {
+    if (filter.getOr() != null) {
+      return filter.getOr().getTrue();
+    }
+    return null;
+  }
+
+  private Boolean getAndFalse(BooleanFilter filter) {
+    Boolean value = filter.getFalse();
+    if (value == null && filter.getAnd() != null) {
+      value = filter.getAnd().getFalse();
+    }
+    return value;
+  }
+
+  private Boolean getOrFalse(BooleanFilter filter) {
+    if (filter.getOr() != null) {
+      return filter.getOr().getFalse();
+    }
+    return null;
   }
 }

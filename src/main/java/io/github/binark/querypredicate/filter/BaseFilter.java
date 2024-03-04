@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class BaseFilter<T> implements Filter<T>{
+public class BaseFilter<T, F extends BaseFilter> implements Filter<T, F> {
 
     private T isEquals;
 
@@ -21,6 +21,10 @@ public class BaseFilter<T> implements Filter<T>{
     private List<T> isIn;
 
     private List<T> isNotIn;
+
+    private F or;
+
+    private F and;
 
     /**
      * The getter of is equals
@@ -100,6 +104,26 @@ public class BaseFilter<T> implements Filter<T>{
      */
     public void setIsNotIn(List<T> isNotIn) {
         this.isNotIn = isNotIn;
+    }
+
+    @Override
+    public F getOr() {
+        return or;
+    }
+
+    @Override
+    public void setOr(F or) {
+        this.or = or;
+    }
+
+    @Override
+    public F getAnd() {
+        return and;
+    }
+
+    @Override
+    public void setAnd(F and) {
+        this.and = and;
     }
 }
 

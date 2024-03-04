@@ -4,7 +4,6 @@ import io.github.binark.querypredicate.filter.LongFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
-import java.util.List;
 
 /**
  * <p>The predicate builder for the {@link LongFilter} type. Extends all features from {@link NumericFilterPredicateBuilder}</p>
@@ -16,7 +15,6 @@ public class LongFilterPredicateBuilder extends NumericFilterPredicateBuilder<Lo
   @Override
   public Predicate buildPredicate(Path path, CriteriaBuilder builder, LongFilter filter,
       String fieldName) {
-    List<Predicate> predicates = buildNumericPredicate(path, builder, filter, fieldName);
-    return predicates.size() == 1 ? predicates.get(0) : builder.or(predicates.toArray(new Predicate[0]));
+    return buildNumericPredicate(path, builder, filter, fieldName);
   }
 }
