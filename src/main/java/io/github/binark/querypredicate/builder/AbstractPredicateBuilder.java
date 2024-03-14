@@ -27,7 +27,7 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
      * @param fieldName The entity field name
      * @return {@link Predicate} The query predicate according the filter class
      */
-    protected Predicate buildBaseFilterPredicate(Path path, CriteriaBuilder criteriaBuilder, F filter, String fieldName) {
+    protected Predicate buildBaseFilterPredicate(Path<?> path, CriteriaBuilder criteriaBuilder, F filter, String fieldName) {
         Predicate predicate = null;
 
         Object andEquals = getAndEquals(filter);
@@ -64,8 +64,8 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
 
         Boolean andNull = getAndNull(filter);
         if (andNull != null) {
-            Predicate temporaryPredicate = null;
-            if (Boolean.TRUE.equals(filter.getNull())) {
+            Predicate temporaryPredicate;
+            if (Boolean.TRUE.equals(andNull)) {
                 temporaryPredicate = criteriaBuilder.isNull(path.get(fieldName));
             } else {
                 temporaryPredicate = criteriaBuilder.isNotNull(path.get(fieldName));
@@ -79,8 +79,8 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
 
         Boolean orNull = getOrNull(filter);
         if (orNull != null) {
-            Predicate temporaryPredicate = null;
-            if (Boolean.TRUE.equals(filter.getNull())) {
+            Predicate temporaryPredicate;
+            if (Boolean.TRUE.equals(orNull)) {
                 temporaryPredicate = criteriaBuilder.isNull(path.get(fieldName));
             } else {
                 temporaryPredicate = criteriaBuilder.isNotNull(path.get(fieldName));
@@ -96,9 +96,9 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
         if (andIn != null) {
             In inExpressions = criteriaBuilder.in(path.get(fieldName));
             if (predicate == null) {
-                predicate = inExpressions.in(filter.getIsIn().stream().toArray());
+                predicate = inExpressions.in(andIn.stream().toArray());
             } else {
-                predicate = criteriaBuilder.and(predicate, inExpressions.in(filter.getIsIn().stream().toArray()));
+                predicate = criteriaBuilder.and(predicate, inExpressions.in(andIn.stream().toArray()));
             }
         }
 
@@ -106,9 +106,9 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
         if (orIn != null) {
             In inExpressions = criteriaBuilder.in(path.get(fieldName));
             if (predicate == null) {
-                predicate = inExpressions.in(filter.getIsIn().stream().toArray());
+                predicate = inExpressions.in(orIn.stream().toArray());
             } else {
-                predicate = criteriaBuilder.or(predicate, inExpressions.in(filter.getIsIn().stream().toArray()));
+                predicate = criteriaBuilder.or(predicate, inExpressions.in(orIn.stream().toArray()));
             }
         }
 
@@ -116,9 +116,9 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
         if (andNotIn != null) {
             In inExpressions = criteriaBuilder.in(path.get(fieldName));
             if (predicate == null) {
-                predicate = inExpressions.in(filter.getIsNotIn().stream().toArray()).not();
+                predicate = inExpressions.in(andNotIn.stream().toArray()).not();
             } else {
-                predicate = criteriaBuilder.and(predicate, inExpressions.in(filter.getIsNotIn().stream().toArray()).not());
+                predicate = criteriaBuilder.and(predicate, inExpressions.in(andNotIn.stream().toArray()).not());
             }
         }
 
@@ -126,9 +126,9 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
         if (orNotIn != null) {
             In inExpressions = criteriaBuilder.in(path.get(fieldName));
             if (predicate == null) {
-                predicate = inExpressions.in(filter.getIsNotIn().stream().toArray()).not();
+                predicate = inExpressions.in(orNotIn.stream().toArray()).not();
             } else {
-                predicate = criteriaBuilder.or(predicate, inExpressions.in(filter.getIsNotIn().stream().toArray()).not());
+                predicate = criteriaBuilder.or(predicate, inExpressions.in(orNotIn.stream().toArray()).not());
             }
         }
 
@@ -136,78 +136,78 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
     }
 
     private Object getAndEquals(BaseFilter filter) {
-        Object value = filter.getIsEquals();
-        if (value == null && filter.getAnd() != null) {
-            value = filter.getAnd().getIsEquals();
+        if (filter.getAnd() != null) {
+            return filter.getAnd().getIsEquals();
         }
-        return value;
+        return null;
     }
 
     private Object getOrEquals(BaseFilter filter) {
-        if (filter.getOr() != null) {
-            return filter.getOr().getIsEquals();
+        Object value = filter.getIsEquals();
+        if (value == null && filter.getOr() != null) {
+            value = filter.getOr().getIsEquals();
         }
-        return null;
+        return value;
     }
 
     private Object getAndDifferent(BaseFilter filter) {
-        Object value = filter.getIsDifferent();
-        if (value == null && filter.getAnd() != null) {
-            value = filter.getAnd().getIsDifferent();
+        if (filter.getAnd() != null) {
+            return filter.getAnd().getIsDifferent();
         }
-        return value;
+        return null;
     }
 
     private Object getOrDifferent(BaseFilter filter) {
-        if (filter.getOr() != null) {
-            return filter.getOr().getIsDifferent();
+        Object value = filter.getIsDifferent();
+        if (value == null && filter.getOr() != null) {
+            value = filter.getOr().getIsDifferent();
         }
-        return null;
+        return value;
     }
 
     private Boolean getAndNull(BaseFilter filter) {
-        Boolean value = filter.getNull();
-        if (value == null && filter.getAnd() != null) {
-            value = filter.getAnd().getNull();
+        if (filter.getAnd() != null) {
+            return filter.getAnd().getNull();
         }
-        return value;
+        return null;
     }
 
     private Boolean getOrNull(BaseFilter filter) {
-        if (filter.getOr() != null) {
-            return filter.getOr().getNull();
+        Boolean value = filter.getNull();
+        if (value == null && filter.getOr() != null) {
+            value = filter.getOr().getNull();
         }
-        return null;
+        return value;
     }
 
     private List getAndIn(BaseFilter filter) {
-        List value = filter.getIsIn();
-        if (value == null && filter.getAnd() != null) {
-            value = filter.getAnd().getIsIn();
+        if (filter.getAnd() != null) {
+            return filter.getAnd().getIsIn();
         }
-        return value;
+        return null;
     }
 
     private List getOrIn(BaseFilter filter) {
-        if (filter.getOr() != null) {
-            return filter.getOr().getIsIn();
-        }
-        return null;
-    }
-
-    private List getAndNotIn(BaseFilter filter) {
-        List value = filter.getIsNotIn();
-        if (value == null && filter.getAnd() != null) {
-            value = filter.getAnd().getIsNotIn();
+        List value = filter.getIsIn();
+        if (value == null && filter.getOr() != null) {
+            value = filter.getOr().getIsIn();
         }
         return value;
     }
 
-    private List getOrNotIn(BaseFilter filter) {
-        if (filter.getOr() != null) {
-            return filter.getOr().getIsNotIn();
+    private List getAndNotIn(BaseFilter filter) {
+        if (filter.getAnd() != null) {
+            return filter.getAnd().getIsNotIn();
         }
         return null;
+    }
+
+    private List getOrNotIn(BaseFilter filter) {
+        List value = filter.getIsNotIn();
+        if (value == null && filter.getOr() != null) {
+            value = filter.getOr().getIsNotIn();
+        }
+        return value;
     }
 
     @Override

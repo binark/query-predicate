@@ -274,17 +274,17 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
     }
 
     private String getAndEndWithIgnoreCase(StringFilter filter) {
-        String value = filter.getEndWithIgnoreCase();
-        if (value == null && filter.getAnd() != null) {
-            value = filter.getAnd().getEndWithIgnoreCase();
+        if (filter.getAnd() != null) {
+            return filter.getAnd().getEndWithIgnoreCase();
         }
-        return value;
+        return null;
     }
 
     private String getOrSEndWithIgnoreCase(StringFilter filter) {
-        if (filter.getOr() != null) {
-            return filter.getOr().getEndWithIgnoreCase();
+        String value = filter.getEndWithIgnoreCase();
+        if (value == null && filter.getOr() != null) {
+            value = filter.getOr().getEndWithIgnoreCase();
         }
-        return null;
+        return value;
     }
 }

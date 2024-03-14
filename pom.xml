@@ -6,7 +6,7 @@
 
   <groupId>io.github.binark</groupId>
   <artifactId>query-predicate</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
 
   <name>query-predicate</name>
   <description>This project helps users to build JPA query predicates easily.</description>

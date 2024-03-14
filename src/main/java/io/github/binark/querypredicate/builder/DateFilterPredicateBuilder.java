@@ -24,41 +24,41 @@ public class DateFilterPredicateBuilder extends ComparableFilterPredicateBuilder
     Boolean andToday = getAndToday(filter);
     if (andToday != null) {
       Predicate betweenPredicate = getDateBetweenPredicate(path, builder, new Date(), fieldName);
-      predicate = computeDateBetweenPredicate(filter.getIsToday(), predicate, betweenPredicate, builder, false);
+      predicate = computeDateBetweenPredicate(andToday, predicate, betweenPredicate, builder, false);
     }
 
     Boolean orToday = getOrToday(filter);
     if (orToday != null) {
       Predicate betweenPredicate = getDateBetweenPredicate(path, builder, new Date(), fieldName);
-      predicate = computeDateBetweenPredicate(filter.getIsToday(), predicate, betweenPredicate, builder, true);
+      predicate = computeDateBetweenPredicate(orToday, predicate, betweenPredicate, builder, true);
     }
 
     Boolean andTomorrow = getAndTomorrow(filter);
     if (andTomorrow != null) {
       Date tomorrow = new Date( new Date().getTime() + (1000 * 60 * 60 * 24) );
       Predicate betweenPredicate = getDateBetweenPredicate(path, builder, tomorrow, fieldName);
-      predicate = computeDateBetweenPredicate(filter.getIsTomorrow(), predicate, betweenPredicate, builder, false);
+      predicate = computeDateBetweenPredicate(andTomorrow, predicate, betweenPredicate, builder, false);
     }
 
     Boolean orTomorrow = getOrTomorrow(filter);
     if (orTomorrow != null) {
       Date tomorrow = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
       Predicate betweenPredicate = getDateBetweenPredicate(path, builder, tomorrow, fieldName);
-      predicate = computeDateBetweenPredicate(filter.getIsTomorrow(), predicate, betweenPredicate, builder, true);
+      predicate = computeDateBetweenPredicate(orTomorrow, predicate, betweenPredicate, builder, true);
     }
 
     Boolean andYesterday = getAndYesterday(filter);
     if (andYesterday != null) {
       Date yesterday = new Date( new Date().getTime() - (1000 * 60 * 60 * 24) );
       Predicate betweenPredicate = getDateBetweenPredicate(path, builder, yesterday, fieldName);
-      predicate = computeDateBetweenPredicate(filter.getIsYesterday(), predicate, betweenPredicate, builder, false);
+      predicate = computeDateBetweenPredicate(andYesterday, predicate, betweenPredicate, builder, false);
     }
 
     Boolean orYesterday = getOrYesterday(filter);
     if (orYesterday != null) {
       Date yesterday = new Date(new Date().getTime() - (1000 * 60 * 60 * 24));
       Predicate betweenPredicate = getDateBetweenPredicate(path, builder, yesterday, fieldName);
-      predicate = computeDateBetweenPredicate(filter.getIsYesterday(), predicate, betweenPredicate, builder, true);
+      predicate = computeDateBetweenPredicate(orYesterday, predicate, betweenPredicate, builder, true);
     }
 
     return predicate;
@@ -105,47 +105,47 @@ public class DateFilterPredicateBuilder extends ComparableFilterPredicateBuilder
   }
 
   private Boolean getAndToday(DateFilter filter) {
-    Boolean value = filter.getIsToday();
-    if (value == null && filter.getAnd() != null) {
-      value = filter.getAnd().getIsToday();
+    if (filter.getAnd() != null) {
+      return filter.getAnd().getIsToday();
     }
-    return value;
+    return null;
   }
 
   private Boolean getOrToday(DateFilter filter) {
-    if (filter.getOr() != null) {
-      return filter.getOr().getIsToday();
+    Boolean value = filter.getIsToday();
+    if (value == null && filter.getOr() != null) {
+      value = filter.getOr().getIsToday();
     }
-    return null;
+    return value;
   }
 
   private Boolean getAndTomorrow(DateFilter filter) {
-    Boolean value = filter.getIsTomorrow();
-    if (value == null && filter.getAnd() != null) {
-      value = filter.getAnd().getIsTomorrow();
+    if (filter.getAnd() != null) {
+      return filter.getAnd().getIsTomorrow();
     }
-    return value;
+    return null;
   }
 
   private Boolean getOrTomorrow(DateFilter filter) {
-    if (filter.getOr() != null) {
-      return filter.getOr().getIsTomorrow();
-    }
-    return null;
-  }
-
-  private Boolean getAndYesterday(DateFilter filter) {
-    Boolean value = filter.getIsYesterday();
-    if (value == null && filter.getAnd() != null) {
-      value = filter.getAnd().getIsYesterday();
+    Boolean value = filter.getIsTomorrow();
+    if (value == null && filter.getOr() != null) {
+      value = filter.getOr().getIsTomorrow();
     }
     return value;
   }
 
-  private Boolean getOrYesterday(DateFilter filter) {
-    if (filter.getOr() != null) {
-      return filter.getOr().getIsYesterday();
+  private Boolean getAndYesterday(DateFilter filter) {
+    if (filter.getAnd() != null) {
+      return filter.getAnd().getIsYesterday();
     }
     return null;
+  }
+
+  private Boolean getOrYesterday(DateFilter filter) {
+    Boolean value = filter.getIsYesterday();
+    if (value == null && filter.getOr() != null) {
+      value = filter.getOr().getIsYesterday();
+    }
+    return value;
   }
 }

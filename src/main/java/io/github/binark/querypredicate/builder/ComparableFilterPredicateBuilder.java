@@ -144,77 +144,77 @@ public abstract class ComparableFilterPredicateBuilder<F extends ComparableFilte
   }
 
   protected Comparable getAndGreaterThan(ComparableFilter filter) {
-    Comparable value = filter.getIsGreaterThan();
-    if (value == null && filter.getAnd() != null) {
-      value = filter.getAnd().getIsGreaterThan();
+    if (filter.getAnd() != null) {
+      return filter.getAnd().getIsGreaterThan();
     }
-    return value;
+    return null;
   }
 
   protected Comparable getOrGreaterThan(ComparableFilter filter) {
-    if (filter.getOr() != null) {
-      return filter.getOr().getIsGreaterThan();
+    Comparable value = filter.getIsGreaterThan();
+    if (value == null && filter.getOr() != null) {
+      value = filter.getOr().getIsGreaterThan();
     }
-    return null;
+    return value;
   }
 
   protected Comparable getAndGreaterThanOrEquals(ComparableFilter filter) {
-    Comparable value = filter.getIsGreaterThanOrEqualsTo();
-    if (value == null && filter.getAnd() != null) {
-      value = filter.getAnd().getIsGreaterThanOrEqualsTo();
+    if (filter.getAnd() != null) {
+      return filter.getAnd().getIsGreaterThanOrEqualsTo();
     }
-    return value;
+    return null;
   }
 
   protected Comparable getOrGreaterThanOrEquals(ComparableFilter filter) {
-    if (filter.getOr() != null) {
-      return filter.getOr().getIsGreaterThanOrEqualsTo();
+    Comparable value = filter.getIsGreaterThanOrEqualsTo();
+    if (value == null && filter.getOr() != null) {
+      value = filter.getOr().getIsGreaterThanOrEqualsTo();
     }
-    return null;
+    return value;
   }
 
   protected Comparable getAndLessThan(ComparableFilter filter) {
-    Comparable value = filter.getIsLessThan();
-    if (value == null && filter.getAnd() != null) {
-      value = filter.getAnd().getIsLessThan();
+    if (filter.getAnd() != null) {
+      return filter.getAnd().getIsLessThan();
     }
-    return value;
+    return null;
   }
 
   protected Comparable getOrLessThan(ComparableFilter filter) {
-    if (filter.getOr() != null) {
-      return filter.getOr().getIsLessThan();
+    Comparable value = filter.getIsLessThan();
+    if (value == null && filter.getOr() != null) {
+      value = filter.getOr().getIsLessThan();
     }
-    return null;
+    return value;
   }
 
   protected Comparable getAndLessThanOrEquals(ComparableFilter filter) {
-    Comparable value = filter.getIsLessThanOrEqualsTo();
-    if (value == null && filter.getAnd() != null) {
-      value = filter.getAnd().getIsLessThanOrEqualsTo();
+    if (filter.getAnd() != null) {
+      return filter.getAnd().getIsLessThanOrEqualsTo();
     }
-    return value;
+    return null;
   }
 
   protected Comparable getOrLessThanOrEquals(ComparableFilter filter) {
-    if (filter.getOr() != null) {
-      return filter.getOr().getIsLessThanOrEqualsTo();
-    }
-    return null;
-  }
-
-  protected Range getAndBetween(ComparableFilter filter) {
-    Range value = filter.getIsBetween();
-    if (value == null && filter.getAnd() != null) {
-      value = filter.getAnd().getIsBetween();
+    Comparable value = filter.getIsLessThanOrEqualsTo();
+    if (value != null && filter.getOr() != null) {
+      value = filter.getOr().getIsLessThanOrEqualsTo();
     }
     return value;
   }
 
-  protected Range getOrBetween(ComparableFilter filter) {
-    if (filter.getOr() != null) {
-      return filter.getOr().getIsBetween();
+  protected Range getAndBetween(ComparableFilter filter) {
+    if (filter.getAnd() != null) {
+      return filter.getAnd().getIsBetween();
     }
     return null;
+  }
+
+  protected Range getOrBetween(ComparableFilter filter) {
+    Range value = filter.getIsBetween();
+    if (value == null && filter.getOr() != null) {
+      value = filter.getOr().getIsBetween();
+    }
+    return value;
   }
 }

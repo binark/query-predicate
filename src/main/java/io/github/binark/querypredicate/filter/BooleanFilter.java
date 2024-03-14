@@ -23,7 +23,7 @@ public class BooleanFilter extends ComparableFilter<Boolean, BooleanFilter> {
    * @param  isTrue boolean
    */
   public void setTrue(Boolean isTrue) {
-    isTrue = isTrue;
+      this.isTrue = isTrue;
   }
 
   /**
@@ -39,6 +39,6 @@ public class BooleanFilter extends ComparableFilter<Boolean, BooleanFilter> {
    * @param  isFalse boolean
    */
   public void setFalse(Boolean isFalse) {
-    isFalse = isFalse;
+      this.isFalse = isFalse;
   }
 }
