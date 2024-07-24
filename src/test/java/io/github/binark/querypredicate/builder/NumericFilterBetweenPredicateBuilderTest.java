@@ -93,7 +93,7 @@ class NumericFilterBetweenPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(AND, compoundPredicate.getOperator().name());
+        assertEquals(OR, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -138,16 +138,16 @@ class NumericFilterBetweenPredicateBuilderTest {
 
     @Test
     void buildNumericPredicate_And_With_Or_Is_Between() {
-        NumericFilter orFilter = mock(NumericFilter.class, CALLS_REAL_METHODS);
-        Range<Integer> orRange = new Range<>();
-        orRange.setStart(VALUE);
-        orRange.setEnd(OTHER_VALUE);
-        orFilter.setIsBetween(orRange);
+        NumericFilter andFilter = mock(NumericFilter.class, CALLS_REAL_METHODS);
         Range<Integer> andRange = new Range<>();
-        andRange.setStart(OTHER_VALUE);
-        andRange.setEnd(VALUE);
-        filter.setIsBetween(andRange);
-        filter.setOr(orFilter);
+        andRange.setStart(VALUE);
+        andRange.setEnd(OTHER_VALUE);
+        andFilter.setIsBetween(andRange);
+        Range<Integer> ordRange = new Range<>();
+        ordRange.setStart(OTHER_VALUE);
+        ordRange.setEnd(VALUE);
+        filter.setIsBetween(ordRange);
+        filter.setAnd(andFilter);
 
         Predicate predicate = predicateBuilder.buildNumericPredicate(path, criteriaBuilder,
                 filter, FIELD_NAME);
@@ -166,20 +166,20 @@ class NumericFilterBetweenPredicateBuilderTest {
         LiteralExpression<Integer> andLowerBound = (LiteralExpression<Integer>) andBetweenPredicate.getLowerBound();
 
         assertNotNull(andLowerBound);
-        assertEquals(OTHER_VALUE, andLowerBound.getLiteral());
+        assertEquals(VALUE, andLowerBound.getLiteral());
 
         LiteralExpression<Integer> andUpperBound = (LiteralExpression<Integer>) andBetweenPredicate.getUpperBound();
         assertNotNull(andUpperBound);
-        assertEquals(VALUE, andUpperBound.getLiteral());
+        assertEquals(OTHER_VALUE, andUpperBound.getLiteral());
 
         BetweenPredicate<Integer> orBetweenPredicate = (BetweenPredicate<Integer>) expressions.get(1);
         LiteralExpression<Integer> orLowerBound = (LiteralExpression<Integer>) orBetweenPredicate.getLowerBound();
 
         assertNotNull(orLowerBound);
-        assertEquals(VALUE, orLowerBound.getLiteral());
+        assertEquals(OTHER_VALUE, orLowerBound.getLiteral());
 
         LiteralExpression<Integer> orUpperBound = (LiteralExpression<Integer>) orBetweenPredicate.getUpperBound();
         assertNotNull(orUpperBound);
-        assertEquals(OTHER_VALUE, orUpperBound.getLiteral());
+        assertEquals(VALUE, orUpperBound.getLiteral());
     }
 }

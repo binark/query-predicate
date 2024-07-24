@@ -83,7 +83,7 @@ class NumericFilterLessThanOrEqualsPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(AND, compoundPredicate.getOperator().name());
+        assertEquals(OR, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -118,10 +118,10 @@ class NumericFilterLessThanOrEqualsPredicateBuilderTest {
 
     @Test
     void buildNumericPredicate_And_With_Or_Is_LessThan() {
-        NumericFilter orFilter = Mockito.mock(NumericFilter.class, Mockito.CALLS_REAL_METHODS);
-        orFilter.setIsLessThanOrEqualsTo(VALUE);
+        NumericFilter andFilter = Mockito.mock(NumericFilter.class, Mockito.CALLS_REAL_METHODS);
+        andFilter.setIsLessThanOrEqualsTo(VALUE);
         filter.setIsLessThanOrEqualsTo(OTHER_VALUE);
-        filter.setOr(orFilter);
+        filter.setAnd(andFilter);
 
         Predicate predicate = predicateBuilder.buildNumericPredicate(path, criteriaBuilder,
                 filter, FIELD_NAME);
@@ -140,13 +140,13 @@ class NumericFilterLessThanOrEqualsPredicateBuilderTest {
         assertEquals(ComparisonOperator.LESS_THAN_OR_EQUAL, andComparisonPredicate.getComparisonOperator());
 
         LiteralExpression andLiteralExpression = (LiteralExpression) andComparisonPredicate.getRightHandOperand();
-        assertEquals(OTHER_VALUE, andLiteralExpression.getLiteral());
+        assertEquals(VALUE, andLiteralExpression.getLiteral());
 
         ComparisonPredicate orComparisonPredicate = (ComparisonPredicate) expressions.get(1);
         assertEquals(ComparisonOperator.LESS_THAN_OR_EQUAL, orComparisonPredicate.getComparisonOperator());
 
         LiteralExpression orLiteralExpression = (LiteralExpression) orComparisonPredicate.getRightHandOperand();
-        assertEquals(VALUE, orLiteralExpression.getLiteral());
+        assertEquals(OTHER_VALUE, orLiteralExpression.getLiteral());
     }
 
 }

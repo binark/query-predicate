@@ -155,7 +155,7 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(AND, compoundPredicate.getOperator().name());
+    assertEquals(OR, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertEquals(2, expressions.size());
@@ -176,13 +176,13 @@ class AbstractPredicateBuilderTest {
   }
 
   @Test
-  void buildBaseFilterPredicate_Or_Is_Different() {
+  void buildBaseFilterPredicate_And_Is_Different() {
     TestObject value = new TestObject("different");
     Mockito.when(path.getJavaType()).thenReturn(String.class);
-    TestFilter orTestFilter = new TestFilter();
-    orTestFilter.setIsDifferent(value);
+    TestFilter andTestFilter = new TestFilter();
+    andTestFilter.setIsDifferent(value);
     TestFilter testFilter = new TestFilter();
-    testFilter.setOr(orTestFilter);
+    testFilter.setAnd(andTestFilter);
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
 
@@ -201,11 +201,11 @@ class AbstractPredicateBuilderTest {
     TestObject andValue = new TestObject("andDifferent");
     TestObject orValue = new TestObject("orDifferent");
     Mockito.when(path.getJavaType()).thenReturn(String.class);
-    TestFilter orTestFilter = new TestFilter();
-    orTestFilter.setIsDifferent(orValue);
+    TestFilter andTestFilter = new TestFilter();
+    andTestFilter.setIsDifferent(andValue);
     TestFilter testFilter = new TestFilter();
-    testFilter.setIsDifferent(andValue);
-    testFilter.setOr(orTestFilter);
+    testFilter.setIsDifferent(orValue);
+    testFilter.setAnd(andTestFilter);
 
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
@@ -235,7 +235,7 @@ class AbstractPredicateBuilderTest {
   }
 
   @Test
-  void buildBaseFilterPredicate_Is_Null_True_() {
+  void buildBaseFilterPredicate_Is_Null_True() {
     TestFilter testFilter = new TestFilter();
     testFilter.setNull(true);
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
@@ -261,7 +261,7 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(AND, compoundPredicate.getOperator().name());
+    assertEquals(OR, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertEquals(2, expressions.size());
@@ -271,11 +271,11 @@ class AbstractPredicateBuilderTest {
   }
 
   @Test
-  void buildBaseFilterPredicate_Or_Is_Null_True() {
-    TestFilter orTestFilter = new TestFilter();
-    orTestFilter.setNull(true);
+  void buildBaseFilterPredicate_And_Is_Null_True() {
+    TestFilter andTestFilter = new TestFilter();
+    andTestFilter.setNull(true);
     TestFilter testFilter = new TestFilter();
-    testFilter.setOr(orTestFilter);
+    testFilter.setAnd(andTestFilter);
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
 
@@ -287,11 +287,11 @@ class AbstractPredicateBuilderTest {
 
   @Test
   void buildBaseFilterPredicate_And_With_Or_Is_Null_True() {
-    TestFilter orTestFilter = new TestFilter();
-    orTestFilter.setNull(true);
+    TestFilter andTestFilter = new TestFilter();
+    andTestFilter.setNull(true);
     TestFilter testFilter = new TestFilter();
     testFilter.setNull(true);
-    testFilter.setOr(orTestFilter);
+    testFilter.setAnd(andTestFilter);
 
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
@@ -334,7 +334,7 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(AND, compoundPredicate.getOperator().name());
+    assertEquals(OR, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertEquals(2, expressions.size());
@@ -344,11 +344,11 @@ class AbstractPredicateBuilderTest {
   }
 
   @Test
-  void buildBaseFilterPredicate_Or_Is_Null_False() {
-    TestFilter orTestFilter = new TestFilter();
-    orTestFilter.setNull(false);
+  void buildBaseFilterPredicate_And_Is_Null_False() {
+    TestFilter andTestFilter = new TestFilter();
+    andTestFilter.setNull(false);
     TestFilter testFilter = new TestFilter();
-    testFilter.setOr(orTestFilter);
+    testFilter.setAnd(andTestFilter);
 
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
@@ -361,11 +361,11 @@ class AbstractPredicateBuilderTest {
 
   @Test
   void buildBaseFilterPredicate_And_With_Or_Is_Null_False() {
-    TestFilter orTestFilter = new TestFilter();
-    orTestFilter.setNull(false);
+    TestFilter andTestFilter = new TestFilter();
+    andTestFilter.setNull(false);
     TestFilter testFilter = new TestFilter();
     testFilter.setNull(false);
-    testFilter.setOr(orTestFilter);
+    testFilter.setAnd(andTestFilter);
 
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
@@ -416,7 +416,7 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(AND, compoundPredicate.getOperator().name());
+    assertEquals(OR, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertEquals(2, expressions.size());
@@ -432,12 +432,12 @@ class AbstractPredicateBuilderTest {
   }
 
   @Test
-  void buildBaseFilterPredicate_Or_Is_In() {
+  void buildBaseFilterPredicate_And_Is_In() {
     List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
-    TestFilter orTestFilter = new TestFilter();
-    orTestFilter.setIsIn(values);
+    TestFilter andTestFilter = new TestFilter();
+    andTestFilter.setIsIn(values);
     TestFilter testFilter = new TestFilter();
-    testFilter.setOr(orTestFilter);
+    testFilter.setAnd(andTestFilter);
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
 
@@ -457,11 +457,11 @@ class AbstractPredicateBuilderTest {
   void buildBaseFilterPredicate_And_With_Or_Is_In() {
     List<TestObject> andValues = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
     List<TestObject> orValues = Arrays.asList(new TestObject("def"), new TestObject("lmn"));
-    TestFilter orTestFilter = new TestFilter();
-    orTestFilter.setIsIn(orValues);
+    TestFilter andTestFilter = new TestFilter();
+    andTestFilter.setIsIn(andValues);
     TestFilter testFilter = new TestFilter();
-    testFilter.setIsIn(andValues);
-    testFilter.setOr(orTestFilter);
+    testFilter.setIsIn(orValues);
+    testFilter.setAnd(andTestFilter);
 
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
@@ -523,7 +523,7 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(AND, compoundPredicate.getOperator().name());
+    assertEquals(OR, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertEquals(2, expressions.size());
@@ -533,12 +533,12 @@ class AbstractPredicateBuilderTest {
   }
 
   @Test
-  void buildBaseFilterPredicate_Or_Is_Not_In() {
+  void buildBaseFilterPredicate_And_Is_Not_In() {
     List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
-    TestFilter orTestFilter = new TestFilter();
-    orTestFilter.setIsNotIn(values);
+    TestFilter andTestFilter = new TestFilter();
+    andTestFilter.setIsNotIn(values);
     TestFilter testFilter = new TestFilter();
-    testFilter.setOr(orTestFilter);
+    testFilter.setAnd(andTestFilter);
 
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
@@ -553,11 +553,11 @@ class AbstractPredicateBuilderTest {
   void buildBaseFilterPredicate_And_With_Or_Is_Not_In() {
     List<TestObject> andValues = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
     List<TestObject> orValues = Arrays.asList(new TestObject("def"), new TestObject("lmn"));
-    TestFilter orTestFilter = new TestFilter();
-    orTestFilter.setIsNotIn(orValues);
+    TestFilter andTestFilter = new TestFilter();
+    andTestFilter.setIsNotIn(andValues);
     TestFilter testFilter = new TestFilter();
-    testFilter.setIsNotIn(andValues);
-    testFilter.setOr(orTestFilter);
+    testFilter.setIsNotIn(orValues);
+    testFilter.setAnd(andTestFilter);
 
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);

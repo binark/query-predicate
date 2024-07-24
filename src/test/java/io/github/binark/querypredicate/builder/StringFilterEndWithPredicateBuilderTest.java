@@ -145,7 +145,7 @@ class StringFilterEndWithPredicateBuilderTest extends StringFilterPredicateBuild
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(AND, compoundPredicate.getOperator().name());
+        assertEquals(OR, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -182,11 +182,11 @@ class StringFilterEndWithPredicateBuilderTest extends StringFilterPredicateBuild
 
     @Test
     void buildPredicate_And_With_Or_EndWithIgnoreCase() {
-        StringFilter orFilter = new StringFilter();
-        orFilter.setEndWithIgnoreCase(VALUE);
+        StringFilter andFilter = new StringFilter();
+        andFilter.setEndWithIgnoreCase(VALUE);
         StringFilter filter = new StringFilter();
         filter.setEndWithIgnoreCase(OTHER_VALUE);
-        filter.setOr(orFilter);
+        filter.setAnd(andFilter);
 
         Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
                 FIELD_NAME);
@@ -203,10 +203,10 @@ class StringFilterEndWithPredicateBuilderTest extends StringFilterPredicateBuild
 
         LikePredicate andLikePredicate = (LikePredicate) expressions.get(0);
         LiteralExpression andLiteralExpression = (LiteralExpression) andLikePredicate.getPattern();
-        assertEquals("%" + OTHER_VALUE.toUpperCase(), andLiteralExpression.getLiteral());
+        assertEquals("%" + VALUE.toUpperCase(), andLiteralExpression.getLiteral());
 
         LikePredicate likePredicate = (LikePredicate) expressions.get(1);
         LiteralExpression literalExpression = (LiteralExpression) likePredicate.getPattern();
-        assertEquals("%" + VALUE.toUpperCase(), literalExpression.getLiteral());
+        assertEquals("%" + OTHER_VALUE.toUpperCase(), literalExpression.getLiteral());
     }
 }

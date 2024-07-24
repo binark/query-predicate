@@ -55,7 +55,7 @@ class LocalDateFilterTomorrowPredicateBuilderTest extends LocalDateFilterPredica
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(AND, compoundPredicate.getOperator().name());
+        assertEquals(OR, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -94,11 +94,11 @@ class LocalDateFilterTomorrowPredicateBuilderTest extends LocalDateFilterPredica
 
     @Test
     void buildPredicate_for_and_with_or_tomorrow() {
-        LocalDateFilter orLocalDateFilter = new LocalDateFilter();
-        orLocalDateFilter.setIsTomorrow(true);
+        LocalDateFilter andLocalDateFilter = new LocalDateFilter();
+        andLocalDateFilter.setIsTomorrow(true);
         LocalDateFilter localDateFilter = new LocalDateFilter();
         localDateFilter.setIsTomorrow(true);
-        localDateFilter.setOr(orLocalDateFilter);
+        localDateFilter.setAnd(andLocalDateFilter);
 
         Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, localDateFilter,
                 FIELD_NAME);

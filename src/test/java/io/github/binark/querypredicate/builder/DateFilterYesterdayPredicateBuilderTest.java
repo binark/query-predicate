@@ -54,7 +54,7 @@ class DateFilterYesterdayPredicateBuilderTest extends DateFilterPredicateBuilder
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(AND, compoundPredicate.getOperator().name());
+        assertEquals(OR, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -97,11 +97,11 @@ class DateFilterYesterdayPredicateBuilderTest extends DateFilterPredicateBuilder
 
     @Test
     void buildPredicate_for_and_with_or_yesterday() {
-        DateFilter orDateFilter = new DateFilter();
-        orDateFilter.setIsYesterday(true);
+        DateFilter andDateFilter = new DateFilter();
+        andDateFilter.setIsYesterday(true);
         DateFilter dateFilter = new DateFilter();
         dateFilter.setIsYesterday(true);
-        dateFilter.setOr(orDateFilter);
+        dateFilter.setAnd(andDateFilter);
 
         Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, dateFilter,
                 FIELD_NAME);

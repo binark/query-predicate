@@ -61,7 +61,7 @@ class BooleanFilterFalsePredicateBuilderTest extends BooleanFilterPredicateBuild
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(AND, compoundPredicate.getOperator().name());
+        assertEquals(OR, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -91,11 +91,11 @@ class BooleanFilterFalsePredicateBuilderTest extends BooleanFilterPredicateBuild
 
     @Test
     void buildPredicate_And_With_Or_False() {
-        BooleanFilter orFilter = new BooleanFilter();
-        orFilter.setFalse(VALUE);
+        BooleanFilter andFilter = new BooleanFilter();
+        andFilter.setFalse(VALUE);
         BooleanFilter filter = new BooleanFilter();
         filter.setFalse(OTHER_VALUE);
-        filter.setOr(orFilter);
+        filter.setAnd(andFilter);
 
         Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
                 FIELD_NAME);
@@ -111,9 +111,9 @@ class BooleanFilterFalsePredicateBuilderTest extends BooleanFilterPredicateBuild
         assertEquals(2, expressions.size());
 
         BooleanAssertionPredicate andBooleanAssertionPredicate = (BooleanAssertionPredicate) expressions.get(0);
-        assertEquals(!OTHER_VALUE, andBooleanAssertionPredicate.getAssertedValue());
+        assertEquals(!VALUE, andBooleanAssertionPredicate.getAssertedValue());
 
         BooleanAssertionPredicate orBooleanAssertionPredicate = (BooleanAssertionPredicate) expressions.get(1);
-        assertEquals(!VALUE, orBooleanAssertionPredicate.getAssertedValue());
+        assertEquals(!OTHER_VALUE, orBooleanAssertionPredicate.getAssertedValue());
     }
 }

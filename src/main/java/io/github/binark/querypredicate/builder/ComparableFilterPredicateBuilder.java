@@ -197,7 +197,7 @@ public abstract class ComparableFilterPredicateBuilder<F extends ComparableFilte
 
   protected Comparable getOrLessThanOrEquals(ComparableFilter filter) {
     Comparable value = filter.getIsLessThanOrEqualsTo();
-    if (value != null && filter.getOr() != null) {
+    if (value == null && filter.getOr() != null) {
       value = filter.getOr().getIsLessThanOrEqualsTo();
     }
     return value;

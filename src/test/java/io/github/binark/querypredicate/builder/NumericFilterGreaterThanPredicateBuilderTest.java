@@ -83,7 +83,7 @@ class NumericFilterGreaterThanPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(AND, compoundPredicate.getOperator().name());
+        assertEquals(OR, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -118,10 +118,10 @@ class NumericFilterGreaterThanPredicateBuilderTest {
 
     @Test
     void buildNumericPredicate_And_With_Or_Is_GreaterThan() {
-        NumericFilter orFilter = Mockito.mock(NumericFilter.class, Mockito.CALLS_REAL_METHODS);
-        orFilter.setIsGreaterThan(VALUE);
+        NumericFilter andFilter = Mockito.mock(NumericFilter.class, Mockito.CALLS_REAL_METHODS);
+        andFilter.setIsGreaterThan(VALUE);
         filter.setIsGreaterThan(OTHER_VALUE);
-        filter.setOr(orFilter);
+        filter.setAnd(andFilter);
 
         Predicate predicate = predicateBuilder.buildNumericPredicate(path, criteriaBuilder,
                 filter, FIELD_NAME);
@@ -140,13 +140,13 @@ class NumericFilterGreaterThanPredicateBuilderTest {
         assertEquals(ComparisonOperator.GREATER_THAN, andComparisonPredicate.getComparisonOperator());
 
         LiteralExpression andLiteralExpression = (LiteralExpression) andComparisonPredicate.getRightHandOperand();
-        assertEquals(OTHER_VALUE, andLiteralExpression.getLiteral());
+        assertEquals(VALUE, andLiteralExpression.getLiteral());
 
         ComparisonPredicate orComparisonPredicate = (ComparisonPredicate) expressions.get(1);
         assertEquals(ComparisonOperator.GREATER_THAN, orComparisonPredicate.getComparisonOperator());
 
         LiteralExpression orLiteralExpression = (LiteralExpression) orComparisonPredicate.getRightHandOperand();
-        assertEquals(VALUE, orLiteralExpression.getLiteral());
+        assertEquals(OTHER_VALUE, orLiteralExpression.getLiteral());
     }
 
 }
