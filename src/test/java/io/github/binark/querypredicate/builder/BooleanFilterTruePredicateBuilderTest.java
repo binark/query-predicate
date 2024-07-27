@@ -61,7 +61,7 @@ class BooleanFilterTruePredicateBuilderTest extends BooleanFilterPredicateBuilde
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -90,7 +90,7 @@ class BooleanFilterTruePredicateBuilderTest extends BooleanFilterPredicateBuilde
     }
 
     @Test
-    void buildPredicate_And_With_Or_True() {
+    void buildPredicate_And_With_Normal_True() {
         BooleanFilter andFilter = new BooleanFilter();
         andFilter.setTrue(VALUE);
         BooleanFilter filter = new BooleanFilter();
@@ -104,16 +104,16 @@ class BooleanFilterTruePredicateBuilderTest extends BooleanFilterPredicateBuilde
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
         assertEquals(2, expressions.size());
 
-        BooleanAssertionPredicate andBooleanAssertionPredicate = (BooleanAssertionPredicate) expressions.get(0);
-        assertEquals(VALUE, andBooleanAssertionPredicate.getAssertedValue());
+        BooleanAssertionPredicate normalBooleanAssertionPredicate = (BooleanAssertionPredicate) expressions.get(0);
+        assertEquals(OTHER_VALUE, normalBooleanAssertionPredicate.getAssertedValue());
 
-        BooleanAssertionPredicate orBooleanAssertionPredicate = (BooleanAssertionPredicate) expressions.get(1);
-        assertEquals(OTHER_VALUE, orBooleanAssertionPredicate.getAssertedValue());
+        BooleanAssertionPredicate andBooleanAssertionPredicate = (BooleanAssertionPredicate) expressions.get(1);
+        assertEquals(VALUE, andBooleanAssertionPredicate.getAssertedValue());
     }
 }

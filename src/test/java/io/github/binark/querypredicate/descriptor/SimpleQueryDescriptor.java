@@ -1,16 +1,16 @@
 package io.github.binark.querypredicate.descriptor;
 
+
 import io.github.binark.querypredicate.filter.DateFilter;
 import io.github.binark.querypredicate.filter.LocalDateFilter;
 import io.github.binark.querypredicate.filter.StringFilter;
-import java.time.LocalDateTime;
 
 public class SimpleQueryDescriptor implements QueryDescriptor{
     private StringFilter id;
 
     private DateFilter birthday;
 
-    private LocalDateFilter<LocalDateTime> createdAt;
+    private LocalDateFilter createdAt;
 
     public StringFilter getId() {
         return id;
@@ -28,12 +28,12 @@ public class SimpleQueryDescriptor implements QueryDescriptor{
         this.birthday = birthday;
     }
 
-    public LocalDateFilter<LocalDateTime> getCreatedAt() {
+    public LocalDateFilter getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(
-        LocalDateFilter<LocalDateTime> createdAt) {
+        LocalDateFilter createdAt) {
         this.createdAt = createdAt;
     }
 }

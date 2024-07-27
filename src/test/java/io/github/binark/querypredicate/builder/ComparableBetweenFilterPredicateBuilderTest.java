@@ -93,7 +93,7 @@ class ComparableBetweenFilterPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -143,10 +143,10 @@ class ComparableBetweenFilterPredicateBuilderTest {
         andRange.setStart(OTHER_VALUE);
         andRange.setEnd(VALUE);
         andFilter.setIsBetween(andRange);
-        Range<Instant> ordRange = new Range<>();
-        ordRange.setStart(VALUE);
-        ordRange.setEnd(OTHER_VALUE);
-        filter.setIsBetween(ordRange);
+        Range<Instant> normalRange = new Range<>();
+        normalRange.setStart(VALUE);
+        normalRange.setEnd(OTHER_VALUE);
+        filter.setIsBetween(normalRange);
         filter.setAnd(andFilter);
 
         Predicate predicate = predicateBuilder.buildComparablePredicate(path, criteriaBuilder, filter,
@@ -156,13 +156,23 @@ class ComparableBetweenFilterPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
         assertEquals(2, expressions.size());
 
-        BetweenPredicate<Instant> andBetweenPredicate = (BetweenPredicate<Instant>) expressions.get(0);
+        BetweenPredicate<Instant> normalBetweenPredicate = (BetweenPredicate<Instant>) expressions.get(0);
+        LiteralExpression<Instant> normalLowerExpression = (LiteralExpression) normalBetweenPredicate.getLowerBound();
+
+        assertNotNull(normalLowerExpression);
+        assertEquals(VALUE, normalLowerExpression.getLiteral());
+
+        LiteralExpression<Instant> normalUpperExpression = (LiteralExpression) normalBetweenPredicate.getUpperBound();
+        assertNotNull(normalUpperExpression);
+        assertEquals(OTHER_VALUE, normalUpperExpression.getLiteral());
+
+        BetweenPredicate<Instant> andBetweenPredicate = (BetweenPredicate<Instant>) expressions.get(1);
         LiteralExpression<Instant> andLowerExpression = (LiteralExpression) andBetweenPredicate.getLowerBound();
 
         assertNotNull(andLowerExpression);
@@ -171,15 +181,5 @@ class ComparableBetweenFilterPredicateBuilderTest {
         LiteralExpression<Instant> andUpperExpression = (LiteralExpression) andBetweenPredicate.getUpperBound();
         assertNotNull(andUpperExpression);
         assertEquals(VALUE, andUpperExpression.getLiteral());
-
-        BetweenPredicate<Instant> orBetweenPredicate = (BetweenPredicate<Instant>) expressions.get(1);
-        LiteralExpression<Instant> orLowerExpression = (LiteralExpression) orBetweenPredicate.getLowerBound();
-
-        assertNotNull(orLowerExpression);
-        assertEquals(VALUE, orLowerExpression.getLiteral());
-
-        LiteralExpression<Instant> orUpperExpression = (LiteralExpression) orBetweenPredicate.getUpperBound();
-        assertNotNull(orUpperExpression);
-        assertEquals(OTHER_VALUE, orUpperExpression.getLiteral());
     }
 }

@@ -27,6 +27,15 @@ public abstract class NumericFilterPredicateBuilder<F extends NumericFilter> ext
   public Predicate buildNumericPredicate(Path path, CriteriaBuilder builder, F filter, String fieldName) {
     Predicate predicate = buildBaseFilterPredicate(path, builder, filter, fieldName);
 
+    Comparable isGreaterThan = filter.getIsGreaterThan();
+    if (isGreaterThan != null) {
+      if (predicate == null) {
+        predicate = builder.gt(path.get(fieldName), (Number) isGreaterThan);
+      } else {
+        predicate = builder.and(predicate, builder.gt(path.get(fieldName), (Number) isGreaterThan));
+      }
+    }
+
     Comparable andGreaterThan = getAndGreaterThan(filter);
     if (andGreaterThan != null) {
       if (predicate == null) {
@@ -42,6 +51,15 @@ public abstract class NumericFilterPredicateBuilder<F extends NumericFilter> ext
         predicate = builder.gt(path.get(fieldName), (Number) orGreaterThan);
       } else {
         predicate = builder.or(predicate, builder.gt(path.get(fieldName), (Number) orGreaterThan));
+      }
+    }
+
+    Comparable isGreaterThanOrEqualsTo = filter.getIsGreaterThanOrEqualsTo();
+    if (isGreaterThanOrEqualsTo != null) {
+      if (predicate == null) {
+        predicate = builder.ge(path.get(fieldName), (Number) isGreaterThanOrEqualsTo);
+      } else {
+        predicate = builder.and(predicate, builder.ge(path.get(fieldName), (Number) isGreaterThanOrEqualsTo));
       }
     }
 
@@ -63,6 +81,15 @@ public abstract class NumericFilterPredicateBuilder<F extends NumericFilter> ext
       }
     }
 
+    Comparable isLessThan = filter.getIsLessThan();
+    if (isLessThan != null) {
+      if (predicate == null) {
+        predicate = builder.lt(path.get(fieldName), (Number) isLessThan);
+      } else {
+        predicate = builder.and(predicate, builder.lt(path.get(fieldName), (Number) isLessThan));
+      }
+    }
+
     Comparable andLessThan = getAndLessThan(filter);
     if (andLessThan != null) {
       if (predicate == null) {
@@ -81,6 +108,15 @@ public abstract class NumericFilterPredicateBuilder<F extends NumericFilter> ext
       }
     }
 
+    Comparable isLessThanOrEqualsTo = filter.getIsLessThanOrEqualsTo();
+    if (isLessThanOrEqualsTo != null) {
+      if (predicate == null) {
+        predicate = builder.le(path.get(fieldName), (Number) isLessThanOrEqualsTo);
+      } else {
+        predicate = builder.and(predicate, builder.le(path.get(fieldName), (Number) isLessThanOrEqualsTo));
+      }
+    }
+
     Comparable andLessThanOrEquals = getAndLessThanOrEquals(filter);
     if (andLessThanOrEquals != null) {
       if (predicate == null) {
@@ -96,6 +132,15 @@ public abstract class NumericFilterPredicateBuilder<F extends NumericFilter> ext
         predicate = builder.le(path.get(fieldName), (Number) orLessThanOrEquals);
       } else {
         predicate = builder.or(predicate, builder.le(path.get(fieldName), (Number) orLessThanOrEquals));
+      }
+    }
+
+    Range isBetween = filter.getIsBetween();
+    if (isBetween != null) {
+      if (predicate == null) {
+        predicate = getBetweenPredicate(path, builder, isBetween, fieldName);
+      } else {
+        predicate = builder.and(predicate, getBetweenPredicate(path, builder, isBetween, fieldName));
       }
     }
 

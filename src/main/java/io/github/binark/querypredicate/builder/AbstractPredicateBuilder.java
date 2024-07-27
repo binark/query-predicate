@@ -1,9 +1,9 @@
 package io.github.binark.querypredicate.builder;
 
+
 import io.github.binark.querypredicate.annotation.EntityFieldName;
 import io.github.binark.querypredicate.filter.BaseFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 
@@ -30,9 +30,18 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
     protected Predicate buildBaseFilterPredicate(Path<?> path, CriteriaBuilder criteriaBuilder, F filter, String fieldName) {
         Predicate predicate = null;
 
+        Object isEquals = filter.getIsEquals();
+        if (isEquals != null) {
+            predicate = criteriaBuilder.equal(path.get(fieldName), isEquals);
+        }
+
         Object andEquals = getAndEquals(filter);
         if (andEquals != null) {
-            predicate = criteriaBuilder.equal(path.get(fieldName), andEquals);
+            if (predicate == null) {
+                predicate = criteriaBuilder.equal(path.get(fieldName), andEquals);
+            } else  {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(path.get(fieldName), andEquals));
+            }
         }
 
         Object orEquals = getOrEquals(filter);
@@ -41,6 +50,15 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
                 predicate = criteriaBuilder.equal(path.get(fieldName), orEquals);
             } else {
                 predicate = criteriaBuilder.or(predicate, criteriaBuilder.equal(path.get(fieldName), orEquals));
+            }
+        }
+
+        Object isDifferent = filter.getIsDifferent();
+        if (isDifferent != null) {
+            if (predicate == null) {
+                predicate = criteriaBuilder.notEqual(path.get(fieldName), isDifferent);
+            } else {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.notEqual(path.get(fieldName), isDifferent));
             }
         }
 
@@ -59,6 +77,21 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
                 predicate = criteriaBuilder.notEqual(path.get(fieldName), orDifferent);
             } else {
                 predicate = criteriaBuilder.or(predicate, criteriaBuilder.notEqual(path.get(fieldName), orDifferent));
+            }
+        }
+
+        Boolean filterNull = filter.getNull();
+        if (filterNull != null) {
+            Predicate temporaryPredicate;
+            if (Boolean.TRUE.equals(filterNull)) {
+                temporaryPredicate = criteriaBuilder.isNull(path.get(fieldName));
+            } else {
+                temporaryPredicate = criteriaBuilder.isNotNull(path.get(fieldName));
+            }
+            if (predicate == null) {
+                predicate = temporaryPredicate;
+            } else {
+                predicate = criteriaBuilder.and(predicate, temporaryPredicate);
             }
         }
 
@@ -92,43 +125,63 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
             }
         }
 
+        List isIn = filter.getIsIn();
+        if (isIn != null) {
+            Path<Object> fieldPath = path.get(fieldName);
+            if (predicate == null) {
+                predicate = fieldPath.in(isIn);
+            } else {
+                predicate = criteriaBuilder.and(predicate, fieldPath.in(isIn));
+            }
+        }
+
         List andIn = getAndIn(filter);
         if (andIn != null) {
-            In inExpressions = criteriaBuilder.in(path.get(fieldName));
+            Path<Object> fieldPath = path.get(fieldName);
             if (predicate == null) {
-                predicate = inExpressions.in(andIn.stream().toArray());
+                predicate = fieldPath.in(andIn);
             } else {
-                predicate = criteriaBuilder.and(predicate, inExpressions.in(andIn.stream().toArray()));
+                predicate = criteriaBuilder.and(predicate, fieldPath.in(andIn));
             }
         }
 
         List orIn = getOrIn(filter);
         if (orIn != null) {
-            In inExpressions = criteriaBuilder.in(path.get(fieldName));
+            Path<Object> fieldPath = path.get(fieldName);
             if (predicate == null) {
-                predicate = inExpressions.in(orIn.stream().toArray());
+                predicate = fieldPath.in(orIn);
             } else {
-                predicate = criteriaBuilder.or(predicate, inExpressions.in(orIn.stream().toArray()));
+                predicate = criteriaBuilder.or(predicate, fieldPath.in(orIn));
+            }
+        }
+
+        List isNotIn = filter.getIsNotIn();
+        if (isNotIn != null) {
+            Path<Object> fieldPath = path.get(fieldName);
+            if (predicate == null) {
+                predicate = fieldPath.in(isNotIn).not();
+            } else {
+                predicate = criteriaBuilder.and(predicate, fieldPath.in(isNotIn).not());
             }
         }
 
         List andNotIn = getAndNotIn(filter);
         if (andNotIn != null) {
-            In inExpressions = criteriaBuilder.in(path.get(fieldName));
+            Path<Object> fieldPath = path.get(fieldName);
             if (predicate == null) {
-                predicate = inExpressions.in(andNotIn.stream().toArray()).not();
+                predicate = fieldPath.in(andNotIn).not();
             } else {
-                predicate = criteriaBuilder.and(predicate, inExpressions.in(andNotIn.stream().toArray()).not());
+                predicate = criteriaBuilder.and(predicate, fieldPath.in(andNotIn).not());
             }
         }
 
         List orNotIn = getOrNotIn(filter);
         if (orNotIn != null) {
-            In inExpressions = criteriaBuilder.in(path.get(fieldName));
+            Path<Object> fieldPath = path.get(fieldName);
             if (predicate == null) {
-                predicate = inExpressions.in(orNotIn.stream().toArray()).not();
+                predicate = fieldPath.in(orNotIn).not();
             } else {
-                predicate = criteriaBuilder.or(predicate, inExpressions.in(orNotIn.stream().toArray()).not());
+                predicate = criteriaBuilder.or(predicate, fieldPath.in(orNotIn).not());
             }
         }
 
@@ -143,11 +196,10 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
     }
 
     private Object getOrEquals(BaseFilter filter) {
-        Object value = filter.getIsEquals();
-        if (value == null && filter.getOr() != null) {
-            value = filter.getOr().getIsEquals();
+        if (filter.getOr() != null) {
+            return filter.getOr().getIsEquals();
         }
-        return value;
+        return null;
     }
 
     private Object getAndDifferent(BaseFilter filter) {
@@ -158,11 +210,10 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
     }
 
     private Object getOrDifferent(BaseFilter filter) {
-        Object value = filter.getIsDifferent();
-        if (value == null && filter.getOr() != null) {
-            value = filter.getOr().getIsDifferent();
+        if (filter.getOr() != null) {
+            return filter.getOr().getIsDifferent();
         }
-        return value;
+        return null;
     }
 
     private Boolean getAndNull(BaseFilter filter) {
@@ -173,11 +224,10 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
     }
 
     private Boolean getOrNull(BaseFilter filter) {
-        Boolean value = filter.getNull();
-        if (value == null && filter.getOr() != null) {
-            value = filter.getOr().getNull();
+        if (filter.getOr() != null) {
+            return filter.getOr().getNull();
         }
-        return value;
+        return null;
     }
 
     private List getAndIn(BaseFilter filter) {
@@ -188,11 +238,10 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
     }
 
     private List getOrIn(BaseFilter filter) {
-        List value = filter.getIsIn();
-        if (value == null && filter.getOr() != null) {
-            value = filter.getOr().getIsIn();
+        if (filter.getOr() != null) {
+            return filter.getOr().getIsIn();
         }
-        return value;
+        return null;
     }
 
     private List getAndNotIn(BaseFilter filter) {
@@ -203,11 +252,10 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
     }
 
     private List getOrNotIn(BaseFilter filter) {
-        List value = filter.getIsNotIn();
-        if (value == null && filter.getOr() != null) {
-            value = filter.getOr().getIsNotIn();
+        if (filter.getOr() != null) {
+            return filter.getOr().getIsNotIn();
         }
-        return value;
+        return null;
     }
 
     @Override

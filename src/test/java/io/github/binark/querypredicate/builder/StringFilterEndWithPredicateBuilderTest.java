@@ -145,7 +145,7 @@ class StringFilterEndWithPredicateBuilderTest extends StringFilterPredicateBuild
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -181,7 +181,7 @@ class StringFilterEndWithPredicateBuilderTest extends StringFilterPredicateBuild
     }
 
     @Test
-    void buildPredicate_And_With_Or_EndWithIgnoreCase() {
+    void buildPredicate_And_With_Normal_EndWithIgnoreCase() {
         StringFilter andFilter = new StringFilter();
         andFilter.setEndWithIgnoreCase(VALUE);
         StringFilter filter = new StringFilter();
@@ -195,18 +195,18 @@ class StringFilterEndWithPredicateBuilderTest extends StringFilterPredicateBuild
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
         assertEquals(2, expressions.size());
 
-        LikePredicate andLikePredicate = (LikePredicate) expressions.get(0);
+        LikePredicate normalLikePredicate = (LikePredicate) expressions.get(0);
+        LiteralExpression normalLiteralExpression = (LiteralExpression) normalLikePredicate.getPattern();
+        assertEquals("%" + OTHER_VALUE.toUpperCase(), normalLiteralExpression.getLiteral());
+
+        LikePredicate andLikePredicate = (LikePredicate) expressions.get(1);
         LiteralExpression andLiteralExpression = (LiteralExpression) andLikePredicate.getPattern();
         assertEquals("%" + VALUE.toUpperCase(), andLiteralExpression.getLiteral());
-
-        LikePredicate likePredicate = (LikePredicate) expressions.get(1);
-        LiteralExpression literalExpression = (LiteralExpression) likePredicate.getPattern();
-        assertEquals("%" + OTHER_VALUE.toUpperCase(), literalExpression.getLiteral());
     }
 }

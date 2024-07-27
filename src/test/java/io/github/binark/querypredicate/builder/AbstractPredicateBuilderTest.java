@@ -1,5 +1,6 @@
 package io.github.binark.querypredicate.builder;
 
+
 import io.github.binark.querypredicate.annotation.EntityFieldName;
 import io.github.binark.querypredicate.utils.TestFilter;
 import io.github.binark.querypredicate.utils.TestObject;
@@ -11,20 +12,23 @@ import jakarta.persistence.criteria.Predicate;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
 import org.hibernate.query.criteria.internal.expression.LiteralExpression;
-import org.hibernate.query.criteria.internal.predicate.*;
+import org.hibernate.query.criteria.internal.predicate.ComparisonPredicate;
 import org.hibernate.query.criteria.internal.predicate.ComparisonPredicate.ComparisonOperator;
+import org.hibernate.query.criteria.internal.predicate.CompoundPredicate;
+import org.hibernate.query.criteria.internal.predicate.NegatedPredicateWrapper;
+import org.hibernate.query.criteria.internal.predicate.NullnessPredicate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 
 @ExtendWith(MockitoExtension.class)
 class AbstractPredicateBuilderTest {
@@ -41,13 +45,17 @@ class AbstractPredicateBuilderTest {
 
   @Mock(answer = Answers.RETURNS_MOCKS)
   private SessionFactoryImpl sessionFactory;
+  @Mock
+  Path fieldPath;
+  @Mock
+  Predicate predicateMock;
 
   private CriteriaBuilder criteriaBuilder = new CriteriaBuilderImpl(sessionFactory);
 
   @Test
   void buildBaseFilterPredicate_Is_Equals() {
     TestObject value = new TestObject("equals");
-    Mockito.when(path.getJavaType()).thenReturn(String.class);
+    when(path.getJavaType()).thenReturn(String.class);
     TestFilter testFilter = new TestFilter();
     testFilter.setIsEquals(value);
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
@@ -66,7 +74,7 @@ class AbstractPredicateBuilderTest {
   @Test
   void buildBaseFilterPredicate_And_Is_Equals() {
     TestObject value = new TestObject("equals");
-    Mockito.when(path.getJavaType()).thenReturn(String.class);
+    when(path.getJavaType()).thenReturn(String.class);
     TestFilter testFilter = new TestFilter();
     TestFilter andTestFilter = new TestFilter();
     andTestFilter.setIsEquals(value);
@@ -85,12 +93,12 @@ class AbstractPredicateBuilderTest {
   }
 
   @Test
-  void buildBaseFilterPredicate_And_With_Or_Is_Equals() {
+  void buildBaseFilterPredicate_And_With_Normal_Is_Equals() {
     TestObject andValue = new TestObject("andEquals");
-    TestObject orValue = new TestObject("orEquals");
-    Mockito.when(path.getJavaType()).thenReturn(String.class);
+    TestObject value = new TestObject("equals");
+    when(path.getJavaType()).thenReturn(String.class);
     TestFilter testFilter = new TestFilter();
-    testFilter.setIsEquals(orValue);
+    testFilter.setIsEquals(value);
     TestFilter andTestFilter = new TestFilter();
     andTestFilter.setIsEquals(andValue);
     testFilter.setAnd(andTestFilter);
@@ -101,7 +109,7 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(OR, compoundPredicate.getOperator().name());
+    assertEquals(AND, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertEquals(2, expressions.size());
@@ -109,22 +117,22 @@ class AbstractPredicateBuilderTest {
     ComparisonPredicate andComparisonPredicate = (ComparisonPredicate) expressions.get(0);
     assertNotNull(andComparisonPredicate);
     assertEquals(ComparisonOperator.EQUAL, andComparisonPredicate.getComparisonOperator());
-    LiteralExpression andLiteralExpression = (LiteralExpression) andComparisonPredicate.getRightHandOperand();
+    LiteralExpression<?> andLiteralExpression = (LiteralExpression<?>) andComparisonPredicate.getRightHandOperand();
     assertNotNull(andLiteralExpression);
-    assertEquals(andValue, andLiteralExpression.getLiteral());
+    assertEquals(value, andLiteralExpression.getLiteral());
 
-    ComparisonPredicate orComparisonPredicate = (ComparisonPredicate) expressions.get(1);
-    assertNotNull(orComparisonPredicate);
-    assertEquals(ComparisonOperator.EQUAL, orComparisonPredicate.getComparisonOperator());
-    LiteralExpression orLiteralExpression = (LiteralExpression) orComparisonPredicate.getRightHandOperand();
-    assertNotNull(orLiteralExpression);
-    assertEquals(orValue, orLiteralExpression.getLiteral());
+    ComparisonPredicate comparisonPredicate = (ComparisonPredicate) expressions.get(1);
+    assertNotNull(comparisonPredicate);
+    assertEquals(ComparisonOperator.EQUAL, comparisonPredicate.getComparisonOperator());
+    LiteralExpression rightHandOperand = (LiteralExpression) comparisonPredicate.getRightHandOperand();
+    assertNotNull(rightHandOperand);
+    assertEquals(andValue, rightHandOperand.getLiteral());
   }
 
   @Test
   void buildBaseFilterPredicate_Is_Different() {
     TestObject value = new TestObject("different");
-    Mockito.when(path.getJavaType()).thenReturn(String.class);
+    when(path.getJavaType()).thenReturn(String.class);
     TestFilter testFilter = new TestFilter();
     testFilter.setIsDifferent(value);
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
@@ -144,7 +152,7 @@ class AbstractPredicateBuilderTest {
   void buildBaseFilterPredicate_Is_Different_With_Not_Null_Predicate() {
     TestObject differentValue = new TestObject("different");
     TestObject equalsValue = new TestObject("equals");
-    Mockito.when(path.getJavaType()).thenReturn(String.class);
+    when(path.getJavaType()).thenReturn(String.class);
     TestFilter testFilter = new TestFilter();
     testFilter.setIsEquals(equalsValue);
     testFilter.setIsDifferent(differentValue);
@@ -155,7 +163,7 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(OR, compoundPredicate.getOperator().name());
+    assertEquals(AND, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertEquals(2, expressions.size());
@@ -178,7 +186,7 @@ class AbstractPredicateBuilderTest {
   @Test
   void buildBaseFilterPredicate_And_Is_Different() {
     TestObject value = new TestObject("different");
-    Mockito.when(path.getJavaType()).thenReturn(String.class);
+    when(path.getJavaType()).thenReturn(String.class);
     TestFilter andTestFilter = new TestFilter();
     andTestFilter.setIsDifferent(value);
     TestFilter testFilter = new TestFilter();
@@ -199,12 +207,12 @@ class AbstractPredicateBuilderTest {
   @Test
   void buildBaseFilterPredicate_And_With_Or_Is_Different() {
     TestObject andValue = new TestObject("andDifferent");
-    TestObject orValue = new TestObject("orDifferent");
-    Mockito.when(path.getJavaType()).thenReturn(String.class);
+    TestObject value = new TestObject("different");
+    when(path.getJavaType()).thenReturn(String.class);
     TestFilter andTestFilter = new TestFilter();
     andTestFilter.setIsDifferent(andValue);
     TestFilter testFilter = new TestFilter();
-    testFilter.setIsDifferent(orValue);
+    testFilter.setIsDifferent(value);
     testFilter.setAnd(andTestFilter);
 
     Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
@@ -213,7 +221,7 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(OR, compoundPredicate.getOperator().name());
+    assertEquals(AND, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertNotNull(expressions);
@@ -224,14 +232,14 @@ class AbstractPredicateBuilderTest {
     assertEquals(ComparisonOperator.NOT_EQUAL, andComparisonPredicate.getComparisonOperator());
     LiteralExpression andLiteralExpression = (LiteralExpression) andComparisonPredicate.getRightHandOperand();
     assertNotNull(andLiteralExpression);
-    assertEquals(andValue, andLiteralExpression.getLiteral());
+    assertEquals(value, andLiteralExpression.getLiteral());
 
-    ComparisonPredicate orComparisonPredicate = (ComparisonPredicate) expressions.get(1);
-    assertNotNull(orComparisonPredicate);
-    assertEquals(ComparisonOperator.NOT_EQUAL, orComparisonPredicate.getComparisonOperator());
-    LiteralExpression orLiteralExpression = (LiteralExpression) orComparisonPredicate.getRightHandOperand();
-    assertNotNull(orLiteralExpression);
-    assertEquals(orValue, orLiteralExpression.getLiteral());
+    ComparisonPredicate comparisonPredicate = (ComparisonPredicate) expressions.get(1);
+    assertNotNull(comparisonPredicate);
+    assertEquals(ComparisonOperator.NOT_EQUAL, comparisonPredicate.getComparisonOperator());
+    LiteralExpression rightHandOperand = (LiteralExpression) comparisonPredicate.getRightHandOperand();
+    assertNotNull(rightHandOperand);
+    assertEquals(andValue, rightHandOperand.getLiteral());
   }
 
   @Test
@@ -249,7 +257,7 @@ class AbstractPredicateBuilderTest {
 
   @Test
   void buildBaseFilterPredicate_Is_Null_True_With_Not_Null_Predicate() {
-    Mockito.when(path.getJavaType()).thenReturn(String.class);
+    when(path.getJavaType()).thenReturn(String.class);
     TestObject equalsValue = new TestObject("equals");
     TestFilter testFilter = new TestFilter();
     testFilter.setIsEquals(equalsValue);
@@ -261,7 +269,7 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(OR, compoundPredicate.getOperator().name());
+    assertEquals(AND, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertEquals(2, expressions.size());
@@ -299,7 +307,7 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(OR, compoundPredicate.getOperator().name());
+    assertEquals(AND, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertNotNull(expressions);
@@ -322,7 +330,7 @@ class AbstractPredicateBuilderTest {
 
   @Test
   void buildBaseFilterPredicate_Is_Null_False_With_Not_Null_Predicate() {
-    Mockito.when(path.getJavaType()).thenReturn(String.class);
+    when(path.getJavaType()).thenReturn(String.class);
     TestObject equalsValue = new TestObject("equals");
     TestFilter testFilter = new TestFilter();
     testFilter.setIsEquals(equalsValue);
@@ -334,7 +342,7 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(OR, compoundPredicate.getOperator().name());
+    assertEquals(AND, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertEquals(2, expressions.size());
@@ -360,7 +368,7 @@ class AbstractPredicateBuilderTest {
   }
 
   @Test
-  void buildBaseFilterPredicate_And_With_Or_Is_Null_False() {
+  void buildBaseFilterPredicate_And_With_Normal_Is_Null_False() {
     TestFilter andTestFilter = new TestFilter();
     andTestFilter.setNull(false);
     TestFilter testFilter = new TestFilter();
@@ -373,7 +381,7 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(OR, compoundPredicate.getOperator().name());
+    assertEquals(AND, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertNotNull(expressions);
@@ -383,27 +391,21 @@ class AbstractPredicateBuilderTest {
 
   @Test
   void buildBaseFilterPredicate_Is_In() {
+    when(path.get(anyString())).thenReturn(fieldPath);
     List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
     TestFilter testFilter = new TestFilter();
     testFilter.setIsIn(values);
-    Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
+    predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
 
-    assertNotNull(predicate);
-
-    InPredicate inPredicate = (InPredicate) predicate;
-
-    List<LiteralExpression<TestObject>> predicateValues = inPredicate.getValues();
-    assertEquals(values.size(), predicateValues.size());
-    List<TestObject> inValues = predicateValues.stream().map(LiteralExpression::getLiteral).collect(
-            Collectors.toList());
-    assertLinesMatch(values.stream().map(TestObject::getName).collect(Collectors.toList()), inValues.stream()
-            .map(TestObject::getName).collect(Collectors.toList()));
+    verify(path).get(FIELD_NAME);
+    verify(fieldPath).in(values);
   }
 
   @Test
   void buildBaseFilterPredicate_Is_In_With_Not_Null_Predicate() {
-    Mockito.when(path.getJavaType()).thenReturn(String.class);
+    when(path.getJavaType()).thenReturn(String.class);
+    when(path.in(anyCollection())).thenReturn(predicateMock);
     TestObject equalsValue = new TestObject("equals");
     List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
     TestFilter testFilter = new TestFilter();
@@ -416,101 +418,67 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(OR, compoundPredicate.getOperator().name());
+    assertEquals(AND, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertEquals(2, expressions.size());
 
-    InPredicate inPredicate = (InPredicate) expressions.get(1);
+    Predicate inPredicate = (Predicate) expressions.get(1);
 
-    List<LiteralExpression<TestObject>> predicateValues = inPredicate.getValues();
-    assertEquals(values.size(), predicateValues.size());
-    List<TestObject> inValues = predicateValues.stream().map(LiteralExpression::getLiteral).collect(
-            Collectors.toList());
-    assertLinesMatch(values.stream().map(TestObject::getName).collect(Collectors.toList()), inValues.stream()
-            .map(TestObject::getName).collect(Collectors.toList()));
+    verify(path).in(values);
+    assertEquals(predicateMock, inPredicate);
   }
 
   @Test
   void buildBaseFilterPredicate_And_Is_In() {
+    when(path.get(anyString())).thenReturn(fieldPath);
     List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
     TestFilter andTestFilter = new TestFilter();
     andTestFilter.setIsIn(values);
     TestFilter testFilter = new TestFilter();
     testFilter.setAnd(andTestFilter);
-    Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
+    predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
-
-    assertNotNull(predicate);
-
-    InPredicate inPredicate = (InPredicate) predicate;
-
-    List<LiteralExpression<TestObject>> predicateValues = inPredicate.getValues();
-    assertEquals(values.size(), predicateValues.size());
-    List<TestObject> inValues = predicateValues.stream().map(LiteralExpression::getLiteral).collect(
-            Collectors.toList());
-    assertLinesMatch(values.stream().map(TestObject::getName).collect(Collectors.toList()), inValues.stream()
-            .map(TestObject::getName).collect(Collectors.toList()));
+    verify(path).get(FIELD_NAME);
+    verify(fieldPath).in(values);
   }
 
   @Test
-  void buildBaseFilterPredicate_And_With_Or_Is_In() {
+  void buildBaseFilterPredicate_And_With_Normal_Is_In() {
+    when(path.get(anyString())).thenReturn(fieldPath);
     List<TestObject> andValues = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
-    List<TestObject> orValues = Arrays.asList(new TestObject("def"), new TestObject("lmn"));
+    List<TestObject> value = Arrays.asList(new TestObject("def"), new TestObject("lmn"));
     TestFilter andTestFilter = new TestFilter();
     andTestFilter.setIsIn(andValues);
     TestFilter testFilter = new TestFilter();
-    testFilter.setIsIn(orValues);
+    testFilter.setIsIn(value);
     testFilter.setAnd(andTestFilter);
 
-    Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
+    predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
 
-    assertNotNull(predicate);
-
-    CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(OR, compoundPredicate.getOperator().name());
-
-    List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
-    assertNotNull(expressions);
-    assertEquals(2, expressions.size());
-
-    InPredicate<TestObject> andInPredicate = (InPredicate) expressions.get(0);
-
-    List<Expression<? extends TestObject>> andInPredicateValues = andInPredicate.getValues();
-    assertEquals(andValues.size(), andInPredicateValues.size());
-    List<TestObject> andInValues = andInPredicateValues.stream().map(expression -> (LiteralExpression<TestObject>) expression).map(LiteralExpression::getLiteral).collect(
-            Collectors.toList());
-    assertLinesMatch(andValues.stream().map(TestObject::getName).collect(Collectors.toList()), andInValues.stream()
-            .map(TestObject::getName).collect(Collectors.toList()));
-
-    InPredicate<TestObject> orInPredicate = (InPredicate) expressions.get(1);
-
-    List<Expression<? extends TestObject>> orInPredicateValues = orInPredicate.getValues();
-    assertEquals(orValues.size(), orInPredicateValues.size());
-    List<TestObject> orInValues = orInPredicateValues.stream().map(expression -> (LiteralExpression<TestObject>) expression).map(LiteralExpression::getLiteral).collect(
-            Collectors.toList());
-    assertLinesMatch(orValues.stream().map(TestObject::getName).collect(Collectors.toList()), orInValues.stream()
-            .map(TestObject::getName).collect(Collectors.toList()));
+    verify(path, times(2)).get(FIELD_NAME);
+    verify(fieldPath).in(andValues);
+    verify(fieldPath).in(value);
   }
 
   @Test
   void buildBaseFilterPredicate_Is_Not_In() {
+    when(path.in(anyCollection())).thenReturn(predicateMock);
     List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
     TestFilter testFilter = new TestFilter();
     testFilter.setIsNotIn(values);
-    Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
+    predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
         FIELD_NAME);
 
-    assertNotNull(predicate);
-
-    NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) predicate;
-    assertNotNull(negatedPredicateWrapper);
+    verify(path).in(values);
+    verify(predicateMock).not();
   }
 
   @Test
   void buildBaseFilterPredicate_Is_Not_In_With_Not_Null_Predicate() {
-    Mockito.when(path.getJavaType()).thenReturn(String.class);
+    when(path.getJavaType()).thenReturn(String.class);
+    when(path.in(anyCollection())).thenReturn(predicateMock);
     TestObject equalsValue = new TestObject("equals");
     List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
     TestFilter testFilter = new TestFilter();
@@ -523,55 +491,53 @@ class AbstractPredicateBuilderTest {
     assertNotNull(predicate);
 
     CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(OR, compoundPredicate.getOperator().name());
+    assertEquals(AND, compoundPredicate.getOperator().name());
 
     List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
     assertEquals(2, expressions.size());
 
-    NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) expressions.get(1);
-    assertNotNull(negatedPredicateWrapper);
+    verify(path).in(values);
+    verify(predicateMock).not();
   }
 
   @Test
   void buildBaseFilterPredicate_And_Is_Not_In() {
+    when(path.get(anyString())).thenReturn(fieldPath);
+    when(fieldPath.in(anyCollection())).thenReturn(predicateMock);
     List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
     TestFilter andTestFilter = new TestFilter();
     andTestFilter.setIsNotIn(values);
     TestFilter testFilter = new TestFilter();
     testFilter.setAnd(andTestFilter);
 
-    Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
+    predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
 
-    assertNotNull(predicate);
-
-    NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) predicate;
-    assertNotNull(negatedPredicateWrapper);
+    verify(path).get(FIELD_NAME);
+    verify(fieldPath).in(values);
+    verify(predicateMock).not();
   }
 
   @Test
-  void buildBaseFilterPredicate_And_With_Or_Is_Not_In() {
+  void buildBaseFilterPredicate_And_With_Normal_Is_Not_In() {
+    when(path.get(anyString())).thenReturn(fieldPath);
+    when(fieldPath.in(anyCollection())).thenReturn(predicateMock);
+
     List<TestObject> andValues = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
-    List<TestObject> orValues = Arrays.asList(new TestObject("def"), new TestObject("lmn"));
+    List<TestObject> normalValues = Arrays.asList(new TestObject("def"), new TestObject("lmn"));
     TestFilter andTestFilter = new TestFilter();
     andTestFilter.setIsNotIn(andValues);
     TestFilter testFilter = new TestFilter();
-    testFilter.setIsNotIn(orValues);
+    testFilter.setIsNotIn(normalValues);
     testFilter.setAnd(andTestFilter);
 
-    Predicate predicate = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
+    predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
             FIELD_NAME);
 
-    assertNotNull(predicate);
-
-    CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-    assertEquals(OR, compoundPredicate.getOperator().name());
-
-    List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
-    assertNotNull(expressions);
-    assertEquals(2, expressions.size());
-
-    assertTrue(expressions.stream().allMatch(expression -> expression instanceof NegatedPredicateWrapper));
+    verify(path, times(2)).get(FIELD_NAME);
+    verify(fieldPath).in(normalValues);
+    verify(fieldPath).in(andValues);
+    verify(predicateMock, times(2)).not();
   }
 
   @Test

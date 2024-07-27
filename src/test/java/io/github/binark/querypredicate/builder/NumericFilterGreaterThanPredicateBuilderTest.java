@@ -83,7 +83,7 @@ class NumericFilterGreaterThanPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -117,7 +117,7 @@ class NumericFilterGreaterThanPredicateBuilderTest {
     }
 
     @Test
-    void buildNumericPredicate_And_With_Or_Is_GreaterThan() {
+    void buildNumericPredicate_And_With_Normal_Is_GreaterThan() {
         NumericFilter andFilter = Mockito.mock(NumericFilter.class, Mockito.CALLS_REAL_METHODS);
         andFilter.setIsGreaterThan(VALUE);
         filter.setIsGreaterThan(OTHER_VALUE);
@@ -130,23 +130,23 @@ class NumericFilterGreaterThanPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
         assertEquals(2, expressions.size());
 
-        ComparisonPredicate andComparisonPredicate = (ComparisonPredicate) expressions.get(0);
+        ComparisonPredicate normalComparisonPredicate = (ComparisonPredicate) expressions.get(0);
+        assertEquals(ComparisonOperator.GREATER_THAN, normalComparisonPredicate.getComparisonOperator());
+
+        LiteralExpression normalLiteralExpression = (LiteralExpression) normalComparisonPredicate.getRightHandOperand();
+        assertEquals(OTHER_VALUE, normalLiteralExpression.getLiteral());
+
+        ComparisonPredicate andComparisonPredicate = (ComparisonPredicate) expressions.get(1);
         assertEquals(ComparisonOperator.GREATER_THAN, andComparisonPredicate.getComparisonOperator());
 
         LiteralExpression andLiteralExpression = (LiteralExpression) andComparisonPredicate.getRightHandOperand();
         assertEquals(VALUE, andLiteralExpression.getLiteral());
-
-        ComparisonPredicate orComparisonPredicate = (ComparisonPredicate) expressions.get(1);
-        assertEquals(ComparisonOperator.GREATER_THAN, orComparisonPredicate.getComparisonOperator());
-
-        LiteralExpression orLiteralExpression = (LiteralExpression) orComparisonPredicate.getRightHandOperand();
-        assertEquals(OTHER_VALUE, orLiteralExpression.getLiteral());
     }
 
 }

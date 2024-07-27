@@ -16,6 +16,15 @@ public class BooleanFilterPredicateBuilder extends ComparableFilterPredicateBuil
   public Predicate buildPredicate(Path path, CriteriaBuilder builder, BooleanFilter filter, String fieldName) {
     Predicate predicate = buildComparablePredicate(path, builder, filter, fieldName);
 
+    Boolean filterTrue = filter.getTrue();
+    if (filterTrue != null) {
+      if (predicate == null) {
+        predicate = Boolean.TRUE.equals(filterTrue) ? builder.isTrue(path.get(fieldName)) : builder.isFalse(path.get(fieldName));
+      } else {
+        predicate = Boolean.TRUE.equals(filterTrue) ? builder.and(predicate, builder.isTrue(path.get(fieldName))) : builder.and(predicate, builder.isFalse(path.get(fieldName)));
+      }
+    }
+
     Boolean andTrue = getAndTrue(filter);
     if (andTrue != null) {
       if (predicate == null) {
@@ -31,6 +40,15 @@ public class BooleanFilterPredicateBuilder extends ComparableFilterPredicateBuil
         predicate = Boolean.TRUE.equals(orTrue) ? builder.isTrue(path.get(fieldName)) : builder.isFalse(path.get(fieldName));
       } else {
         predicate = Boolean.TRUE.equals(orTrue) ? builder.or(predicate, builder.isTrue(path.get(fieldName))) : builder.or(predicate, builder.isFalse(path.get(fieldName)));
+      }
+    }
+
+    Boolean filterFalse = filter.getFalse();
+    if (filterFalse != null) {
+      if (predicate == null) {
+        predicate = Boolean.TRUE.equals(filterFalse) ? builder.isFalse(path.get(fieldName)) : builder.isTrue(path.get(fieldName));
+      } else {
+        predicate = Boolean.TRUE.equals(filterFalse) ? builder.and(predicate, builder.isFalse(path.get(fieldName))) : builder.and(predicate, builder.isTrue(path.get(fieldName)));
       }
     }
 
@@ -63,11 +81,10 @@ public class BooleanFilterPredicateBuilder extends ComparableFilterPredicateBuil
   }
 
   private Boolean getOrTrue(BooleanFilter filter) {
-    Boolean value = filter.getTrue();
-    if (value == null && filter.getOr() != null) {
-      value = filter.getOr().getTrue();
+    if (filter.getOr() != null) {
+      return filter.getOr().getTrue();
     }
-    return value;
+    return null;
   }
 
   private Boolean getAndFalse(BooleanFilter filter) {
@@ -78,10 +95,9 @@ public class BooleanFilterPredicateBuilder extends ComparableFilterPredicateBuil
   }
 
   private Boolean getOrFalse(BooleanFilter filter) {
-    Boolean value = filter.getFalse();
-    if (value == null && filter.getOr() != null) {
+    if (filter.getOr() != null) {
       return filter.getOr().getFalse();
     }
-    return value;
+    return null;
   }
 }

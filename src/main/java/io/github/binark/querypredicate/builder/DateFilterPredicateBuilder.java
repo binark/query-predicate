@@ -21,6 +21,12 @@ public class DateFilterPredicateBuilder extends ComparableFilterPredicateBuilder
       String fieldName) {
     Predicate predicate = super.buildComparablePredicate(path, builder, filter, fieldName);
 
+    Boolean isToday = filter.getIsToday();
+    if (isToday != null) {
+      Predicate betweenPredicate = getDateBetweenPredicate(path, builder, new Date(), fieldName);
+      predicate = computeDateBetweenPredicate(isToday, predicate, betweenPredicate, builder, false);
+    }
+
     Boolean andToday = getAndToday(filter);
     if (andToday != null) {
       Predicate betweenPredicate = getDateBetweenPredicate(path, builder, new Date(), fieldName);
@@ -31,6 +37,13 @@ public class DateFilterPredicateBuilder extends ComparableFilterPredicateBuilder
     if (orToday != null) {
       Predicate betweenPredicate = getDateBetweenPredicate(path, builder, new Date(), fieldName);
       predicate = computeDateBetweenPredicate(orToday, predicate, betweenPredicate, builder, true);
+    }
+
+    Boolean isTomorrow = filter.getIsTomorrow();
+    if (isTomorrow != null) {
+      Date tomorrow = new Date( new Date().getTime() + (1000 * 60 * 60 * 24) );
+      Predicate betweenPredicate = getDateBetweenPredicate(path, builder, tomorrow, fieldName);
+      predicate = computeDateBetweenPredicate(isTomorrow, predicate, betweenPredicate, builder, false);
     }
 
     Boolean andTomorrow = getAndTomorrow(filter);
@@ -45,6 +58,13 @@ public class DateFilterPredicateBuilder extends ComparableFilterPredicateBuilder
       Date tomorrow = new Date(new Date().getTime() + (1000 * 60 * 60 * 24));
       Predicate betweenPredicate = getDateBetweenPredicate(path, builder, tomorrow, fieldName);
       predicate = computeDateBetweenPredicate(orTomorrow, predicate, betweenPredicate, builder, true);
+    }
+
+    Boolean isYesterday = filter.getIsYesterday();
+    if (isYesterday != null) {
+      Date yesterday = new Date( new Date().getTime() - (1000 * 60 * 60 * 24) );
+      Predicate betweenPredicate = getDateBetweenPredicate(path, builder, yesterday, fieldName);
+      predicate = computeDateBetweenPredicate(isYesterday, predicate, betweenPredicate, builder, false);
     }
 
     Boolean andYesterday = getAndYesterday(filter);
@@ -112,11 +132,10 @@ public class DateFilterPredicateBuilder extends ComparableFilterPredicateBuilder
   }
 
   private Boolean getOrToday(DateFilter filter) {
-    Boolean value = filter.getIsToday();
-    if (value == null && filter.getOr() != null) {
-      value = filter.getOr().getIsToday();
+    if (filter.getOr() != null) {
+      return filter.getOr().getIsToday();
     }
-    return value;
+    return null;
   }
 
   private Boolean getAndTomorrow(DateFilter filter) {
@@ -127,11 +146,10 @@ public class DateFilterPredicateBuilder extends ComparableFilterPredicateBuilder
   }
 
   private Boolean getOrTomorrow(DateFilter filter) {
-    Boolean value = filter.getIsTomorrow();
-    if (value == null && filter.getOr() != null) {
-      value = filter.getOr().getIsTomorrow();
+    if (filter.getOr() != null) {
+      return filter.getOr().getIsTomorrow();
     }
-    return value;
+    return null;
   }
 
   private Boolean getAndYesterday(DateFilter filter) {
@@ -142,10 +160,9 @@ public class DateFilterPredicateBuilder extends ComparableFilterPredicateBuilder
   }
 
   private Boolean getOrYesterday(DateFilter filter) {
-    Boolean value = filter.getIsYesterday();
-    if (value == null && filter.getOr() != null) {
-      value = filter.getOr().getIsYesterday();
+    if (filter.getOr() != null) {
+      return filter.getOr().getIsYesterday();
     }
-    return value;
+    return null;
   }
 }

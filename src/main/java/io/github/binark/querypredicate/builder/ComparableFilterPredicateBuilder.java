@@ -28,6 +28,15 @@ public abstract class ComparableFilterPredicateBuilder<F extends ComparableFilte
   public Predicate buildComparablePredicate(Path path, CriteriaBuilder builder, F filter, String fieldName) {
     Predicate predicate = buildBaseFilterPredicate(path, builder, filter, fieldName);
 
+    Comparable isGreaterThan = filter.getIsGreaterThan();
+    if (isGreaterThan != null) {
+      if (predicate == null) {
+        predicate = builder.greaterThan(path.get(fieldName), isGreaterThan);
+      } else {
+        predicate = builder.and(predicate, builder.greaterThan(path.get(fieldName), isGreaterThan));
+      }
+    }
+
     Comparable andGreaterThan = getAndGreaterThan(filter);
     if (andGreaterThan != null) {
       if (predicate == null) {
@@ -43,6 +52,15 @@ public abstract class ComparableFilterPredicateBuilder<F extends ComparableFilte
         predicate = builder.greaterThan(path.get(fieldName), orGreaterThan);
       } else {
         predicate = builder.or(predicate, builder.greaterThan(path.get(fieldName), orGreaterThan));
+      }
+    }
+
+    Comparable isGreaterThanOrEqualsTo = filter.getIsGreaterThanOrEqualsTo();
+    if (isGreaterThanOrEqualsTo != null) {
+      if (predicate == null) {
+        predicate = builder.greaterThanOrEqualTo(path.get(fieldName), isGreaterThanOrEqualsTo);
+      } else {
+        predicate = builder.and(predicate, builder.greaterThanOrEqualTo(path.get(fieldName), isGreaterThanOrEqualsTo));
       }
     }
 
@@ -64,6 +82,15 @@ public abstract class ComparableFilterPredicateBuilder<F extends ComparableFilte
       }
     }
 
+    Comparable isLessThan = filter.getIsLessThan();
+    if (isLessThan != null) {
+      if (predicate == null) {
+        predicate = builder.lessThan(path.get(fieldName), isLessThan);
+      } else {
+        predicate = builder.and(predicate, builder.lessThan(path.get(fieldName), isLessThan));
+      }
+    }
+
     Comparable andLessThan = getAndLessThan(filter);
     if (andLessThan != null) {
       if (predicate == null) {
@@ -82,6 +109,15 @@ public abstract class ComparableFilterPredicateBuilder<F extends ComparableFilte
       }
     }
 
+    Comparable isLessThanOrEqualsTo = filter.getIsLessThanOrEqualsTo();
+    if (isLessThanOrEqualsTo != null) {
+      if (predicate == null) {
+        predicate = builder.lessThanOrEqualTo(path.get(fieldName), isLessThanOrEqualsTo);
+      } else {
+        predicate = builder.and(predicate, builder.lessThanOrEqualTo(path.get(fieldName), isLessThanOrEqualsTo));
+      }
+    }
+
     Comparable andLessThanOrEquals = getAndLessThanOrEquals(filter);
     if (andLessThanOrEquals != null) {
       if (predicate == null) {
@@ -97,6 +133,16 @@ public abstract class ComparableFilterPredicateBuilder<F extends ComparableFilte
         predicate = builder.lessThanOrEqualTo(path.get(fieldName), orLessThanOrEquals);
       } else {
         predicate = builder.or(predicate, builder.lessThanOrEqualTo(path.get(fieldName), orLessThanOrEquals));
+      }
+    }
+
+    Range isBetween = filter.getIsBetween();
+    if (isBetween != null) {
+      Predicate temporaryPredicate = getBetweenPredicate(path, builder, isBetween, fieldName);
+      if (predicate == null) {
+        predicate = temporaryPredicate;
+      } else {
+        predicate = builder.and(predicate, temporaryPredicate);
       }
     }
 
@@ -151,11 +197,10 @@ public abstract class ComparableFilterPredicateBuilder<F extends ComparableFilte
   }
 
   protected Comparable getOrGreaterThan(ComparableFilter filter) {
-    Comparable value = filter.getIsGreaterThan();
-    if (value == null && filter.getOr() != null) {
-      value = filter.getOr().getIsGreaterThan();
+    if (filter.getOr() != null) {
+      return filter.getOr().getIsGreaterThan();
     }
-    return value;
+    return null;
   }
 
   protected Comparable getAndGreaterThanOrEquals(ComparableFilter filter) {
@@ -166,11 +211,10 @@ public abstract class ComparableFilterPredicateBuilder<F extends ComparableFilte
   }
 
   protected Comparable getOrGreaterThanOrEquals(ComparableFilter filter) {
-    Comparable value = filter.getIsGreaterThanOrEqualsTo();
-    if (value == null && filter.getOr() != null) {
-      value = filter.getOr().getIsGreaterThanOrEqualsTo();
+    if (filter.getOr() != null) {
+      return filter.getOr().getIsGreaterThanOrEqualsTo();
     }
-    return value;
+    return null;
   }
 
   protected Comparable getAndLessThan(ComparableFilter filter) {
@@ -181,11 +225,10 @@ public abstract class ComparableFilterPredicateBuilder<F extends ComparableFilte
   }
 
   protected Comparable getOrLessThan(ComparableFilter filter) {
-    Comparable value = filter.getIsLessThan();
-    if (value == null && filter.getOr() != null) {
-      value = filter.getOr().getIsLessThan();
+    if (filter.getOr() != null) {
+      return filter.getOr().getIsLessThan();
     }
-    return value;
+    return null;
   }
 
   protected Comparable getAndLessThanOrEquals(ComparableFilter filter) {
@@ -196,11 +239,10 @@ public abstract class ComparableFilterPredicateBuilder<F extends ComparableFilte
   }
 
   protected Comparable getOrLessThanOrEquals(ComparableFilter filter) {
-    Comparable value = filter.getIsLessThanOrEqualsTo();
-    if (value == null && filter.getOr() != null) {
-      value = filter.getOr().getIsLessThanOrEqualsTo();
+    if (filter.getOr() != null) {
+      return filter.getOr().getIsLessThanOrEqualsTo();
     }
-    return value;
+    return null;
   }
 
   protected Range getAndBetween(ComparableFilter filter) {
@@ -211,10 +253,9 @@ public abstract class ComparableFilterPredicateBuilder<F extends ComparableFilte
   }
 
   protected Range getOrBetween(ComparableFilter filter) {
-    Range value = filter.getIsBetween();
-    if (value == null && filter.getOr() != null) {
-      value = filter.getOr().getIsBetween();
+    if (filter.getOr() != null) {
+      return filter.getOr().getIsBetween();
     }
-    return value;
+    return null;
   }
 }

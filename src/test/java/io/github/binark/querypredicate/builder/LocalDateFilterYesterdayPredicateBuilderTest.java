@@ -57,7 +57,7 @@ class LocalDateFilterYesterdayPredicateBuilderTest extends LocalDateFilterPredic
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -99,7 +99,7 @@ class LocalDateFilterYesterdayPredicateBuilderTest extends LocalDateFilterPredic
     }
 
     @Test
-    void buildPredicate_for_and_with_or_yesterday() {
+    void buildPredicate_for_and_with_normal_yesterday() {
         LocalDateFilter andLocalDateFilter = new LocalDateFilter();
         andLocalDateFilter.setIsYesterday(true);
         LocalDateFilter localDateFilter = new LocalDateFilter();
@@ -113,13 +113,23 @@ class LocalDateFilterYesterdayPredicateBuilderTest extends LocalDateFilterPredic
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
         assertEquals(2, expressions.size());
 
-        BetweenPredicate andBetweenPredicate = (BetweenPredicate) expressions.get(0);
+        BetweenPredicate normalBetweenPredicate = (BetweenPredicate) expressions.get(0);
+
+        assertNotNull(normalBetweenPredicate);
+
+        LiteralExpression<LocalDate> normalLowerBound = (LiteralExpression<LocalDate>) normalBetweenPredicate.getLowerBound();
+        LiteralExpression<LocalDate> normalUpperBound = (LiteralExpression<LocalDate>) normalBetweenPredicate.getUpperBound();
+
+        assertEquals(LocalDate.now().minusDays(1).atStartOfDay().toLocalDate(), normalLowerBound.getLiteral());
+        assertEquals(LocalDate.now().minusDays(1).atTime(LocalTime.MAX).toLocalDate(), normalUpperBound.getLiteral());
+
+        BetweenPredicate andBetweenPredicate = (BetweenPredicate) expressions.get(1);
 
         assertNotNull(andBetweenPredicate);
 
@@ -128,16 +138,6 @@ class LocalDateFilterYesterdayPredicateBuilderTest extends LocalDateFilterPredic
 
         assertEquals(LocalDate.now().minusDays(1).atStartOfDay().toLocalDate(), andLowerBound.getLiteral());
         assertEquals(LocalDate.now().minusDays(1).atTime(LocalTime.MAX).toLocalDate(), andUpperBound.getLiteral());
-
-        BetweenPredicate orBetweenPredicate = (BetweenPredicate) expressions.get(1);
-
-        assertNotNull(orBetweenPredicate);
-
-        LiteralExpression<LocalDate> orLowerBound = (LiteralExpression<LocalDate>) orBetweenPredicate.getLowerBound();
-        LiteralExpression<LocalDate> orUpperBound = (LiteralExpression<LocalDate>) orBetweenPredicate.getUpperBound();
-
-        assertEquals(LocalDate.now().minusDays(1).atStartOfDay().toLocalDate(), orLowerBound.getLiteral());
-        assertEquals(LocalDate.now().minusDays(1).atTime(LocalTime.MAX).toLocalDate(), orUpperBound.getLiteral());
     }
 
     @Test

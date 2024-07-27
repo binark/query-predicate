@@ -54,7 +54,7 @@ class DateFilterTodayPredicateBuilderTest extends DateFilterPredicateBuilderTest
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -96,7 +96,7 @@ class DateFilterTodayPredicateBuilderTest extends DateFilterPredicateBuilderTest
     }
 
     @Test
-    void buildPredicate_for_and_with_or_today() {
+    void buildPredicate_for_and_with_normal_today() {
         DateFilter andDateFilter = new DateFilter();
         andDateFilter.setIsToday(true);
         DateFilter dateFilter = new DateFilter();
@@ -110,13 +110,23 @@ class DateFilterTodayPredicateBuilderTest extends DateFilterPredicateBuilderTest
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
         assertEquals(2, expressions.size());
 
-        BetweenPredicate andBetweenPredicate = (BetweenPredicate) expressions.get(0);
+        BetweenPredicate normalBetweenPredicate = (BetweenPredicate) expressions.get(0);
+
+        assertNotNull(normalBetweenPredicate);
+
+        LiteralExpression<Date> normalLowerBound = (LiteralExpression<Date>) normalBetweenPredicate.getLowerBound();
+        LiteralExpression<Date> normalUpperBound = (LiteralExpression<Date>) normalBetweenPredicate.getUpperBound();
+
+        assertEquals(atStartOfDay(new Date()), normalLowerBound.getLiteral());
+        assertEquals(atEndOfDay(new Date()), normalUpperBound.getLiteral());
+
+        BetweenPredicate andBetweenPredicate = (BetweenPredicate) expressions.get(1);
 
         assertNotNull(andBetweenPredicate);
 
@@ -125,16 +135,6 @@ class DateFilterTodayPredicateBuilderTest extends DateFilterPredicateBuilderTest
 
         assertEquals(atStartOfDay(new Date()), andLowerBound.getLiteral());
         assertEquals(atEndOfDay(new Date()), andUpperBound.getLiteral());
-
-        BetweenPredicate orBetweenPredicate = (BetweenPredicate) expressions.get(1);
-
-        assertNotNull(orBetweenPredicate);
-
-        LiteralExpression<Date> orLowerBound = (LiteralExpression<Date>) orBetweenPredicate.getLowerBound();
-        LiteralExpression<Date> orUpperBound = (LiteralExpression<Date>) orBetweenPredicate.getUpperBound();
-
-        assertEquals(atStartOfDay(new Date()), orLowerBound.getLiteral());
-        assertEquals(atEndOfDay(new Date()), orUpperBound.getLiteral());
     }
 
     @Test

@@ -1,8 +1,5 @@
 package io.github.binark.querypredicate.descriptor.converter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.github.binark.querypredicate.descriptor.FilterAndSubQueryDescriptor;
 import io.github.binark.querypredicate.descriptor.SimpleQueryDescriptor;
@@ -12,11 +9,6 @@ import io.github.binark.querypredicate.filter.StringFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Date;
-import java.util.List;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
 import org.hibernate.query.criteria.internal.expression.LiteralExpression;
@@ -31,6 +23,14 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class QueryDescriptorConverterTest {
@@ -74,7 +74,7 @@ public class QueryDescriptorConverterTest {
         id.setContains(STRING_VALUE);
         DateFilter birthday = new DateFilter();
         birthday.setIsGreaterThan(today);
-        LocalDateFilter<LocalDateTime> createdAt = new LocalDateFilter<>();
+        LocalDateFilter createdAt = new LocalDateFilter();
         createdAt.setIsYesterday(true);
         SimpleQueryDescriptor simpleQueryDescriptor = new SimpleQueryDescriptor();
         simpleQueryDescriptor.setId(id);

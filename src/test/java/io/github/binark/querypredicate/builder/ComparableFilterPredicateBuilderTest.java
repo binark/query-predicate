@@ -81,7 +81,7 @@ class ComparableFilterPredicateBuilderTest {
         assertNotNull(predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -119,7 +119,7 @@ class ComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void buildComparablePredicate_And_With_Or_Is_GreaterThan() {
+    void buildComparablePredicate_And_With_Normal_Is_GreaterThan() {
         ComparableFilter andFilter = Mockito.mock(ComparableFilter.class, Mockito.CALLS_REAL_METHODS);
         andFilter.setIsGreaterThan(VALUE);
         filter.setIsGreaterThan(OTHER_VALUE);
@@ -132,23 +132,23 @@ class ComparableFilterPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
         assertEquals(2, expressions.size());
 
-        ComparisonPredicate andGreaterThanPredicate = (ComparisonPredicate) expressions.get(0);
+        ComparisonPredicate normalGreaterThanPredicate = (ComparisonPredicate) expressions.get(0);
+        assertEquals(ComparisonOperator.GREATER_THAN, normalGreaterThanPredicate.getComparisonOperator());
+
+        LiteralExpression normalLiteralExpression = (LiteralExpression) normalGreaterThanPredicate.getRightHandOperand();
+        assertEquals(OTHER_VALUE, normalLiteralExpression.getLiteral());
+
+        ComparisonPredicate andGreaterThanPredicate = (ComparisonPredicate) expressions.get(1);
         assertEquals(ComparisonOperator.GREATER_THAN, andGreaterThanPredicate.getComparisonOperator());
 
         LiteralExpression andLiteralExpression = (LiteralExpression) andGreaterThanPredicate.getRightHandOperand();
         assertEquals(VALUE, andLiteralExpression.getLiteral());
-
-        ComparisonPredicate orGreaterThanPredicate = (ComparisonPredicate) expressions.get(1);
-        assertEquals(ComparisonOperator.GREATER_THAN, orGreaterThanPredicate.getComparisonOperator());
-
-        LiteralExpression orLiteralExpression = (LiteralExpression) orGreaterThanPredicate.getRightHandOperand();
-        assertEquals(OTHER_VALUE, orLiteralExpression.getLiteral());
     }
 
   @Test
@@ -180,7 +180,7 @@ class ComparableFilterPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -213,7 +213,7 @@ class ComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void buildComparablePredicate_And_With_Or_Is_GreaterThan_Or_Equals_To() {
+    void buildComparablePredicate_And_With_Normal_Is_GreaterThan_Or_Equals_To() {
         ComparableFilter andFilter = Mockito.mock(ComparableFilter.class, Mockito.CALLS_REAL_METHODS);
         andFilter.setIsGreaterThanOrEqualsTo(VALUE);
         filter.setIsGreaterThanOrEqualsTo(OTHER_VALUE);
@@ -226,23 +226,23 @@ class ComparableFilterPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
         assertEquals(2, expressions.size());
 
-        ComparisonPredicate andGreaterThanOrEqualsToPredicate = (ComparisonPredicate) expressions.get(0);
+        ComparisonPredicate normalGreaterThanOrEqualsToPredicate = (ComparisonPredicate) expressions.get(0);
+        assertEquals(ComparisonOperator.GREATER_THAN_OR_EQUAL, normalGreaterThanOrEqualsToPredicate.getComparisonOperator());
+
+        LiteralExpression normalLiteralExpression = (LiteralExpression) normalGreaterThanOrEqualsToPredicate.getRightHandOperand();
+        assertEquals(OTHER_VALUE, normalLiteralExpression.getLiteral());
+
+        ComparisonPredicate andGreaterThanOrEqualsToPredicate = (ComparisonPredicate) expressions.get(1);
         assertEquals(ComparisonOperator.GREATER_THAN_OR_EQUAL, andGreaterThanOrEqualsToPredicate.getComparisonOperator());
 
         LiteralExpression andLiteralExpression = (LiteralExpression) andGreaterThanOrEqualsToPredicate.getRightHandOperand();
         assertEquals(VALUE, andLiteralExpression.getLiteral());
-
-        ComparisonPredicate orGreaterThanOrEqualsToPredicate = (ComparisonPredicate) expressions.get(1);
-        assertEquals(ComparisonOperator.GREATER_THAN_OR_EQUAL, orGreaterThanOrEqualsToPredicate.getComparisonOperator());
-
-        LiteralExpression orLiteralExpression = (LiteralExpression) orGreaterThanOrEqualsToPredicate.getRightHandOperand();
-        assertEquals(OTHER_VALUE, orLiteralExpression.getLiteral());
     }
 
   @Test
@@ -274,7 +274,7 @@ class ComparableFilterPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -307,7 +307,7 @@ class ComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void buildComparablePredicate_And_With_Or_Is_LessThan() {
+    void buildComparablePredicate_And_With_Normal_Is_LessThan() {
         ComparableFilter andFilter = Mockito.mock(ComparableFilter.class, Mockito.CALLS_REAL_METHODS);
         andFilter.setIsLessThan(VALUE);
         filter.setIsLessThan(OTHER_VALUE);
@@ -320,23 +320,23 @@ class ComparableFilterPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
         assertEquals(2, expressions.size());
 
-        ComparisonPredicate andLessThanPredicate = (ComparisonPredicate) expressions.get(0);
+        ComparisonPredicate normalLessThanPredicate = (ComparisonPredicate) expressions.get(0);
+        assertEquals(ComparisonOperator.LESS_THAN, normalLessThanPredicate.getComparisonOperator());
+
+        LiteralExpression normalLiteralExpression = (LiteralExpression) normalLessThanPredicate.getRightHandOperand();
+        assertEquals(OTHER_VALUE, normalLiteralExpression.getLiteral());
+
+        ComparisonPredicate andLessThanPredicate = (ComparisonPredicate) expressions.get(1);
         assertEquals(ComparisonOperator.LESS_THAN, andLessThanPredicate.getComparisonOperator());
 
         LiteralExpression andLiteralExpression = (LiteralExpression) andLessThanPredicate.getRightHandOperand();
         assertEquals(VALUE, andLiteralExpression.getLiteral());
-
-        ComparisonPredicate orLessThanPredicate = (ComparisonPredicate) expressions.get(1);
-        assertEquals(ComparisonOperator.LESS_THAN, orLessThanPredicate.getComparisonOperator());
-
-        LiteralExpression orLiteralExpression = (LiteralExpression) orLessThanPredicate.getRightHandOperand();
-        assertEquals(OTHER_VALUE, orLiteralExpression.getLiteral());
     }
 
   @Test
@@ -368,7 +368,7 @@ class ComparableFilterPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -401,7 +401,7 @@ class ComparableFilterPredicateBuilderTest {
   }
 
     @Test
-    void buildComparablePredicate_And_With_Or_Is_LessThan_Or_Equals_To() {
+    void buildComparablePredicate_And_With_Normal_Is_LessThan_Or_Equals_To() {
         ComparableFilter andFilter = Mockito.mock(ComparableFilter.class, Mockito.CALLS_REAL_METHODS);
         andFilter.setIsLessThanOrEqualsTo(VALUE);
         filter.setIsLessThanOrEqualsTo(OTHER_VALUE);
@@ -414,23 +414,23 @@ class ComparableFilterPredicateBuilderTest {
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
         assertEquals(2, expressions.size());
 
-        ComparisonPredicate andLessThanOrEqualsToPredicate = (ComparisonPredicate) expressions.get(0);
+        ComparisonPredicate normalLessThanOrEqualsToPredicate = (ComparisonPredicate) expressions.get(0);
+        assertEquals(ComparisonOperator.LESS_THAN_OR_EQUAL, normalLessThanOrEqualsToPredicate.getComparisonOperator());
+
+        LiteralExpression normalLiteralExpression = (LiteralExpression) normalLessThanOrEqualsToPredicate.getRightHandOperand();
+        assertEquals(OTHER_VALUE, normalLiteralExpression.getLiteral());
+
+        ComparisonPredicate andLessThanOrEqualsToPredicate = (ComparisonPredicate) expressions.get(1);
         assertEquals(ComparisonOperator.LESS_THAN_OR_EQUAL, andLessThanOrEqualsToPredicate.getComparisonOperator());
 
         LiteralExpression andLiteralExpression = (LiteralExpression) andLessThanOrEqualsToPredicate.getRightHandOperand();
         assertEquals(VALUE, andLiteralExpression.getLiteral());
-
-        ComparisonPredicate orLessThanOrEqualsToPredicate = (ComparisonPredicate) expressions.get(1);
-        assertEquals(ComparisonOperator.LESS_THAN_OR_EQUAL, orLessThanOrEqualsToPredicate.getComparisonOperator());
-
-        LiteralExpression orLiteralExpression = (LiteralExpression) orLessThanOrEqualsToPredicate.getRightHandOperand();
-        assertEquals(OTHER_VALUE, orLiteralExpression.getLiteral());
     }
 
   @Test

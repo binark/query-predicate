@@ -8,6 +8,6 @@ package io.github.binark.querypredicate.filter;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public abstract class NumericFilter<T extends Number & Comparable, F extends Filter> extends ComparableFilter<T, NumericFilter> {
+public abstract class NumericFilter<T extends Number & Comparable, F extends NumericFilter> extends ComparableFilter<T, F> {
 
 }

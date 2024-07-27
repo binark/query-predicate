@@ -61,7 +61,7 @@ class BooleanFilterFalsePredicateBuilderTest extends BooleanFilterPredicateBuild
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
@@ -90,7 +90,7 @@ class BooleanFilterFalsePredicateBuilderTest extends BooleanFilterPredicateBuild
     }
 
     @Test
-    void buildPredicate_And_With_Or_False() {
+    void buildPredicate_And_With_Normal_False() {
         BooleanFilter andFilter = new BooleanFilter();
         andFilter.setFalse(VALUE);
         BooleanFilter filter = new BooleanFilter();
@@ -104,16 +104,16 @@ class BooleanFilterFalsePredicateBuilderTest extends BooleanFilterPredicateBuild
         assertInstanceOf(CompoundPredicate.class, predicate);
 
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(OR, compoundPredicate.getOperator().name());
+        assertEquals(AND, compoundPredicate.getOperator().name());
 
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
         assertNotNull(expressions);
         assertEquals(2, expressions.size());
 
         BooleanAssertionPredicate andBooleanAssertionPredicate = (BooleanAssertionPredicate) expressions.get(0);
-        assertEquals(!VALUE, andBooleanAssertionPredicate.getAssertedValue());
+        assertEquals(VALUE, andBooleanAssertionPredicate.getAssertedValue());
 
-        BooleanAssertionPredicate orBooleanAssertionPredicate = (BooleanAssertionPredicate) expressions.get(1);
-        assertEquals(!OTHER_VALUE, orBooleanAssertionPredicate.getAssertedValue());
+        BooleanAssertionPredicate normalBooleanAssertionPredicate = (BooleanAssertionPredicate) expressions.get(1);
+        assertEquals(OTHER_VALUE, normalBooleanAssertionPredicate.getAssertedValue());
     }
 }

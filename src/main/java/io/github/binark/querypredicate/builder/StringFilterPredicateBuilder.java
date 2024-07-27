@@ -17,6 +17,15 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
     public Predicate buildPredicate(Path path, CriteriaBuilder builder, StringFilter filter, String fieldName) {
         Predicate predicate = buildComparablePredicate(path, builder, filter, fieldName);
 
+        String contains = filter.getContains();
+        if (contains != null) {
+            if (predicate == null) {
+                predicate = builder.like(path.<String>get(fieldName), "%" + contains + "%");
+            } else {
+                predicate = builder.and(predicate, builder.like(path.<String>get(fieldName), "%" + contains + "%"));
+            }
+        }
+
         String andContains = getAndContains(filter);
         if (andContains != null) {
             if (predicate == null) {
@@ -32,6 +41,17 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
                 predicate = builder.like(path.<String>get(fieldName), "%" + orContains + "%");
             } else {
                 predicate = builder.or(predicate, builder.like(path.<String>get(fieldName), "%" + orContains + "%"));
+            }
+        }
+
+        String notContains = filter.getNotContains();
+        if (notContains != null) {
+            if (predicate == null) {
+                predicate = builder.notLike(
+                        path.<String>get(fieldName), "%" + notContains + "%");
+            } else {
+                predicate = builder.and(predicate, builder.notLike(
+                        path.<String>get(fieldName), "%" + notContains + "%"));
             }
         }
 
@@ -57,6 +77,15 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
             }
         }
 
+        String startWith = filter.getStartWith();
+        if (startWith != null) {
+            if (predicate == null) {
+                predicate = builder.like(path.<String>get(fieldName), startWith + "%");
+            } else {
+                predicate = builder.and(predicate, builder.like(path.<String>get(fieldName), startWith + "%"));
+            }
+        }
+
         String andStartWith = getAndStartWith(filter);
         if (andStartWith != null) {
             if (predicate == null) {
@@ -72,6 +101,15 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
                 predicate = builder.like(path.<String>get(fieldName), orStartWith + "%");
             } else {
                 predicate = builder.or(predicate, builder.like(path.<String>get(fieldName), orStartWith + "%"));
+            }
+        }
+
+        String endWith = filter.getEndWith();
+        if (endWith != null) {
+            if (predicate == null) {
+                predicate = builder.like(path.<String>get(fieldName), "%" + endWith);
+            } else {
+                predicate = builder.and(predicate, builder.like(path.<String>get(fieldName), "%" + endWith));
             }
         }
 
@@ -93,6 +131,15 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
             }
         }
 
+        String containsIgnoreCase = filter.getContainsIgnoreCase();
+        if (containsIgnoreCase != null) {
+            if (predicate == null) {
+                predicate = builder.like(builder.upper(path.<String>get(fieldName)), "%" + containsIgnoreCase.toUpperCase() + "%");
+            } else {
+                predicate = builder.and(predicate, builder.like(builder.upper(path.<String>get(fieldName)), "%" + containsIgnoreCase.toUpperCase() + "%"));
+            }
+        }
+
         String andContainsIgnoreCase = getAndContainsIgnoreCase(filter);
         if (andContainsIgnoreCase != null) {
             if (predicate == null) {
@@ -108,6 +155,15 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
                 predicate = builder.like(builder.upper(path.<String>get(fieldName)), "%" + orContainsIgnoreCase.toUpperCase() + "%");
             } else {
                 predicate = builder.or(predicate, builder.like(builder.upper(path.<String>get(fieldName)), "%" + orContainsIgnoreCase.toUpperCase() + "%"));
+            }
+        }
+
+        String notContainsIgnoreCase = filter.getNotContainsIgnoreCase();
+        if (notContainsIgnoreCase != null) {
+            if (predicate == null) {
+                predicate = builder.notLike(builder.upper(path.<String>get(fieldName)), "%" + notContainsIgnoreCase.toUpperCase() + "%");
+            } else {
+                predicate = builder.and(predicate, builder.notLike(builder.upper(path.<String>get(fieldName)), "%" + notContainsIgnoreCase.toUpperCase() + "%"));
             }
         }
 
@@ -129,6 +185,15 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
             }
         }
 
+        String startWithIgnoreCase = filter.getStartWithIgnoreCase();
+        if (startWithIgnoreCase != null) {
+            if (predicate == null) {
+                predicate = builder.like(builder.upper(path.<String>get(fieldName)), startWithIgnoreCase.toUpperCase() + "%");
+            } else {
+                predicate = builder.and(predicate, builder.like(builder.upper(path.<String>get(fieldName)), startWithIgnoreCase.toUpperCase() + "%"));
+            }
+        }
+
         String andStartWithIgnoreCase = getAndStartWithIgnoreCase(filter);
         if (andStartWithIgnoreCase != null) {
             if (predicate == null) {
@@ -144,6 +209,15 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
                 predicate = builder.like(builder.upper(path.<String>get(fieldName)), orStartWithIgnoreCase.toUpperCase() + "%");
             } else {
                 predicate = builder.or(predicate, builder.like(builder.upper(path.<String>get(fieldName)), orStartWithIgnoreCase.toUpperCase() + "%"));
+            }
+        }
+
+        String endWithIgnoreCase = filter.getEndWithIgnoreCase();
+        if (endWithIgnoreCase != null) {
+            if (predicate == null) {
+                predicate = builder.like(builder.upper(path.<String>get(fieldName)), "%" + endWithIgnoreCase.toUpperCase());
+            } else {
+                predicate = builder.and(predicate, builder.like(builder.upper(path.<String>get(fieldName)), "%" + endWithIgnoreCase.toUpperCase()));
             }
         }
 
@@ -169,11 +243,10 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
     }
 
     private String getAndContains(StringFilter filter) {
-        String value = filter.getContains();
-        if (value == null && filter.getAnd() != null) {
-            value = filter.getAnd().getContains();
+        if (filter.getAnd() != null) {
+            return filter.getAnd().getContains();
         }
-        return value;
+        return null;
     }
 
     private String getOrContains(StringFilter filter) {
@@ -184,11 +257,10 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
     }
 
     private String getAndNotContains(StringFilter filter) {
-        String value = filter.getNotContains();
-        if (value == null && filter.getAnd() != null) {
-            value = filter.getAnd().getNotContains();
+        if (filter.getAnd() != null) {
+            return filter.getAnd().getNotContains();
         }
-        return value;
+        return null;
     }
 
     private String getOrNotContains(StringFilter filter) {
@@ -199,11 +271,10 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
     }
 
     private String getAndStartWith(StringFilter filter) {
-        String value = filter.getStartWith();
-        if (value == null && filter.getAnd() != null) {
-            value = filter.getAnd().getStartWith();
+        if (filter.getAnd() != null) {
+            return filter.getAnd().getStartWith();
         }
-        return value;
+        return null;
     }
 
     private String getOrStartWith(StringFilter filter) {
@@ -214,11 +285,10 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
     }
 
     private String getAndEndWith(StringFilter filter) {
-        String value = filter.getEndWith();
-        if (value == null && filter.getAnd() != null) {
-            value = filter.getAnd().getEndWith();
+        if (filter.getAnd() != null) {
+            return filter.getAnd().getEndWith();
         }
-        return value;
+        return null;
     }
 
     private String getOrEndWith(StringFilter filter) {
@@ -229,11 +299,10 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
     }
 
     private String getAndContainsIgnoreCase(StringFilter filter) {
-        String value = filter.getContainsIgnoreCase();
-        if (value == null && filter.getAnd() != null) {
-            value = filter.getAnd().getContainsIgnoreCase();
+        if (filter.getAnd() != null) {
+            return filter.getAnd().getContainsIgnoreCase();
         }
-        return value;
+        return null;
     }
 
     private String getOrContainsIgnoreCase(StringFilter filter) {
@@ -244,11 +313,10 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
     }
 
     private String getAndNotContainsIgnoreCase(StringFilter filter) {
-        String value = filter.getNotContainsIgnoreCase();
-        if (value == null && filter.getAnd() != null) {
-            value = filter.getAnd().getNotContainsIgnoreCase();
+        if (filter.getAnd() != null) {
+            return filter.getAnd().getNotContainsIgnoreCase();
         }
-        return value;
+        return null;
     }
 
     private String getOrNotContainsIgnoreCase(StringFilter filter) {
@@ -259,11 +327,10 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
     }
 
     private String getAndStartWithIgnoreCase(StringFilter filter) {
-        String value = filter.getStartWithIgnoreCase();
-        if (value == null && filter.getAnd() != null) {
-            value = filter.getAnd().getNotContainsIgnoreCase();
+        if (filter.getAnd() != null) {
+            return filter.getAnd().getNotContainsIgnoreCase();
         }
-        return value;
+        return null;
     }
 
     private String getOrStartWithIgnoreCase(StringFilter filter) {
@@ -281,10 +348,9 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
     }
 
     private String getOrSEndWithIgnoreCase(StringFilter filter) {
-        String value = filter.getEndWithIgnoreCase();
-        if (value == null && filter.getOr() != null) {
-            value = filter.getOr().getEndWithIgnoreCase();
+        if (filter.getOr() != null) {
+            return filter.getOr().getEndWithIgnoreCase();
         }
-        return value;
+        return null;
     }
 }
