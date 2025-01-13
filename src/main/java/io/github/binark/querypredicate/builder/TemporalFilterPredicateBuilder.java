@@ -1,6 +1,6 @@
 package io.github.binark.querypredicate.builder;
 
-
+import io.github.binark.querypredicate.filter.BaseTemporalFilter;
 import io.github.binark.querypredicate.filter.Range;
 import io.github.binark.querypredicate.filter.TemporalFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -10,96 +10,105 @@ import jakarta.persistence.criteria.Predicate;
 import java.time.temporal.Temporal;
 
 /**
- * The predicate builder for the {@link TemporalFilter} type
+ * The predicate builder for the {@link BaseTemporalFilter} type
  *
  * @param <F> filter
  * @param <T> data type
  * @author kenany (armelknyobe@gmail.com)
  */
-public abstract class TemporalFilterPredicateBuilder<F extends TemporalFilter, T extends Temporal & Comparable> extends ComparableFilterPredicateBuilder<F>{
+public abstract class TemporalFilterPredicateBuilder<F extends TemporalFilter, T extends Temporal & Comparable> extends ComparableFilterPredicateBuilder<F> {
 
   @Override
   public Predicate buildPredicate(Path path, CriteriaBuilder builder, F filter,
       String fieldName) {
-    Predicate predicate = super.buildComparablePredicate(path, builder, filter, fieldName);
+    Predicate predicate = super.buildPredicate(path, builder, filter, fieldName);
+    predicate = addTodayPredicate(predicate, filter, builder, path, fieldName);
+    predicate = addTomorrowPredicate(predicate, filter, builder, path, fieldName);
+    predicate = addYesterdayPredicate(predicate, filter, builder, path, fieldName);
+    return predicate;
+  }
 
+  protected Predicate addTodayPredicate(Predicate predicate, F filter, CriteriaBuilder builder,
+                                        Path path, String fieldName) {
     Boolean isToday = filter.getIsToday();
     if (isToday != null) {
-      Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
-              getNow(), fieldName);
-      predicate = computeDateBetweenPredicate(isToday, predicate, localDateBetweenPredicate, builder, false);
+      Predicate todayPredicate = getLocalDateBetweenPredicate(path, builder,
+                                                              getNow(), fieldName);
+      todayPredicate = isToday ? todayPredicate : todayPredicate.not();
+      predicate = combinePredicate(predicate, todayPredicate, builder);
     }
-
     Boolean andToday = getAndToday(filter);
     if (andToday != null) {
-      Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
-              getNow(), fieldName);
-      predicate = computeDateBetweenPredicate(andToday, predicate, localDateBetweenPredicate, builder, false);
+      Predicate andTodayPredicate = getLocalDateBetweenPredicate(path, builder,
+                                                                 getNow(), fieldName);
+      andTodayPredicate = andToday ? andTodayPredicate : andTodayPredicate.not();
+      predicate = combinePredicate(predicate, andTodayPredicate, builder);
     }
 
     Boolean orToday = getOrToday(filter);
     if (orToday != null) {
-      Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
-              getNow(), fieldName);
-      predicate = computeDateBetweenPredicate(orToday, predicate, localDateBetweenPredicate, builder, true);
+      Predicate orTodayPredicate = getLocalDateBetweenPredicate(path, builder,
+                                                                getNow(), fieldName);
+      orTodayPredicate = orToday ? orTodayPredicate : orTodayPredicate.not();
+      predicate = combinePredicate(predicate, orTodayPredicate, builder, CombineOperator.OR);
     }
+    return predicate;
+  }
 
+  protected Predicate addTomorrowPredicate(Predicate predicate, F filter, CriteriaBuilder builder,
+                                           Path path, String fieldName) {
     Boolean isTomorrow = filter.getIsTomorrow();
     if (isTomorrow != null) {
-      Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
-              shiftTo(1), fieldName);
-      predicate = computeDateBetweenPredicate(isTomorrow, predicate, localDateBetweenPredicate, builder, false);
+      Predicate tomorrowPredicate = getLocalDateBetweenPredicate(path, builder,
+                                                                 shiftTo(1), fieldName);
+      tomorrowPredicate = isTomorrow ? tomorrowPredicate : tomorrowPredicate.not();
+      predicate = combinePredicate(predicate, tomorrowPredicate, builder);
     }
 
     Boolean andTomorrow = getAndTomorrow(filter);
     if (andTomorrow != null) {
-      Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
-              shiftTo(1), fieldName);
-      predicate = computeDateBetweenPredicate(andTomorrow, predicate, localDateBetweenPredicate, builder, false);
+      Predicate andTomorrowPredicate = getLocalDateBetweenPredicate(path, builder,
+                                                                    shiftTo(1), fieldName);
+      andTomorrowPredicate = andTomorrow ? andTomorrowPredicate : andTomorrowPredicate.not();
+      predicate = combinePredicate(predicate, andTomorrowPredicate, builder);
     }
 
     Boolean orTomorrow = getOrTomorrow(filter);
     if (orTomorrow != null) {
-      Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
-              shiftTo(1), fieldName);
-      predicate = computeDateBetweenPredicate(orTomorrow, predicate, localDateBetweenPredicate, builder, true);
+      Predicate orTomorrowPredicate = getLocalDateBetweenPredicate(path, builder,
+                                                                   shiftTo(1), fieldName);
+      orTomorrowPredicate = orTomorrow ? orTomorrowPredicate : orTomorrowPredicate.not();
+      predicate = combinePredicate(predicate, orTomorrowPredicate, builder, CombineOperator.OR);
     }
+    return predicate;
+  }
 
+  protected Predicate addYesterdayPredicate(Predicate predicate, F filter, CriteriaBuilder builder,
+                                            Path path, String fieldName) {
     Boolean isYesterday = filter.getIsYesterday();
     if (isYesterday != null) {
-      Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
-              shiftFrom(1), fieldName);
-      predicate = computeDateBetweenPredicate(isYesterday, predicate, localDateBetweenPredicate, builder, false);
+      Predicate yesterdayPredicate = getLocalDateBetweenPredicate(path, builder,
+                                                                  shiftFrom(1), fieldName);
+      yesterdayPredicate = isYesterday ? yesterdayPredicate : yesterdayPredicate.not();
+      predicate = combinePredicate(predicate, yesterdayPredicate, builder);
     }
 
     Boolean andYesterday = getAndYesterday(filter);
     if (andYesterday != null) {
-      Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
-              shiftFrom(1), fieldName);
-      predicate = computeDateBetweenPredicate(andYesterday, predicate, localDateBetweenPredicate, builder, false);
+      Predicate andYesterdayPredicate = getLocalDateBetweenPredicate(path, builder,
+                                                                     shiftFrom(1), fieldName);
+      andYesterdayPredicate = andYesterday ? andYesterdayPredicate : andYesterdayPredicate.not();
+      predicate = combinePredicate(predicate, andYesterdayPredicate, builder);
     }
 
     Boolean orYesterday = getOrYesterday(filter);
     if (orYesterday != null) {
-      Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
-              shiftFrom(1), fieldName);
-      predicate = computeDateBetweenPredicate(orYesterday, predicate, localDateBetweenPredicate, builder, true);
+      Predicate orYesterdayPredicate = getLocalDateBetweenPredicate(path, builder,
+                                                                    shiftFrom(1), fieldName);
+      orYesterdayPredicate = orYesterday ? orYesterdayPredicate : orYesterdayPredicate.not();
+      predicate = combinePredicate(predicate, orYesterdayPredicate, builder, CombineOperator.OR);
     }
-
     return predicate;
-  }
-
-  private Predicate computeDateBetweenPredicate(Boolean filterRule, Predicate basePredicate, Predicate temporaryPredicate, CriteriaBuilder builder, boolean isOrOperator) {
-    if (!Boolean.TRUE.equals(filterRule)) {
-      temporaryPredicate = temporaryPredicate.not();
-    }
-    if (basePredicate == null) {
-      return temporaryPredicate;
-    }
-    if (isOrOperator) {
-      return builder.or(basePredicate, temporaryPredicate);
-    }
-    return builder.and(basePredicate, temporaryPredicate);
   }
 
   private Predicate getLocalDateBetweenPredicate(Path path, CriteriaBuilder builder, T localDate, String fieldName) {

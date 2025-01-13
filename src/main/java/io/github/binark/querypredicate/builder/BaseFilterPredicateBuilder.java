@@ -11,10 +11,10 @@ import jakarta.persistence.criteria.Predicate;
  *
  * The predicate builder for the {@link BaseFilter} type
  */
-public class BaseFilterPredicateBuilder extends AbstractPredicateBuilder<BaseFilter>{
+public class BaseFilterPredicateBuilder<F extends BaseFilter> extends AbstractPredicateBuilder<F> {
 
     @Override
-    public Predicate buildPredicate(Path path, CriteriaBuilder builder, BaseFilter filter, String fieldName) {
-        return buildBaseFilterPredicate(path, builder, filter, fieldName);
+    public Predicate buildPredicate(Path path, CriteriaBuilder builder, F filter, String fieldName) {
+        return this.buildBasePredicate(path, builder, filter, fieldName);
     }
 }

@@ -1,20 +1,16 @@
 package io.github.binark.querypredicate.management;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import io.github.binark.querypredicate.annotation.FilterClass;
 import io.github.binark.querypredicate.builder.PredicateBuilder;
-import io.github.binark.querypredicate.filter.StringFilter;
-import io.github.binark.querypredicate.utils.TestFilter;
-import io.github.binark.querypredicate.utils.TestFilterPredicateBuilder;
-import io.github.binark.querypredicate.utils.WithoutAnnotationPredicateBuilder;
+import io.github.binark.querypredicate.filter.BaseStringFilter;
+import io.github.binark.querypredicate.testdouble.TestBaseFilter;
+import io.github.binark.querypredicate.testdouble.TestFilterPredicateBuilder;
+import io.github.binark.querypredicate.testdouble.WithoutAnnotationPredicateBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class PredicateBuilderManagementTest {
 
@@ -32,14 +28,14 @@ class PredicateBuilderManagementTest {
   void registerPredicateBuilder() {
 
     IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
-        () -> resolver.resolverPredicateBuilder(TestFilter.class));
+                                                                     () -> resolver.resolverPredicateBuilder(TestBaseFilter.class));
 
-    assertTrue(illegalArgumentException.getMessage().contains(TestFilter.class.getSimpleName()));
+      assertTrue(illegalArgumentException.getMessage().contains(TestBaseFilter.class.getSimpleName()));
 
     TestFilterPredicateBuilder testFilterPredicateBuilder = new TestFilterPredicateBuilder();
     registry.registerPredicateBuilder(testFilterPredicateBuilder);
 
-    PredicateBuilder predicateBuilder = resolver.resolverPredicateBuilder(TestFilter.class);
+      PredicateBuilder predicateBuilder = resolver.resolverPredicateBuilder(TestBaseFilter.class);
 
     assertNotNull(predicateBuilder);
     assertEquals(testFilterPredicateBuilder, predicateBuilder);
@@ -57,14 +53,14 @@ class PredicateBuilderManagementTest {
 
   @Test
   void replacePredicateBuilder() {
-    PredicateBuilder stringPredicateBuilder = resolver.resolverPredicateBuilder(StringFilter.class);
+      PredicateBuilder stringPredicateBuilder = resolver.resolverPredicateBuilder(BaseStringFilter.class);
 
     Assertions.assertNotNull(stringPredicateBuilder);
 
     TestFilterPredicateBuilder testFilterPredicateBuilder = new TestFilterPredicateBuilder();
-    registry.replacePredicateBuilder(StringFilter.class, testFilterPredicateBuilder);
+      registry.replacePredicateBuilder(BaseStringFilter.class, testFilterPredicateBuilder);
 
-    PredicateBuilder predicateBuilder = resolver.resolverPredicateBuilder(StringFilter.class);
+      PredicateBuilder predicateBuilder = resolver.resolverPredicateBuilder(BaseStringFilter.class);
 
     assertNotNull(predicateBuilder);
     assertEquals(testFilterPredicateBuilder, predicateBuilder);

@@ -1,14 +1,13 @@
 package io.github.binark.querypredicate.builder;
 
-
+import io.github.binark.querypredicate.filter.BaseInstantFilter;
 import io.github.binark.querypredicate.filter.InstantFilter;
 
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 
-
 /**
- * The predicate builder for the {@link InstantFilter} type
+ * The predicate builder for the {@link BaseInstantFilter} type
  *
  * @author kenany (armelknyobe@gmail.com)
  */

@@ -5,7 +5,7 @@ package io.github.binark.querypredicate.filter;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class StringFilter extends ComparableFilter<String, StringFilter> {
+public class StringFilter extends ComparableFilter<String, BaseStringFilter> {
 
     private String contains;
     private String notContains;

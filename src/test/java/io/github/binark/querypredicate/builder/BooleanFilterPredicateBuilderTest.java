@@ -4,9 +4,12 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class BooleanFilterPredicateBuilderTest {
 
     protected static final Boolean VALUE = Boolean.TRUE;

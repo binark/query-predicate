@@ -2,14 +2,14 @@ package io.github.binark.querypredicate.filter;
 
 import java.time.temporal.Temporal;
 
-
 /**
  * The local date filter type class
  * @param <T> must implements {@link Temporal}
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public abstract class TemporalFilter<T extends Temporal & Comparable> extends ComparableFilter<T, TemporalFilter> {
+public abstract class TemporalFilter<T extends Temporal & Comparable, F extends BaseTemporalFilter<T>> extends ComparableFilter<T,
+        F> {
 
   protected Boolean isToday;
   protected Boolean isTomorrow;
@@ -64,22 +64,22 @@ public abstract class TemporalFilter<T extends Temporal & Comparable> extends Co
   }
 
     @Override
-    public TemporalFilter getOr() {
+    public F getOr() {
         return super.getOr();
     }
 
     @Override
-    public void setOr(TemporalFilter or) {
+    public void setOr(F or) {
         super.setOr(or);
     }
 
     @Override
-    public TemporalFilter getAnd() {
+    public F getAnd() {
         return super.getAnd();
     }
 
     @Override
-    public void setAnd(TemporalFilter and) {
+    public void setAnd(F and) {
         super.setAnd(and);
     }
 }

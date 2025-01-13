@@ -8,5 +8,5 @@ import java.time.LocalDate;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class LocalDateFilter extends TemporalFilter<LocalDate> {
+public class LocalDateFilter extends TemporalFilter<LocalDate, BaseLocalDateFilter> {
 }

@@ -7,7 +7,7 @@ import java.util.Date;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class DateFilter extends ComparableFilter<Date, DateFilter> {
+public class DateFilter extends ComparableFilter<Date, BaseDateFilter> {
 
   private Boolean isToday;
   private Boolean isTomorrow;

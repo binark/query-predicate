@@ -1,5 +1,6 @@
 package io.github.binark.querypredicate.builder;
 
+import io.github.binark.querypredicate.filter.BaseBooleanFilter;
 import io.github.binark.querypredicate.filter.BooleanFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
@@ -8,68 +9,63 @@ import jakarta.persistence.criteria.Predicate;
 /**
  * @author kenany (armelknyobe@gmail.com)
  *
- * The predicate builder for the {@link BooleanFilter} type
+ * The predicate builder for the {@link BaseBooleanFilter} type
  */
-public class BooleanFilterPredicateBuilder extends ComparableFilterPredicateBuilder<BooleanFilter>{
+public class BooleanFilterPredicateBuilder extends ComparableFilterPredicateBuilder<BooleanFilter> {
 
   @Override
   public Predicate buildPredicate(Path path, CriteriaBuilder builder, BooleanFilter filter, String fieldName) {
-    Predicate predicate = buildComparablePredicate(path, builder, filter, fieldName);
+    Predicate predicate = super.buildPredicate(path, builder, filter, fieldName);
+    predicate = addIsTruePredicate(predicate, filter, builder, path, fieldName);
+    predicate = addIsFalsePredicate(predicate, filter, builder, path, fieldName);
+    return predicate;
+  }
 
+  private Predicate addIsTruePredicate(Predicate predicate, BooleanFilter filter, CriteriaBuilder builder, Path path,
+                                       String fieldName) {
     Boolean filterTrue = filter.getTrue();
     if (filterTrue != null) {
-      if (predicate == null) {
-        predicate = Boolean.TRUE.equals(filterTrue) ? builder.isTrue(path.get(fieldName)) : builder.isFalse(path.get(fieldName));
-      } else {
-        predicate = Boolean.TRUE.equals(filterTrue) ? builder.and(predicate, builder.isTrue(path.get(fieldName))) : builder.and(predicate, builder.isFalse(path.get(fieldName)));
-      }
+      Predicate temporaryPredicate = Boolean.TRUE.equals(filterTrue) ? builder.isTrue(path.get(fieldName)) :
+              builder.isFalse(path.get(fieldName));
+      predicate = combinePredicate(predicate, temporaryPredicate, builder);
     }
-
     Boolean andTrue = getAndTrue(filter);
     if (andTrue != null) {
-      if (predicate == null) {
-        predicate = Boolean.TRUE.equals(andTrue) ? builder.isTrue(path.get(fieldName)) : builder.isFalse(path.get(fieldName));
-      } else {
-        predicate = Boolean.TRUE.equals(andTrue) ? builder.and(predicate, builder.isTrue(path.get(fieldName))) : builder.and(predicate, builder.isFalse(path.get(fieldName)));
-      }
+      Predicate temporaryPredicate = Boolean.TRUE.equals(andTrue) ? builder.isTrue(path.get(fieldName)) :
+              builder.isFalse(path.get(fieldName));
+      predicate = combinePredicate(predicate, temporaryPredicate, builder);
     }
-
     Boolean orTrue = getOrTrue(filter);
     if (orTrue != null) {
-      if (predicate == null) {
-        predicate = Boolean.TRUE.equals(orTrue) ? builder.isTrue(path.get(fieldName)) : builder.isFalse(path.get(fieldName));
-      } else {
-        predicate = Boolean.TRUE.equals(orTrue) ? builder.or(predicate, builder.isTrue(path.get(fieldName))) : builder.or(predicate, builder.isFalse(path.get(fieldName)));
-      }
+      Predicate temporaryPredicate = Boolean.TRUE.equals(orTrue) ? builder.isTrue(path.get(fieldName)) :
+              builder.isFalse(path.get(fieldName));
+      predicate = combinePredicate(predicate, temporaryPredicate, builder, CombineOperator.OR);
     }
+    return predicate;
+  }
 
+  private Predicate addIsFalsePredicate(Predicate predicate, BooleanFilter filter, CriteriaBuilder builder, Path path,
+                                        String fieldName) {
     Boolean filterFalse = filter.getFalse();
     if (filterFalse != null) {
-      if (predicate == null) {
-        predicate = Boolean.TRUE.equals(filterFalse) ? builder.isFalse(path.get(fieldName)) : builder.isTrue(path.get(fieldName));
-      } else {
-        predicate = Boolean.TRUE.equals(filterFalse) ? builder.and(predicate, builder.isFalse(path.get(fieldName))) : builder.and(predicate, builder.isTrue(path.get(fieldName)));
-      }
+      Predicate temporaryPredicate = Boolean.TRUE.equals(filterFalse) ? builder.isFalse(path.get(fieldName)) :
+              builder.isTrue(path.get(fieldName));
+      predicate = combinePredicate(predicate, temporaryPredicate, builder);
     }
 
     Boolean andFalse = getAndFalse(filter);
     if (andFalse != null) {
-      if (predicate == null) {
-        predicate = Boolean.TRUE.equals(andFalse) ? builder.isFalse(path.get(fieldName)) : builder.isTrue(path.get(fieldName));
-      } else {
-        predicate = Boolean.TRUE.equals(andFalse) ? builder.and(predicate, builder.isFalse(path.get(fieldName))) : builder.and(predicate, builder.isTrue(path.get(fieldName)));
-      }
+      Predicate temporaryPredicate = Boolean.TRUE.equals(andFalse) ? builder.isFalse(path.get(fieldName)) :
+              builder.isTrue(path.get(fieldName));
+      predicate = combinePredicate(predicate, temporaryPredicate, builder);
     }
 
     Boolean orFalse = getOrFalse(filter);
     if (orFalse != null) {
-      if (predicate == null) {
-        predicate = Boolean.TRUE.equals(orFalse) ? builder.isFalse(path.get(fieldName)) : builder.isTrue(path.get(fieldName));
-      } else {
-        predicate = Boolean.TRUE.equals(orFalse) ? builder.or(predicate, builder.isFalse(path.get(fieldName))) : builder.or(predicate, builder.isTrue(path.get(fieldName)));
-      }
+      Predicate temporaryPredicate = Boolean.TRUE.equals(orFalse) ? builder.isFalse(path.get(fieldName)) :
+              builder.isTrue(path.get(fieldName));
+      predicate = combinePredicate(predicate, temporaryPredicate, builder);
     }
-
     return predicate;
   }
 

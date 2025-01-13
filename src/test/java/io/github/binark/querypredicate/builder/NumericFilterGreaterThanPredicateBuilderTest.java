@@ -1,152 +1,139 @@
 package io.github.binark.querypredicate.builder;
 
-import io.github.binark.querypredicate.filter.NumericFilter;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import io.github.binark.querypredicate.testdouble.TestBaseNumericFilter;
+import io.github.binark.querypredicate.testdouble.TestNumberObject;
+import io.github.binark.querypredicate.testdouble.TestNumericFilter;
 import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
-import org.hibernate.internal.SessionFactoryImpl;
-import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
 import org.hibernate.query.criteria.internal.expression.LiteralExpression;
 import org.hibernate.query.criteria.internal.predicate.ComparisonPredicate;
-import org.hibernate.query.criteria.internal.predicate.ComparisonPredicate.ComparisonOperator;
 import org.hibernate.query.criteria.internal.predicate.CompoundPredicate;
-import org.hibernate.query.criteria.internal.predicate.NegatedPredicateWrapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-class NumericFilterGreaterThanPredicateBuilderTest {
-
-    public static final String FIELD_NAME = "fieldName";
-    public static final int VALUE = 123;
-    public static final int OTHER_VALUE = 456;
-    public static final String AND = "AND";
-    public static final String OR = "OR";
-
-    @Mock(answer = Answers.CALLS_REAL_METHODS)
-    private NumericFilterPredicateBuilder predicateBuilder;
-
-    @Mock(answer = Answers.RETURNS_SELF)
-    private Path path;
-
-    @Mock(answer = Answers.RETURNS_MOCKS)
-    private SessionFactoryImpl sessionFactory;
-
-    @InjectMocks
-    private CriteriaBuilder criteriaBuilder = new CriteriaBuilderImpl(sessionFactory);
-
-    private NumericFilter filter;
-
-    @BeforeEach
-    void setUp() {
-        Mockito.when(path.getJavaType()).thenReturn(Number.class);
-        filter = Mockito.mock(NumericFilter.class, Mockito.CALLS_REAL_METHODS);
-    }
+public class NumericFilterGreaterThanPredicateBuilderTest extends NumericFilterPredicateBuilderTestInit {
 
     @Test
-    void buildNumericPredicate_Is_GreaterThan() {
-        filter.setIsGreaterThan(VALUE);
+    void testBuildIsGreaterThanPredicate() {
+        TestNumericFilter filter = new TestNumericFilter();
+        filter.setIsGreaterThan(new TestNumberObject());
+        when(path.getJavaType()).thenReturn(TestNumberObject.class);
 
-        Predicate predicate = predicateBuilder.buildNumericPredicate(path, criteriaBuilder,
-                filter, FIELD_NAME);
+        Predicate predicate = predicateBuilder.addGreaterThanPredicate(basePredicate, filter, criteriaBuilder, path,
+                                                                       FIELD_NAME);
 
-        assertNotNull(predicate);
-        assertInstanceOf(ComparisonPredicate.class, predicate);
-
-        ComparisonPredicate comparisonPredicate = (ComparisonPredicate) predicate;
-        assertEquals(ComparisonOperator.GREATER_THAN, comparisonPredicate.getComparisonOperator());
-
-        LiteralExpression literalExpression = (LiteralExpression) comparisonPredicate.getRightHandOperand();
-        assertEquals(VALUE, literalExpression.getLiteral());
-    }
-
-    @Test
-    void buildNumericPredicate_Is_GreaterThan_With_Not_Null_Predicate() {
-        filter.setNull(false);
-        filter.setIsGreaterThan(VALUE);
-
-        Predicate predicate = predicateBuilder.buildNumericPredicate(path, criteriaBuilder,
-                filter, FIELD_NAME);
-
-        assertNotNull(predicate);
         assertInstanceOf(CompoundPredicate.class, predicate);
-
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(AND, compoundPredicate.getOperator().name());
-
+        assertEquals(Predicate.BooleanOperator.AND, compoundPredicate.getOperator());
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
-        assertNotNull(expressions);
         assertEquals(2, expressions.size());
-        assertInstanceOf(NegatedPredicateWrapper.class, expressions.get(0));
-
-        ComparisonPredicate greaterThanComparisonPredicate = (ComparisonPredicate) expressions.get(1);
-        assertEquals(ComparisonOperator.GREATER_THAN, greaterThanComparisonPredicate.getComparisonOperator());
-
-        LiteralExpression greaterThanLiteralExpression = (LiteralExpression) greaterThanComparisonPredicate.getRightHandOperand();
-        assertEquals(VALUE, greaterThanLiteralExpression.getLiteral());
+        assertEquals(basePredicate, expressions.get(0));
+        assertInstanceOf(ComparisonPredicate.class, expressions.get(1));
+        ComparisonPredicate comparisonPredicate = (ComparisonPredicate) expressions.get(1);
+        assertEquals(ComparisonPredicate.ComparisonOperator.GREATER_THAN, comparisonPredicate.getComparisonOperator());
+        LiteralExpression rightHandOperand = (LiteralExpression) comparisonPredicate.getRightHandOperand();
+        assertEquals(filter.getIsGreaterThan(), rightHandOperand.getLiteral());
     }
 
     @Test
-    void buildNumericPredicate_Or_Is_GreaterThan() {
-        NumericFilter orFilter = Mockito.mock(NumericFilter.class, Mockito.CALLS_REAL_METHODS);
-        orFilter.setIsGreaterThan(VALUE);
-        filter.setOr(orFilter);
-
-        Predicate predicate = predicateBuilder.buildNumericPredicate(path, criteriaBuilder,
-                filter, FIELD_NAME);
-
-        assertNotNull(predicate);
-        assertInstanceOf(ComparisonPredicate.class, predicate);
-
-        ComparisonPredicate comparisonPredicate = (ComparisonPredicate) predicate;
-        assertEquals(ComparisonOperator.GREATER_THAN, comparisonPredicate.getComparisonOperator());
-
-        LiteralExpression literalExpression = (LiteralExpression) comparisonPredicate.getRightHandOperand();
-        assertEquals(VALUE, literalExpression.getLiteral());
-    }
-
-    @Test
-    void buildNumericPredicate_And_With_Normal_Is_GreaterThan() {
-        NumericFilter andFilter = Mockito.mock(NumericFilter.class, Mockito.CALLS_REAL_METHODS);
-        andFilter.setIsGreaterThan(VALUE);
-        filter.setIsGreaterThan(OTHER_VALUE);
+    void testBuildAndGreaterThanPredicate() {
+        TestNumericFilter filter = new TestNumericFilter();
+        TestBaseNumericFilter andFilter = new TestBaseNumericFilter();
+        andFilter.setIsGreaterThan(new TestNumberObject());
         filter.setAnd(andFilter);
+        when(path.getJavaType()).thenReturn(TestNumberObject.class);
 
-        Predicate predicate = predicateBuilder.buildNumericPredicate(path, criteriaBuilder,
-                filter, FIELD_NAME);
+        Predicate predicate = predicateBuilder.addGreaterThanPredicate(basePredicate, filter, criteriaBuilder, path,
+                                                                       FIELD_NAME);
 
-        assertNotNull(predicate);
         assertInstanceOf(CompoundPredicate.class, predicate);
-
         CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-        assertEquals(AND, compoundPredicate.getOperator().name());
-
+        assertEquals(Predicate.BooleanOperator.AND, compoundPredicate.getOperator());
         List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
-        assertNotNull(expressions);
         assertEquals(2, expressions.size());
-
-        ComparisonPredicate normalComparisonPredicate = (ComparisonPredicate) expressions.get(0);
-        assertEquals(ComparisonOperator.GREATER_THAN, normalComparisonPredicate.getComparisonOperator());
-
-        LiteralExpression normalLiteralExpression = (LiteralExpression) normalComparisonPredicate.getRightHandOperand();
-        assertEquals(OTHER_VALUE, normalLiteralExpression.getLiteral());
-
-        ComparisonPredicate andComparisonPredicate = (ComparisonPredicate) expressions.get(1);
-        assertEquals(ComparisonOperator.GREATER_THAN, andComparisonPredicate.getComparisonOperator());
-
-        LiteralExpression andLiteralExpression = (LiteralExpression) andComparisonPredicate.getRightHandOperand();
-        assertEquals(VALUE, andLiteralExpression.getLiteral());
+        assertEquals(basePredicate, expressions.get(0));
+        assertInstanceOf(ComparisonPredicate.class, expressions.get(1));
+        ComparisonPredicate comparisonPredicate = (ComparisonPredicate) expressions.get(1);
+        assertEquals(ComparisonPredicate.ComparisonOperator.GREATER_THAN, comparisonPredicate.getComparisonOperator());
+        LiteralExpression rightHandOperand = (LiteralExpression) comparisonPredicate.getRightHandOperand();
+        assertEquals(andFilter.getIsGreaterThan(), rightHandOperand.getLiteral());
     }
 
+    @Test
+    void testBuildOrGreaterThanPredicate() {
+        TestNumericFilter filter = new TestNumericFilter();
+        TestBaseNumericFilter orFilter = new TestBaseNumericFilter();
+        orFilter.setIsGreaterThan(new TestNumberObject());
+        filter.setOr(orFilter);
+        when(path.getJavaType()).thenReturn(TestNumberObject.class);
+
+        Predicate predicate = predicateBuilder.addGreaterThanPredicate(basePredicate, filter, criteriaBuilder, path,
+                                                                       FIELD_NAME);
+
+        assertInstanceOf(CompoundPredicate.class, predicate);
+        CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
+        assertEquals(Predicate.BooleanOperator.OR, compoundPredicate.getOperator());
+        List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
+        assertEquals(2, expressions.size());
+        assertEquals(basePredicate, expressions.get(0));
+        assertInstanceOf(ComparisonPredicate.class, expressions.get(1));
+        ComparisonPredicate comparisonPredicate = (ComparisonPredicate) expressions.get(1);
+        assertEquals(ComparisonPredicate.ComparisonOperator.GREATER_THAN, comparisonPredicate.getComparisonOperator());
+        LiteralExpression rightHandOperand = (LiteralExpression) comparisonPredicate.getRightHandOperand();
+        assertEquals(orFilter.getIsGreaterThan(), rightHandOperand.getLiteral());
+    }
+
+    @Test
+    void testBuildFullGreaterThanPredicate() {
+        TestNumericFilter filter = new TestNumericFilter();
+        TestBaseNumericFilter orFilter = new TestBaseNumericFilter();
+        orFilter.setIsGreaterThan(new TestNumberObject());
+        filter.setOr(orFilter);
+        TestBaseNumericFilter andFilter = new TestBaseNumericFilter();
+        andFilter.setIsGreaterThan(new TestNumberObject());
+        filter.setAnd(andFilter);
+        filter.setIsGreaterThan(new TestNumberObject());
+        when(path.getJavaType()).thenReturn(TestNumberObject.class);
+
+        Predicate predicate = predicateBuilder.addGreaterThanPredicate(basePredicate, filter, criteriaBuilder, path,
+                                                                       FIELD_NAME);
+
+        assertInstanceOf(CompoundPredicate.class, predicate);
+        CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
+        assertEquals(Predicate.BooleanOperator.OR, compoundPredicate.getOperator());
+        List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
+        assertEquals(2, expressions.size());
+        assertInstanceOf(CompoundPredicate.class, expressions.get(0));
+        CompoundPredicate andPredicate = (CompoundPredicate) expressions.get(0);
+        assertEquals(Predicate.BooleanOperator.AND, andPredicate.getOperator());
+        List<Expression<Boolean>> andPredicateExpressions = andPredicate.getExpressions();
+        assertInstanceOf(CompoundPredicate.class, andPredicateExpressions.get(0));
+        CompoundPredicate isPredicate = (CompoundPredicate) andPredicateExpressions.get(0);
+        assertEquals(Predicate.BooleanOperator.AND, isPredicate.getOperator());
+        List<Expression<Boolean>> isPredicateExpressions = isPredicate.getExpressions();
+        assertEquals(basePredicate, isPredicateExpressions.get(0));
+        assertInstanceOf(ComparisonPredicate.class, isPredicateExpressions.get(1));
+        ComparisonPredicate isGreaterThanPredicate = (ComparisonPredicate) isPredicateExpressions.get(1);
+        assertEquals(ComparisonPredicate.ComparisonOperator.GREATER_THAN,
+                     isGreaterThanPredicate.getComparisonOperator());
+        LiteralExpression isGreaterThanRightOperand = (LiteralExpression) isGreaterThanPredicate.getRightHandOperand();
+        assertEquals(filter.getIsGreaterThan(), isGreaterThanRightOperand.getLiteral());
+        assertInstanceOf(ComparisonPredicate.class, andPredicateExpressions.get(1));
+        ComparisonPredicate andGreaterThanPredicate = (ComparisonPredicate) andPredicateExpressions.get(1);
+        assertEquals(ComparisonPredicate.ComparisonOperator.GREATER_THAN,
+                     andGreaterThanPredicate.getComparisonOperator());
+        LiteralExpression andGreaterThanPredicateRightHandOperand =
+                (LiteralExpression) andGreaterThanPredicate.getRightHandOperand();
+        assertEquals(andFilter.getIsGreaterThan(), andGreaterThanPredicateRightHandOperand.getLiteral());
+        assertInstanceOf(ComparisonPredicate.class, expressions.get(1));
+        ComparisonPredicate orPredicate = (ComparisonPredicate) expressions.get(1);
+        assertEquals(ComparisonPredicate.ComparisonOperator.GREATER_THAN, orPredicate.getComparisonOperator());
+        LiteralExpression rightHandOperand = (LiteralExpression) orPredicate.getRightHandOperand();
+        assertEquals(orFilter.getIsGreaterThan(), rightHandOperand.getLiteral());
+    }
 }

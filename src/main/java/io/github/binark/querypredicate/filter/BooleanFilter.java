@@ -5,7 +5,7 @@ package io.github.binark.querypredicate.filter;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class BooleanFilter extends ComparableFilter<Boolean, BooleanFilter> {
+public class BooleanFilter extends ComparableFilter<Boolean, BaseBooleanFilter> {
 
   private Boolean isTrue;
   private Boolean isFalse;

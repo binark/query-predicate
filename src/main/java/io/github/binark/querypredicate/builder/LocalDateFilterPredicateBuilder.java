@@ -1,13 +1,13 @@
 package io.github.binark.querypredicate.builder;
 
-
+import io.github.binark.querypredicate.filter.BaseLocalDateFilter;
 import io.github.binark.querypredicate.filter.LocalDateFilter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 /**
- * The predicate builder for the {@link LocalDateFilter} type
+ * The predicate builder for the {@link BaseLocalDateFilter} type
  *
  * @author kenany (armelknyobe@gmail.com)
  */
