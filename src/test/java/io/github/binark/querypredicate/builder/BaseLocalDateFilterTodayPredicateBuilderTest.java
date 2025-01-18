@@ -20,7 +20,7 @@ class BaseLocalDateFilterTodayPredicateBuilderTest extends BaseLocalDateFilterPr
     public static final String FIELD_NAME = "today";
 
     @Test
-    void buildPredicate_for_today() {
+    void buildTodayPredicate() {
         BaseLocalDateFilter localDateFilter = new BaseLocalDateFilter();
         localDateFilter.setIsToday(true);
 
@@ -40,7 +40,7 @@ class BaseLocalDateFilterTodayPredicateBuilderTest extends BaseLocalDateFilterPr
     }
 
     @Test
-    void buildPredicate_for_today_with_not_null_predicate() {
+    void buildCombinedIsNotNullAndIsTodayPredicates() {
         BaseLocalDateFilter localDateFilter = new BaseLocalDateFilter();
         localDateFilter.setNull(false);
         localDateFilter.setIsToday(true);
@@ -68,7 +68,7 @@ class BaseLocalDateFilterTodayPredicateBuilderTest extends BaseLocalDateFilterPr
     }
 
     @Test
-    void buildPredicate_not_for_today() {
+    void buildIsNotTodayPredicate() {
         BaseLocalDateFilter localDateFilter = new BaseLocalDateFilter();
         localDateFilter.setIsToday(false);
 

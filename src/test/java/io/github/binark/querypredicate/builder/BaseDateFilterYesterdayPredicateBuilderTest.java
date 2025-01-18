@@ -19,7 +19,7 @@ class BaseDateFilterYesterdayPredicateBuilderTest extends BaseDateFilterPredicat
     protected static final String FIELD_NAME = "yesterday";
 
     @Test
-    void buildPredicate_for_yesterday() {
+    void buildYesterdayPredicate() {
         BaseDateFilter dateFilter = new BaseDateFilter();
         dateFilter.setIsYesterday(true);
         Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, dateFilter,
@@ -40,7 +40,7 @@ class BaseDateFilterYesterdayPredicateBuilderTest extends BaseDateFilterPredicat
     }
 
     @Test
-    void buildPredicate_for_yesterday_with_not_null_predicate() {
+    void buildCombinedIsNotNullAndIsYesterdayPredicates() {
         BaseDateFilter dateFilter = new BaseDateFilter();
         dateFilter.setNull(false);
         dateFilter.setIsYesterday(true);
@@ -69,7 +69,7 @@ class BaseDateFilterYesterdayPredicateBuilderTest extends BaseDateFilterPredicat
     }
 
     @Test
-    void buildPredicate_not_for_yesterday() {
+    void buildIsNotYesterdayPredicate() {
         BaseDateFilter dateFilter = new BaseDateFilter();
         dateFilter.setIsYesterday(false);
         Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, dateFilter,

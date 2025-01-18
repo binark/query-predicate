@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BaseBooleanFilterFalsePredicateBuilderTest extends BaseBooleanFilterPredicateBuilderTest {
 
     @Test
-    void buildPredicate_False() {
+    void buildIsFalsePredicate() {
         BaseBooleanFilter filter = new BaseBooleanFilter();
         filter.setFalse(VALUE);
 
@@ -30,7 +30,7 @@ class BaseBooleanFilterFalsePredicateBuilderTest extends BaseBooleanFilterPredic
     }
 
     @Test
-    void buildPredicate_False_Reverse() {
+    void buildIsFalseReversePredicate() {
         BaseBooleanFilter filter = new BaseBooleanFilter();
         filter.setFalse(!VALUE);
 
@@ -46,7 +46,7 @@ class BaseBooleanFilterFalsePredicateBuilderTest extends BaseBooleanFilterPredic
     }
 
     @Test
-    void buildPredicate_False_With_Not_Null_Predicate() {
+    void buildCombinedIsNotNullAndIsFalsePredicates() {
         BaseBooleanFilter filter = new BaseBooleanFilter();
         filter.setNull(OTHER_VALUE);
         filter.setFalse(VALUE);

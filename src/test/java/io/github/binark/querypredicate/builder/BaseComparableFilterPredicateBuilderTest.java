@@ -55,7 +55,7 @@ class BaseComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void buildPredicate_Is_GreaterThan() {
+    void buildIsGreaterThanPredicate() {
         filter.setIsGreaterThan(VALUE);
 
         Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
@@ -71,7 +71,7 @@ class BaseComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void buildPredicate_Is_GreaterThan_With_Not_Null_Predicate() {
+    void buildCombinedIsEqualsAndIsGreaterThanPredicates() {
         filter.setIsEquals(OTHER_VALUE);
         filter.setIsGreaterThan(VALUE);
 
@@ -101,7 +101,7 @@ class BaseComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void buildPredicate_Is_GreaterThan_Or_Equals_To() {
+    void buildIsGreaterThanOrEqualsToPredicate() {
         filter.setIsGreaterThanOrEqualsTo(VALUE);
 
         Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
@@ -118,7 +118,7 @@ class BaseComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void buildPredicate_Is_GreaterThan_Or_Equals_To_With_Not_Null_Predicate() {
+    void buildCombinedIsEqualsAndIsGreaterThanOrEqualsToPredicate() {
         filter.setIsEquals(OTHER_VALUE);
         filter.setIsGreaterThanOrEqualsTo(VALUE);
 
@@ -143,7 +143,7 @@ class BaseComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void buildPredicate_Is_LessThan() {
+    void buildIsLessThanPredicate() {
         filter.setIsLessThan(VALUE);
 
         Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
@@ -160,7 +160,7 @@ class BaseComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void buildPredicate_Is_LessThan_With_Not_Null_Predicate() {
+    void buildCombinedIsEqualsAndIsLessThanPredicates() {
         filter.setIsEquals(OTHER_VALUE);
         filter.setIsLessThan(VALUE);
 
@@ -185,7 +185,7 @@ class BaseComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void buildPredicate_Is_LessThan_Or_Equals_To() {
+    void buildIsLessThanOrEqualsToPredicate() {
         filter.setIsLessThanOrEqualsTo(VALUE);
 
         Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
@@ -202,7 +202,7 @@ class BaseComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void buildPredicate_Is_LessThan_Or_Equals_To_With_Not_Null_Predicate() {
+    void buildCombinedIsEqualsAnsIsLessThanOrEqualsToPredicates() {
         filter.setIsEquals(OTHER_VALUE);
         filter.setIsLessThanOrEqualsTo(VALUE);
 
@@ -227,7 +227,7 @@ class BaseComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void getBetweenPredicate() {
+    void testBetweenPredicate() {
         Instant start = Instant.MIN;
         Instant end = Instant.now();
         Range<Instant> range = new Range<>();
@@ -249,7 +249,7 @@ class BaseComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void getBetweenPredicate_Without_Start() {
+    void testBetweenPredicateWithoutStart() {
         Range<Instant> range = new Range<>();
         range.setEnd(Instant.now());
 
@@ -261,7 +261,7 @@ class BaseComparableFilterPredicateBuilderTest {
     }
 
     @Test
-    void getBetweenPredicate_Without_End() {
+    void testBetweenPredicateWithoutEnd() {
         Range<Instant> range = new Range<>();
         range.setStart(Instant.now());
 

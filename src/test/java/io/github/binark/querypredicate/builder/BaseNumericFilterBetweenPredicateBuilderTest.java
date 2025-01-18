@@ -50,12 +50,11 @@ class BaseNumericFilterBetweenPredicateBuilderTest {
 
     @BeforeEach
     void setUp() {
-        //  Mockito.when(path.getJavaType()).thenReturn(Number.class);
         filter = mock(BaseNumericFilter.class, CALLS_REAL_METHODS);
     }
 
     @Test
-    void buildNumericPredicate_Is_Between() {
+    void buildIsBetweenPredicate() {
         Range<Integer> range = new Range<>();
         range.setStart(VALUE);
         range.setEnd(OTHER_VALUE);
@@ -79,7 +78,7 @@ class BaseNumericFilterBetweenPredicateBuilderTest {
     }
 
     @Test
-    void buildNumericPredicate_Is_Between_With_Not_Null_Predicate() {
+    void buildCombinedIsNotNullAndIsBetweenPredicates() {
         Range<Integer> range = new Range<>();
         range.setStart(VALUE);
         range.setEnd(OTHER_VALUE);

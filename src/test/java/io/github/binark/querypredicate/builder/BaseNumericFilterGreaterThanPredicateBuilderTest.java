@@ -55,7 +55,7 @@ class BaseNumericFilterGreaterThanPredicateBuilderTest {
     }
 
     @Test
-    void buildNumericPredicate_Is_GreaterThan() {
+    void buildIsGreaterThanPredicate() {
         filter.setIsGreaterThan(VALUE);
 
         Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder,
@@ -72,7 +72,7 @@ class BaseNumericFilterGreaterThanPredicateBuilderTest {
     }
 
     @Test
-    void buildNumericPredicate_Is_GreaterThan_With_Not_Null_Predicate() {
+    void buildCombinedIsNotNullAndIsGreaterThanPredicates() {
         filter.setNull(false);
         filter.setIsGreaterThan(VALUE);
 

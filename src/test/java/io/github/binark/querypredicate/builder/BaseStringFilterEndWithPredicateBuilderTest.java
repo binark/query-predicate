@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BaseStringFilterEndWithPredicateBuilderTest extends BaseStringFilterPredicateBuilderTest {
 
     @Test
-    void buildPredicate_EndWith() {
+    void buildEndWithPredicate() {
         BaseStringFilter filter = new BaseStringFilter();
         filter.setEndWith(VALUE);
 
@@ -33,7 +33,7 @@ class BaseStringFilterEndWithPredicateBuilderTest extends BaseStringFilterPredic
     }
 
     @Test
-    void buildPredicate_EndWith_With_Not_Null_Predicate() {
+    void buildCombinedIsDifferentAndEndWithPredicates() {
         BaseStringFilter filter = new BaseStringFilter();
         filter.setIsDifferent(EQUALS_VALUE);
         filter.setEndWith(VALUE);
@@ -65,7 +65,7 @@ class BaseStringFilterEndWithPredicateBuilderTest extends BaseStringFilterPredic
     }
 
     @Test
-    void buildPredicate_EndWithIgnoreCase() {
+    void buildEndWithIgnoreCasePredicate() {
         BaseStringFilter filter = new BaseStringFilter();
         filter.setEndWithIgnoreCase(VALUE);
 
@@ -80,7 +80,7 @@ class BaseStringFilterEndWithPredicateBuilderTest extends BaseStringFilterPredic
     }
 
     @Test
-    void buildPredicate_EndWithIgnoreCase_With_Not_Null_Predicate() {
+    void buildCombinedIsDifferentAndEndWithIgnoreCasePredicates() {
         BaseStringFilter filter = new BaseStringFilter();
         filter.setIsDifferent(EQUALS_VALUE);
         filter.setEndWithIgnoreCase(VALUE);

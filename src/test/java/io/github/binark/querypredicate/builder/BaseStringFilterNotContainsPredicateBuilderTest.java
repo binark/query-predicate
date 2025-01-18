@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BaseStringFilterNotContainsPredicateBuilderTest extends BaseStringFilterPredicateBuilderTest {
 
     @Test
-    void buildPredicate_Not_Contains() {
+    void buildNotContainsPredicate() {
         BaseStringFilter filter = new BaseStringFilter();
         filter.setNotContains(VALUE);
 
@@ -29,7 +29,7 @@ class BaseStringFilterNotContainsPredicateBuilderTest extends BaseStringFilterPr
     }
 
     @Test
-    void buildPredicate_Not_Contains_With_Not_Null_Predicate() {
+    void buildCombinedIsDifferentAndNotContainsPredicates() {
         BaseStringFilter filter = new BaseStringFilter();
         filter.setIsDifferent(EQUALS_VALUE);
         filter.setNotContains(VALUE);
@@ -59,7 +59,7 @@ class BaseStringFilterNotContainsPredicateBuilderTest extends BaseStringFilterPr
     }
 
     @Test
-    void buildPredicate_Not_ContainsIgnoreCase() {
+    void buildNotContainsIgnoreCasePredicate() {
         BaseStringFilter filter = new BaseStringFilter();
         filter.setNotContainsIgnoreCase(VALUE);
 
@@ -73,7 +73,7 @@ class BaseStringFilterNotContainsPredicateBuilderTest extends BaseStringFilterPr
     }
 
     @Test
-    void buildPredicate_Not_ContainsIgnoreCase_With_Not_Null_Predicate() {
+    void buildCombinedIsDifferentAndNotContainsIgnoreCasePredicates() {
         BaseStringFilter filter = new BaseStringFilter();
         filter.setIsDifferent(EQUALS_VALUE);
         filter.setNotContainsIgnoreCase(VALUE);

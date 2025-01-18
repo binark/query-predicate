@@ -20,7 +20,7 @@ class BaseLocalDateFilterTomorrowPredicateBuilderTest extends BaseLocalDateFilte
     public static final String FIELD_NAME = "tomorrow";
 
     @Test
-    void buildPredicate_for_tomorrow() {
+    void buildIsTomorrowPredicate() {
         BaseLocalDateFilter localDateFilter = new BaseLocalDateFilter();
         localDateFilter.setIsTomorrow(true);
 
@@ -40,7 +40,7 @@ class BaseLocalDateFilterTomorrowPredicateBuilderTest extends BaseLocalDateFilte
     }
 
     @Test
-    void buildPredicate_for_tomorrow_with_not_null_predicate() {
+    void buildCombinedIsNotNullAndIsTomorrowPredicates() {
         BaseLocalDateFilter localDateFilter = new BaseLocalDateFilter();
         localDateFilter.setNull(false);
         localDateFilter.setIsTomorrow(true);
@@ -68,7 +68,7 @@ class BaseLocalDateFilterTomorrowPredicateBuilderTest extends BaseLocalDateFilte
     }
 
     @Test
-    void buildPredicate_not_for_tomorrow() {
+    void buildIsNotTomorrowPredicate() {
         BaseLocalDateFilter localDateFilter = new BaseLocalDateFilter();
         localDateFilter.setIsTomorrow(false);
 

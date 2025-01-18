@@ -19,7 +19,7 @@ class BaseDateFilterTomorrowPredicateBuilderTest extends BaseDateFilterPredicate
     protected static final String FIELD_NAME = "tomorrow";
 
     @Test
-    void buildPredicate_for_tomorrow() {
+    void buildIsTomorrowPredicate() {
         BaseDateFilter dateFilter = new BaseDateFilter();
         dateFilter.setIsTomorrow(true);
         Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, dateFilter,
@@ -40,7 +40,7 @@ class BaseDateFilterTomorrowPredicateBuilderTest extends BaseDateFilterPredicate
     }
 
     @Test
-    void buildPredicate_for_tomorrow_with_not_null_predicate() {
+    void buildCombinedIsNotNullAndIsTomorrowPredicates() {
         BaseDateFilter dateFilter = new BaseDateFilter();
         dateFilter.setNull(false);
         dateFilter.setIsTomorrow(true);
@@ -69,7 +69,7 @@ class BaseDateFilterTomorrowPredicateBuilderTest extends BaseDateFilterPredicate
     }
 
     @Test
-    void buildPredicate_not_for_tomorrow() {
+    void buildIsNotTomorrowPredicate() {
         BaseDateFilter dateFilter = new BaseDateFilter();
         dateFilter.setIsTomorrow(false);
         Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, dateFilter,
