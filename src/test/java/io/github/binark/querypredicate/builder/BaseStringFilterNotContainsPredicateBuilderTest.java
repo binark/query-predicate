@@ -8,15 +8,12 @@ import org.hibernate.query.criteria.internal.predicate.ComparisonPredicate;
 import org.hibernate.query.criteria.internal.predicate.CompoundPredicate;
 import org.hibernate.query.criteria.internal.predicate.NegatedPredicateWrapper;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 import static org.hibernate.query.criteria.internal.predicate.ComparisonPredicate.ComparisonOperator.NOT_EQUAL;
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 class BaseStringFilterNotContainsPredicateBuilderTest extends BaseStringFilterPredicateBuilderTest {
 
     @Test
@@ -29,8 +26,6 @@ class BaseStringFilterNotContainsPredicateBuilderTest extends BaseStringFilterPr
 
         assertNotNull(predicate);
         assertInstanceOf(NegatedPredicateWrapper.class, predicate);
-        NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) predicate;
-        assertNotNull(negatedPredicateWrapper);
     }
 
     @Test
@@ -62,45 +57,6 @@ class BaseStringFilterNotContainsPredicateBuilderTest extends BaseStringFilterPr
         NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) expressions.get(1);
         assertNotNull(negatedPredicateWrapper);
     }
-
-//    @Test
-//    void buildPredicate_Or_Not_Contains() {
-//        BaseStringFilter orFilter = new BaseStringFilter();
-//        orFilter.setNotContains(VALUE);
-//        BaseStringFilter filter = new BaseStringFilter();
-//        filter.setOr(orFilter);
-//
-//        Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
-//                FIELD_NAME);
-//
-//        assertNotNull(predicate);
-//        assertInstanceOf(NegatedPredicateWrapper.class, predicate);
-//        NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) predicate;
-//        assertNotNull(negatedPredicateWrapper);
-//    }
-
-//    @Test
-//    void buildPredicate_And_With_Or_Not_Contains() {
-//        BaseStringFilter orFilter = new BaseStringFilter();
-//        orFilter.setNotContains(VALUE);
-//        BaseStringFilter filter = new BaseStringFilter();
-//        filter.setNotContains(OTHER_VALUE);
-//        filter.setOr(orFilter);
-//
-//        Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
-//                FIELD_NAME);
-//
-//        assertNotNull(predicate);
-//        assertInstanceOf(CompoundPredicate.class, predicate);
-//
-//        CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-//        assertEquals(OR, compoundPredicate.getOperator().name());
-//
-//        List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
-//        assertNotNull(expressions);
-//        assertEquals(2, expressions.size());
-//        assertTrue(expressions.stream().allMatch(expression -> expression instanceof NegatedPredicateWrapper));
-//    }
 
     @Test
     void buildPredicate_Not_ContainsIgnoreCase() {
@@ -145,43 +101,4 @@ class BaseStringFilterNotContainsPredicateBuilderTest extends BaseStringFilterPr
         NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) expressions.get(1);
         assertNotNull(negatedPredicateWrapper);
     }
-
-//    @Test
-//    void buildPredicate_Or_Not_ContainsIgnoreCase() {
-//        BaseStringFilter orFilter = new BaseStringFilter();
-//        orFilter.setNotContainsIgnoreCase(VALUE);
-//        BaseStringFilter filter = new BaseStringFilter();
-//        filter.setOr(orFilter);
-//
-//        Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
-//                FIELD_NAME);
-//
-//        assertNotNull(predicate);
-//        assertInstanceOf(NegatedPredicateWrapper.class, predicate);
-//        NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) predicate;
-//        assertNotNull(negatedPredicateWrapper);
-//    }
-
-//    @Test
-//    void buildPredicate_And_With_Or_Not_ContainsIgnoreCase() {
-//        BaseStringFilter orFilter = new BaseStringFilter();
-//        orFilter.setNotContainsIgnoreCase(VALUE);
-//        BaseStringFilter filter = new BaseStringFilter();
-//        filter.setNotContainsIgnoreCase(OTHER_VALUE);
-//        filter.setOr(orFilter);
-//
-//        Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
-//                FIELD_NAME);
-//
-//        assertNotNull(predicate);
-//        assertInstanceOf(CompoundPredicate.class, predicate);
-//
-//        CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-//        assertEquals(OR, compoundPredicate.getOperator().name());
-//
-//        List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
-//        assertNotNull(expressions);
-//        assertEquals(2, expressions.size());
-//        assertTrue(expressions.stream().allMatch(expression -> expression instanceof NegatedPredicateWrapper));
-//    }
 }

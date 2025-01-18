@@ -64,7 +64,7 @@ public class BooleanFilterPredicateBuilder extends ComparableFilterPredicateBuil
     if (orFalse != null) {
       Predicate temporaryPredicate = Boolean.TRUE.equals(orFalse) ? builder.isFalse(path.get(fieldName)) :
               builder.isTrue(path.get(fieldName));
-      predicate = combinePredicate(predicate, temporaryPredicate, builder);
+      predicate = combinePredicate(predicate, temporaryPredicate, builder, CombineOperator.OR);
     }
     return predicate;
   }

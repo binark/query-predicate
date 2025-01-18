@@ -8,15 +8,12 @@ import org.hibernate.query.criteria.internal.predicate.ComparisonPredicate;
 import org.hibernate.query.criteria.internal.predicate.CompoundPredicate;
 import org.hibernate.query.criteria.internal.predicate.LikePredicate;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 import static org.hibernate.query.criteria.internal.predicate.ComparisonPredicate.ComparisonOperator.NOT_EQUAL;
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 class BaseStringFilterEndWithPredicateBuilderTest extends BaseStringFilterPredicateBuilderTest {
 
     @Test
@@ -67,56 +64,6 @@ class BaseStringFilterEndWithPredicateBuilderTest extends BaseStringFilterPredic
         assertNull(likePredicate.getMatchExpression().toString());
     }
 
-//    @Test
-//    void buildPredicate_Or_EndWith() {
-//        BaseStringFilter orFilter = new BaseStringFilter();
-//        orFilter.setEndWith(VALUE);
-//        BaseStringFilter filter = new BaseStringFilter();
-//        filter.setOr(orFilter);
-//
-//        Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
-//                FIELD_NAME);
-//
-//        assertNotNull(predicate);
-//        assertInstanceOf(LikePredicate.class, predicate);
-//        LikePredicate likePredicate = (LikePredicate) predicate;
-//        LiteralExpression literalExpression = (LiteralExpression) likePredicate.getPattern();
-//        assertEquals("%" + VALUE, literalExpression.getLiteral());
-//        assertNull(likePredicate.getMatchExpression().toString());
-//    }
-
-//    @Test
-//    void buildPredicate_And_With_Or_EndWith() {
-//        BaseStringFilter orFilter = new BaseStringFilter();
-//        orFilter.setEndWith(VALUE);
-//        BaseStringFilter filter = new BaseStringFilter();
-//        filter.setEndWith(OTHER_VALUE);
-//        filter.setOr(orFilter);
-//
-//        Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
-//                FIELD_NAME);
-//
-//        assertNotNull(predicate);
-//        assertInstanceOf(CompoundPredicate.class, predicate);
-//
-//        CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-//        assertEquals(OR, compoundPredicate.getOperator().name());
-//
-//        List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
-//        assertNotNull(expressions);
-//        assertEquals(2, expressions.size());
-//
-//        LikePredicate andLikePredicate = (LikePredicate) expressions.get(0);
-//        LiteralExpression andLiteralExpression = (LiteralExpression) andLikePredicate.getPattern();
-//        assertEquals("%" + OTHER_VALUE, andLiteralExpression.getLiteral());
-//        assertNull(andLikePredicate.getMatchExpression().toString());
-//
-//        LikePredicate likePredicate = (LikePredicate) expressions.get(1);
-//        LiteralExpression literalExpression = (LiteralExpression) likePredicate.getPattern();
-//        assertEquals("%" + VALUE, literalExpression.getLiteral());
-//        assertNull(likePredicate.getMatchExpression().toString());
-//    }
-
     @Test
     void buildPredicate_EndWithIgnoreCase() {
         BaseStringFilter filter = new BaseStringFilter();
@@ -162,51 +109,4 @@ class BaseStringFilterEndWithPredicateBuilderTest extends BaseStringFilterPredic
         LiteralExpression literalExpression = (LiteralExpression) likePredicate.getPattern();
         assertEquals("%" + VALUE.toUpperCase(), literalExpression.getLiteral());
     }
-
-//    @Test
-//    void buildPredicate_Or_EndWithIgnoreCase() {
-//        BaseStringFilter orFilter = new BaseStringFilter();
-//        orFilter.setEndWithIgnoreCase(VALUE);
-//        BaseStringFilter filter = new BaseStringFilter();
-//        filter.setOr(orFilter);
-//
-//        Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
-//                FIELD_NAME);
-//
-//        assertNotNull(predicate);
-//        assertInstanceOf(LikePredicate.class, predicate);
-//        LikePredicate likePredicate = (LikePredicate) predicate;
-//        LiteralExpression literalExpression = (LiteralExpression) likePredicate.getPattern();
-//        assertEquals("%" + VALUE.toUpperCase(), literalExpression.getLiteral());
-//    }
-
-//    @Test
-//    void buildPredicate_And_With_Normal_EndWithIgnoreCase() {
-//        BaseStringFilter andFilter = new BaseStringFilter();
-//        andFilter.setEndWithIgnoreCase(VALUE);
-//        BaseStringFilter filter = new BaseStringFilter();
-//        filter.setEndWithIgnoreCase(OTHER_VALUE);
-//        filter.setAnd(andFilter);
-//
-//        Predicate predicate = predicateBuilder.buildPredicate(path, criteriaBuilder, filter,
-//                FIELD_NAME);
-//
-//        assertNotNull(predicate);
-//        assertInstanceOf(CompoundPredicate.class, predicate);
-//
-//        CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
-//        assertEquals(AND, compoundPredicate.getOperator().name());
-//
-//        List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
-//        assertNotNull(expressions);
-//        assertEquals(2, expressions.size());
-//
-//        LikePredicate normalLikePredicate = (LikePredicate) expressions.get(0);
-//        LiteralExpression normalLiteralExpression = (LiteralExpression) normalLikePredicate.getPattern();
-//        assertEquals("%" + OTHER_VALUE.toUpperCase(), normalLiteralExpression.getLiteral());
-//
-//        LikePredicate andLikePredicate = (LikePredicate) expressions.get(1);
-//        LiteralExpression andLiteralExpression = (LiteralExpression) andLikePredicate.getPattern();
-//        assertEquals("%" + VALUE.toUpperCase(), andLiteralExpression.getLiteral());
-//    }
 }

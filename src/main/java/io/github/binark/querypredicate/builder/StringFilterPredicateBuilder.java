@@ -283,7 +283,7 @@ public class StringFilterPredicateBuilder extends ComparableFilterPredicateBuild
 
     private String getAndStartWithIgnoreCase(StringFilter filter) {
         if (filter.getAnd() != null) {
-            return filter.getAnd().getNotContainsIgnoreCase();
+            return filter.getAnd().getStartWithIgnoreCase();
         }
         return null;
     }

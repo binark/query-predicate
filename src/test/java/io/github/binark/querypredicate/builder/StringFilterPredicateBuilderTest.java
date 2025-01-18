@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class BaseStringFilterPredicateBuilderTest {
+class StringFilterPredicateBuilderTest {
 
     protected static final String VALUE = "value";
     protected static final String OTHER_VALUE = "other_value";
@@ -20,16 +20,22 @@ class BaseStringFilterPredicateBuilderTest {
     protected static final String FIELD_NAME = "field";
     protected static final String AND = "AND";
     protected static final String OR = "OR";
-  @Mock(answer = Answers.RETURNS_SELF)
-  protected Path path;
-  @Mock(answer = Answers.RETURNS_MOCKS)
-  protected SessionFactoryImpl sessionFactory;
+    @Mock(answer = Answers.RETURNS_SELF)
+    protected Path path;
+    @Mock(answer = Answers.RETURNS_MOCKS)
+    protected SessionFactoryImpl sessionFactory;
     protected CriteriaBuilder criteriaBuilder = new CriteriaBuilderImpl(sessionFactory);
-    protected BaseStringFilterPredicateBuilder predicateBuilder = new BaseStringFilterPredicateBuilder();
+    protected StringFilterPredicateBuilder predicateBuilder = new StringFilterPredicateBuilder();
 
     @BeforeEach
     void setUp() {
         Mockito.lenient().when(path.getJavaType()).thenReturn(String.class);
-  }
+    }
 
+    protected String toUpperCase(String value) {
+        if (value != null) {
+            return value.toUpperCase();
+        }
+        return value;
+    }
 }

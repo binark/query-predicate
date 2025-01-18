@@ -4,19 +4,13 @@ import io.github.binark.querypredicate.filter.Range;
 import io.github.binark.querypredicate.testdouble.TestBaseComparableFilter;
 import io.github.binark.querypredicate.testdouble.TestComparableFilter;
 import io.github.binark.querypredicate.testdouble.TestComparableObject;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
-import org.hibernate.internal.SessionFactoryImpl;
-import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
 import org.hibernate.query.criteria.internal.expression.LiteralExpression;
 import org.hibernate.query.criteria.internal.predicate.BetweenPredicate;
 import org.hibernate.query.criteria.internal.predicate.CompoundPredicate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -25,20 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 @ExtendWith(MockitoExtension.class)
-public class ComparableBetweenPredicateBuilderTest {
+public class ComparableBetweenPredicateBuilderTest extends ComparableFilterPredicateBuilderTestInit {
 
-    public static final String FIELD_NAME = "fieldName";
     private final TestComparableObject betweenStart = new TestComparableObject();
     private final TestComparableObject betweenEnd = new TestComparableObject();
-    @Mock(answer = Answers.RETURNS_SELF)
-    private Path path;
-    @Mock(answer = Answers.RETURNS_MOCKS)
-    private SessionFactoryImpl sessionFactory;
-    private CriteriaBuilder criteriaBuilder = new CriteriaBuilderImpl(sessionFactory);
-    @Mock(answer = Answers.CALLS_REAL_METHODS)
-    private ComparableFilterPredicateBuilder<TestComparableFilter> predicateBuilder;
-    @Mock
-    private Predicate basePredicate;
 
     @Test
     void testBuildIsBetweenPredicate() {

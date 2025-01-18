@@ -53,7 +53,7 @@ class AbstractPredicateBuilderTest {
   private CriteriaBuilder criteriaBuilder = new CriteriaBuilderImpl(sessionFactory);
 
   @Test
-  void buildBasePredicate_Is_Equals() {
+  void buildIsEqualsPredicate() {
     TestObject value = new TestObject("equals");
     when(path.getJavaType()).thenReturn(String.class);
     TestBaseFilter testBaseFilter = new TestBaseFilter();

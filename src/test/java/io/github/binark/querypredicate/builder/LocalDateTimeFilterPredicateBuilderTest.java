@@ -10,18 +10,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class BaseLocalDateFilterPredicateBuilderTest {
+class LocalDateTimeFilterPredicateBuilderTest {
 
     protected static final String AND = "AND";
     protected static final String OR = "OR";
 
-  @Mock(answer = Answers.RETURNS_SELF)
-  protected Path path;
+    @Mock(answer = Answers.RETURNS_SELF)
+    protected Path path;
 
-  @Mock(answer = Answers.RETURNS_MOCKS)
-  protected SessionFactoryImpl sessionFactory;
+    @Mock(answer = Answers.RETURNS_MOCKS)
+    protected SessionFactoryImpl sessionFactory;
 
     protected CriteriaBuilder criteriaBuilder = new CriteriaBuilderImpl(sessionFactory);
 
-    protected BaseLocalDateFilterPredicateBuilder predicateBuilder = new BaseLocalDateFilterPredicateBuilder();
+    protected LocalDateTimeFilterPredicateBuilder predicateBuilder = new LocalDateTimeFilterPredicateBuilder();
 }
