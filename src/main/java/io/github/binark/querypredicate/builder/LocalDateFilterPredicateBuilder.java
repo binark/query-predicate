@@ -1,67 +1,40 @@
 package io.github.binark.querypredicate.builder;
 
+import io.github.binark.querypredicate.filter.BaseLocalDateFilter;
 import io.github.binark.querypredicate.filter.LocalDateFilter;
-import io.github.binark.querypredicate.filter.Range;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 /**
- * The predicate builder for the {@link LocalDateFilter} type
+ * The predicate builder for the {@link BaseLocalDateFilter} type
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class LocalDateFilterPredicateBuilder extends ComparableFilterPredicateBuilder<LocalDateFilter>{
+public class LocalDateFilterPredicateBuilder extends TemporalFilterPredicateBuilder<LocalDateFilter, LocalDate> {
 
-  @Override
-  public Predicate buildPredicate(Path path, CriteriaBuilder builder, LocalDateFilter filter,
-      String fieldName) {
-    List<Predicate> predicates = super.buildComparablePredicate(path, builder, filter, fieldName);
-
-    if (filter.getIsToday() != null) {
-      Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
-          LocalDate.now(), fieldName);
-      computeDateBetweenPredicate(filter.getIsToday(), predicates, localDateBetweenPredicate);
+    @Override
+    protected LocalDate getNow() {
+        return LocalDate.now();
     }
 
-    if (filter.getIsTomorrow() != null) {
-      Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
-          LocalDate.now().plusDays(1), fieldName);
-      computeDateBetweenPredicate(filter.getIsTomorrow(), predicates, localDateBetweenPredicate);
+    @Override
+    protected LocalDate shiftTo(int value) {
+        return LocalDate.now().plusDays(value);
     }
 
-    if (filter.getIsYesterday() != null) {
-      Predicate localDateBetweenPredicate = getLocalDateBetweenPredicate(path, builder,
-          LocalDate.now().minusDays(1), fieldName);
-      computeDateBetweenPredicate(filter.getIsYesterday(), predicates, localDateBetweenPredicate);
+    @Override
+    protected LocalDate shiftFrom(int value) {
+        return LocalDate.now().minusDays(value);
     }
 
-    return predicates.size() == 1 ? predicates.get(0) : builder.or(predicates.toArray(new Predicate[0]));
-  }
-
-  private void computeDateBetweenPredicate(Boolean filterRule, List<Predicate> basePredicates, Predicate betweenPredicate) {
-    if (Boolean.TRUE.equals(filterRule)) {
-      basePredicates.add(betweenPredicate);
-    } else {
-      basePredicates.add(betweenPredicate.not());
+    @Override
+    protected LocalDate atStartOfDay(LocalDate localDate) {
+        return localDate.atStartOfDay().toLocalDate();
     }
-  }
 
-  private Predicate getLocalDateBetweenPredicate(Path path, CriteriaBuilder builder, LocalDate localDate, String fieldName) {
-    Range<LocalDate> range = new Range<>();
-    range.setStart(atStartOfDay(localDate));
-    range.setEnd(atEndOfDay(localDate));
-    return getBetweenPredicate(path, builder, range, fieldName);
-  }
-
-  private LocalDate atStartOfDay(LocalDate localDate) {
-    return localDate.atStartOfDay().toLocalDate();
-  }
-
-  private LocalDate atEndOfDay(LocalDate localDate) {
-    return localDate.atTime(LocalTime.MAX).toLocalDate();
-  }
+    @Override
+    protected LocalDate atEndOfDay(LocalDate localDate) {
+        return localDate.atTime(LocalTime.MAX).toLocalDate();
+    }
 }

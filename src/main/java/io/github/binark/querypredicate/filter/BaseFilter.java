@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class BaseFilter<T> implements Filter<T>{
+public class BaseFilter<T> implements Filter<T> {
 
     private T isEquals;
 

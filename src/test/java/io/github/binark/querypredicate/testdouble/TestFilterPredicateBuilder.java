@@ -1,16 +1,18 @@
-package io.github.binark.querypredicate.utils;
+package io.github.binark.querypredicate.testdouble;
 
+import io.github.binark.querypredicate.annotation.FilterClass;
 import io.github.binark.querypredicate.builder.PredicateBuilder;
-import io.github.binark.querypredicate.filter.Filter;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
+
 import java.lang.reflect.Field;
 
-public class WithoutAnnotationPredicateBuilder implements PredicateBuilder {
+@FilterClass(TestBaseFilter.class)
+public class TestFilterPredicateBuilder implements PredicateBuilder<TestBaseFilter> {
 
   @Override
-  public Predicate buildPredicate(Path path, CriteriaBuilder builder, Filter filter,
+  public Predicate buildPredicate(Path path, CriteriaBuilder builder, TestBaseFilter filter,
       String fieldName) {
     return null;
   }

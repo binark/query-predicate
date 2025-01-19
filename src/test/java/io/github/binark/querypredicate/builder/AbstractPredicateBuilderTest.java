@@ -1,40 +1,41 @@
 package io.github.binark.querypredicate.builder;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertLinesMatch;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.binark.querypredicate.annotation.EntityFieldName;
-import io.github.binark.querypredicate.utils.TestFilter;
-import io.github.binark.querypredicate.utils.TestObject;
-import io.github.binark.querypredicate.utils.TestQueryDescriptor;
+import io.github.binark.querypredicate.testdouble.TestBaseFilter;
+import io.github.binark.querypredicate.testdouble.TestObject;
+import io.github.binark.querypredicate.testdouble.TestQueryDescriptor;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
 import org.hibernate.query.criteria.internal.expression.LiteralExpression;
 import org.hibernate.query.criteria.internal.predicate.ComparisonPredicate;
 import org.hibernate.query.criteria.internal.predicate.ComparisonPredicate.ComparisonOperator;
-import org.hibernate.query.criteria.internal.predicate.InPredicate;
+import org.hibernate.query.criteria.internal.predicate.CompoundPredicate;
 import org.hibernate.query.criteria.internal.predicate.NegatedPredicateWrapper;
 import org.hibernate.query.criteria.internal.predicate.NullnessPredicate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 
 @ExtendWith(MockitoExtension.class)
 class AbstractPredicateBuilderTest {
 
   public static final String FIELD_NAME = "fieldName";
+  public static final String OR = "OR";
+  public static final String AND = "AND";
 
   @Mock(answer = Answers.CALLS_REAL_METHODS)
   private AbstractPredicateBuilder predicateBuilder;
@@ -44,22 +45,25 @@ class AbstractPredicateBuilderTest {
 
   @Mock(answer = Answers.RETURNS_MOCKS)
   private SessionFactoryImpl sessionFactory;
+  @Mock
+  Path fieldPath;
+  @Mock(answer = Answers.RETURNS_SELF)
+  Predicate predicateMock;
 
   private CriteriaBuilder criteriaBuilder = new CriteriaBuilderImpl(sessionFactory);
 
   @Test
-  void buildBaseFilterPredicate_Is_Equals() {
+  void buildIsEqualsPredicate() {
     TestObject value = new TestObject("equals");
-    Mockito.when(path.getJavaType()).thenReturn(String.class);
-    TestFilter testFilter = new TestFilter();
-    testFilter.setIsEquals(value);
-    List<Predicate> predicates = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
-        FIELD_NAME);
+    when(path.getJavaType()).thenReturn(String.class);
+    TestBaseFilter testBaseFilter = new TestBaseFilter();
+    testBaseFilter.setIsEquals(value);
+    Predicate predicate = predicateBuilder.buildBasePredicate(path, criteriaBuilder, testBaseFilter,
+                                                              FIELD_NAME);
 
-    assertNotNull(predicates);
-    assertEquals(1, predicates.size());
+    assertNotNull(predicate);
 
-    ComparisonPredicate comparisonPredicate = (ComparisonPredicate) predicates.get(0);
+    ComparisonPredicate comparisonPredicate = (ComparisonPredicate) predicate;
     assertEquals(ComparisonOperator.EQUAL, comparisonPredicate.getComparisonOperator());
 
     LiteralExpression literalExpression = (LiteralExpression) comparisonPredicate.getRightHandOperand();
@@ -68,18 +72,17 @@ class AbstractPredicateBuilderTest {
   }
 
   @Test
-  void buildBaseFilterPredicate_Is_Different() {
+  void buildIsDifferentPredicate() {
     TestObject value = new TestObject("different");
-    Mockito.when(path.getJavaType()).thenReturn(String.class);
-    TestFilter testFilter = new TestFilter();
-    testFilter.setIsDifferent(value);
-    List<Predicate> predicates = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
-        FIELD_NAME);
+    when(path.getJavaType()).thenReturn(String.class);
+    TestBaseFilter testBaseFilter = new TestBaseFilter();
+    testBaseFilter.setIsDifferent(value);
+    Predicate predicate = predicateBuilder.buildBasePredicate(path, criteriaBuilder, testBaseFilter,
+                                                              FIELD_NAME);
 
-    assertNotNull(predicates);
-    assertEquals(1, predicates.size());
+    assertNotNull(predicate);
 
-    ComparisonPredicate comparisonPredicate = (ComparisonPredicate) predicates.get(0);
+    ComparisonPredicate comparisonPredicate = (ComparisonPredicate) predicate;
     assertEquals(ComparisonOperator.NOT_EQUAL, comparisonPredicate.getComparisonOperator());
 
     LiteralExpression literalExpression = (LiteralExpression) comparisonPredicate.getRightHandOperand();
@@ -88,73 +91,194 @@ class AbstractPredicateBuilderTest {
   }
 
   @Test
-  void buildBaseFilterPredicate_Is_Null_True() {
-    TestFilter testFilter = new TestFilter();
-    testFilter.setNull(true);
-    List<Predicate> predicates = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
-        FIELD_NAME);
+  void buildCombinedIsEqualsAndIsDifferentPredicates() {
+    TestObject differentValue = new TestObject("different");
+    TestObject equalsValue = new TestObject("equals");
+    when(path.getJavaType()).thenReturn(String.class);
+    TestBaseFilter testBaseFilter = new TestBaseFilter();
+    testBaseFilter.setIsEquals(equalsValue);
+    testBaseFilter.setIsDifferent(differentValue);
 
-    assertNotNull(predicates);
-    assertEquals(1, predicates.size());
+    Predicate predicate = predicateBuilder.buildBasePredicate(path, criteriaBuilder, testBaseFilter,
+                                                              FIELD_NAME);
 
-    NullnessPredicate nullnessPredicate = (NullnessPredicate) predicates.get(0);
+    assertNotNull(predicate);
+
+    CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
+    assertEquals(AND, compoundPredicate.getOperator().name());
+
+    List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
+    assertEquals(2, expressions.size());
+
+    ComparisonPredicate equalsComparisonPredicate = (ComparisonPredicate) expressions.get(0);
+    assertEquals(ComparisonOperator.EQUAL, equalsComparisonPredicate.getComparisonOperator());
+
+    LiteralExpression equalsLiteralExpression = (LiteralExpression) equalsComparisonPredicate.getRightHandOperand();
+    assertNotNull(equalsLiteralExpression);
+    assertEquals(equalsValue, equalsLiteralExpression.getLiteral());
+
+    ComparisonPredicate differentComparisonPredicate = (ComparisonPredicate) expressions.get(1);
+    assertEquals(ComparisonOperator.NOT_EQUAL, differentComparisonPredicate.getComparisonOperator());
+
+    LiteralExpression differentLiteralExpression = (LiteralExpression) differentComparisonPredicate.getRightHandOperand();
+    assertNotNull(differentLiteralExpression);
+    assertEquals(differentValue, differentLiteralExpression.getLiteral());
+  }
+
+  @Test
+  void buildIsNullTruePredicate() {
+    TestBaseFilter testBaseFilter = new TestBaseFilter();
+    testBaseFilter.setNull(true);
+    Predicate predicate = predicateBuilder.buildBasePredicate(path, criteriaBuilder, testBaseFilter,
+                                                              FIELD_NAME);
+
+    assertNotNull(predicate);
+
+    NullnessPredicate nullnessPredicate = (NullnessPredicate) predicate;
     assertNotNull(nullnessPredicate);
   }
 
   @Test
-  void buildBaseFilterPredicate_Is_Null_False() {
-    TestFilter testFilter = new TestFilter();
-    testFilter.setNull(false);
-    List<Predicate> predicates = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
-        FIELD_NAME);
+  void buildCombinedIsEqualsAndIsNullTruePredicates() {
+    when(path.getJavaType()).thenReturn(String.class);
+    TestObject equalsValue = new TestObject("equals");
+    TestBaseFilter testBaseFilter = new TestBaseFilter();
+    testBaseFilter.setIsEquals(equalsValue);
+    testBaseFilter.setNull(true);
 
-    assertNotNull(predicates);
-    assertEquals(1, predicates.size());
+    Predicate predicate = predicateBuilder.buildBasePredicate(path, criteriaBuilder, testBaseFilter,
+                                                              FIELD_NAME);
 
-    NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) predicates.get(0);
+    assertNotNull(predicate);
+
+    CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
+    assertEquals(AND, compoundPredicate.getOperator().name());
+
+    List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
+    assertEquals(2, expressions.size());
+
+    NullnessPredicate nullnessPredicate = (NullnessPredicate) expressions.get(1);
+    assertNotNull(nullnessPredicate);
+  }
+
+  @Test
+  void buildIsNullFalsePredicate() {
+    TestBaseFilter testBaseFilter = new TestBaseFilter();
+    testBaseFilter.setNull(false);
+    Predicate predicate = predicateBuilder.buildBasePredicate(path, criteriaBuilder, testBaseFilter,
+                                                              FIELD_NAME);
+
+    assertNotNull(predicate);
+
+    NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) predicate;
     assertNotNull(negatedPredicateWrapper);
   }
 
   @Test
-  void buildBaseFilterPredicate_Is_In() {
-    List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
-    TestFilter testFilter = new TestFilter();
-    testFilter.setIsIn(values);
-    List<Predicate> predicates = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
-        FIELD_NAME);
+  void buildCombinedIsEqualsAndIsNullFalsePredicates() {
+    when(path.getJavaType()).thenReturn(String.class);
+    TestObject equalsValue = new TestObject("equals");
+    TestBaseFilter testBaseFilter = new TestBaseFilter();
+    testBaseFilter.setIsEquals(equalsValue);
+    testBaseFilter.setNull(false);
 
-    assertNotNull(predicates);
-    assertEquals(1, predicates.size());
+    Predicate predicate = predicateBuilder.buildBasePredicate(path, criteriaBuilder, testBaseFilter,
+                                                              FIELD_NAME);
 
-    InPredicate inPredicate = (InPredicate) predicates.get(0);
+    assertNotNull(predicate);
 
-    List<LiteralExpression<TestObject>> predicateValues = inPredicate.getValues();
-    assertEquals(values.size(), predicateValues.size());
-    List<TestObject> inValues = predicateValues.stream().map(LiteralExpression::getLiteral).collect(
-        Collectors.toList());
-    assertLinesMatch(values.stream().map(TestObject::getName).collect(Collectors.toList()), inValues.stream()
-        .map(TestObject::getName).collect(Collectors.toList()));
+    CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
+    assertEquals(AND, compoundPredicate.getOperator().name());
+
+    List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
+    assertEquals(2, expressions.size());
+
+    NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) expressions.get(1);
+    assertNotNull(negatedPredicateWrapper);
   }
 
   @Test
-  void buildBaseFilterPredicate_Is_Not_In() {
+  void buildIsInPredicate() {
+    when(path.get(anyString())).thenReturn(fieldPath);
     List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
-    TestFilter testFilter = new TestFilter();
-    testFilter.setIsNotIn(values);
-    List<Predicate> predicates = predicateBuilder.buildBaseFilterPredicate(path, criteriaBuilder, testFilter,
-        FIELD_NAME);
+    TestBaseFilter testBaseFilter = new TestBaseFilter();
+    testBaseFilter.setIsIn(values);
+    predicateBuilder.buildBasePredicate(path, criteriaBuilder, testBaseFilter,
+                                        FIELD_NAME);
 
-    assertNotNull(predicates);
-    assertEquals(1, predicates.size());
+    verify(path).get(FIELD_NAME);
+    verify(fieldPath).in(values);
+  }
 
-    NegatedPredicateWrapper negatedPredicateWrapper = (NegatedPredicateWrapper) predicates.get(0);
-    assertNotNull(negatedPredicateWrapper);
+  @Test
+  void buildCombinedIsEqualsAndIsInPredicates() {
+    when(path.getJavaType()).thenReturn(String.class);
+    when(path.in(anyCollection())).thenReturn(predicateMock);
+    TestObject equalsValue = new TestObject("equals");
+    List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
+    TestBaseFilter testBaseFilter = new TestBaseFilter();
+    testBaseFilter.setIsEquals(equalsValue);
+    testBaseFilter.setIsIn(values);
+
+    Predicate predicate = predicateBuilder.buildBasePredicate(path, criteriaBuilder, testBaseFilter,
+                                                              FIELD_NAME);
+
+    assertNotNull(predicate);
+
+    CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
+    assertEquals(AND, compoundPredicate.getOperator().name());
+
+    List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
+    assertEquals(2, expressions.size());
+
+    Predicate inPredicate = (Predicate) expressions.get(1);
+
+    verify(path).in(values);
+    assertEquals(predicateMock, inPredicate);
+  }
+
+  @Test
+  void buildIsNotInPredicate() {
+    when(path.in(anyCollection())).thenReturn(predicateMock);
+    List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
+    TestBaseFilter testBaseFilter = new TestBaseFilter();
+    testBaseFilter.setIsNotIn(values);
+    predicateBuilder.buildBasePredicate(path, criteriaBuilder, testBaseFilter,
+                                        FIELD_NAME);
+
+    verify(path).in(values);
+    verify(predicateMock).not();
+  }
+
+  @Test
+  void buildCombinedIsEqualsAndIsNotNullPredicates() {
+    when(path.getJavaType()).thenReturn(String.class);
+    when(path.in(anyCollection())).thenReturn(predicateMock);
+    TestObject equalsValue = new TestObject("equals");
+    List<TestObject> values = Arrays.asList(new TestObject("abc"), new TestObject("xyz"));
+    TestBaseFilter testBaseFilter = new TestBaseFilter();
+    testBaseFilter.setIsEquals(equalsValue);
+    testBaseFilter.setIsNotIn(values);
+
+    Predicate predicate = predicateBuilder.buildBasePredicate(path, criteriaBuilder, testBaseFilter,
+                                                              FIELD_NAME);
+
+    assertNotNull(predicate);
+
+    CompoundPredicate compoundPredicate = (CompoundPredicate) predicate;
+    assertEquals(AND, compoundPredicate.getOperator().name());
+
+    List<Expression<Boolean>> expressions = compoundPredicate.getExpressions();
+    assertEquals(2, expressions.size());
+
+    verify(path).in(values);
+    verify(predicateMock).not();
   }
 
   @Test
   void getFieldNameFromAnnotation() throws NoSuchFieldException {
     TestQueryDescriptor testQueryDescriptor = new TestQueryDescriptor();
-    testQueryDescriptor.setTest(new TestFilter());
+    testQueryDescriptor.setTest(new TestBaseFilter());
     String fieldName = predicateBuilder.getFieldNameFromAnnotation(
         testQueryDescriptor.getClass().getDeclaredField("test"));
 
@@ -163,9 +287,9 @@ class AbstractPredicateBuilderTest {
   }
 
   @Test
-  void getFieldNameFromAnnotation_MissingAnnotation() throws NoSuchFieldException {
+  void getFieldNameFromAnnotationMissingAnnotation() {
     TestQueryDescriptor testQueryDescriptor = new TestQueryDescriptor();
-    testQueryDescriptor.setWithoutAnnotation(new TestFilter());
+    testQueryDescriptor.setWithoutAnnotation(new TestBaseFilter());
 
     String fieldName = "withoutAnnotation";
     IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,

@@ -1,39 +1,38 @@
 package io.github.binark.querypredicate.descriptor;
 
-import io.github.binark.querypredicate.filter.DateFilter;
-import io.github.binark.querypredicate.filter.LocalDateFilter;
-import io.github.binark.querypredicate.filter.StringFilter;
-import java.time.LocalDateTime;
+import io.github.binark.querypredicate.filter.BaseDateFilter;
+import io.github.binark.querypredicate.filter.BaseLocalDateFilter;
+import io.github.binark.querypredicate.filter.BaseStringFilter;
 
 public class SimpleQueryDescriptor implements QueryDescriptor{
-    private StringFilter id;
+    private BaseStringFilter id;
 
-    private DateFilter birthday;
+    private BaseDateFilter birthday;
 
-    private LocalDateFilter<LocalDateTime> createdAt;
+    private BaseLocalDateFilter createdAt;
 
-    public StringFilter getId() {
+    public BaseStringFilter getId() {
         return id;
     }
 
-    public void setId(StringFilter id) {
+    public void setId(BaseStringFilter id) {
         this.id = id;
     }
 
-    public DateFilter getBirthday() {
+    public BaseDateFilter getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(DateFilter birthday) {
+    public void setBirthday(BaseDateFilter birthday) {
         this.birthday = birthday;
     }
 
-    public LocalDateFilter<LocalDateTime> getCreatedAt() {
+    public BaseLocalDateFilter getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(
-        LocalDateFilter<LocalDateTime> createdAt) {
+            BaseLocalDateFilter createdAt) {
         this.createdAt = createdAt;
     }
 }

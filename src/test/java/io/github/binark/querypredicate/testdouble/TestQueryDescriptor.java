@@ -1,4 +1,4 @@
-package io.github.binark.querypredicate.utils;
+package io.github.binark.querypredicate.testdouble;
 
 import io.github.binark.querypredicate.annotation.EntityFieldName;
 import io.github.binark.querypredicate.descriptor.QueryDescriptor;
@@ -6,22 +6,22 @@ import io.github.binark.querypredicate.descriptor.QueryDescriptor;
 public class TestQueryDescriptor implements QueryDescriptor {
 
   @EntityFieldName("name")
-  private TestFilter test;
-  private TestFilter withoutAnnotation;
+  private TestBaseFilter test;
+    private TestBaseFilter withoutAnnotation;
 
-  public TestFilter getTest() {
+    public TestBaseFilter getTest() {
     return test;
   }
 
-  public void setTest(TestFilter test) {
+    public void setTest(TestBaseFilter test) {
     this.test = test;
   }
 
-  public TestFilter getWithoutAnnotation() {
+    public TestBaseFilter getWithoutAnnotation() {
     return withoutAnnotation;
   }
 
-  public void setWithoutAnnotation(TestFilter withoutAnnotation) {
+    public void setWithoutAnnotation(TestBaseFilter withoutAnnotation) {
     this.withoutAnnotation = withoutAnnotation;
   }
 }

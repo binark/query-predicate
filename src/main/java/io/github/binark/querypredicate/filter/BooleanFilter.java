@@ -5,7 +5,7 @@ package io.github.binark.querypredicate.filter;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public class BooleanFilter extends ComparableFilter<Boolean>{
+public class BooleanFilter extends ComparableFilter<Boolean, BaseBooleanFilter> {
 
   private Boolean isTrue;
   private Boolean isFalse;
@@ -23,7 +23,7 @@ public class BooleanFilter extends ComparableFilter<Boolean>{
    * @param  isTrue boolean
    */
   public void setTrue(Boolean isTrue) {
-    isTrue = isTrue;
+      this.isTrue = isTrue;
   }
 
   /**
@@ -39,6 +39,6 @@ public class BooleanFilter extends ComparableFilter<Boolean>{
    * @param  isFalse boolean
    */
   public void setFalse(Boolean isFalse) {
-    isFalse = isFalse;
+      this.isFalse = isFalse;
   }
 }

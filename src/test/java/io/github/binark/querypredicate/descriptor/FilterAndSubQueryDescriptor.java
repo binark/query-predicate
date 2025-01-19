@@ -1,18 +1,18 @@
 package io.github.binark.querypredicate.descriptor;
 
-import io.github.binark.querypredicate.filter.StringFilter;
+import io.github.binark.querypredicate.filter.BaseStringFilter;
 
 public class FilterAndSubQueryDescriptor implements QueryDescriptor{
 
-    private StringFilter firstName;
+    private BaseStringFilter firstName;
 
     private SimpleQueryDescriptor subField;
 
-    public StringFilter getFirstName() {
+    public BaseStringFilter getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(StringFilter firstName) {
+    public void setFirstName(BaseStringFilter firstName) {
         this.firstName = firstName;
     }
 

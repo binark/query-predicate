@@ -1,13 +1,13 @@
 package io.github.binark.querypredicate.builder;
 
+
 import io.github.binark.querypredicate.annotation.EntityFieldName;
 import io.github.binark.querypredicate.filter.BaseFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
+
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,37 +25,88 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
      * @param criteriaBuilder {@link CriteriaBuilder} The criteria builder
      * @param filter extends {@link BaseFilter} The filter type
      * @param fieldName The entity field name
-     * @return {@link List} of {@link Predicate} The query predicate list according the filter class
+     * @return {@link Predicate} The query predicate according the filter class
      */
-    protected List<Predicate> buildBaseFilterPredicate(Path path, CriteriaBuilder criteriaBuilder, F filter, String fieldName) {
-        List<Predicate> filterPredicates = new ArrayList<>();
-        if (filter.getIsEquals() != null) {
-            filterPredicates.add(criteriaBuilder.equal(path.get(fieldName), filter.getIsEquals()));
-        }
+    protected Predicate buildBasePredicate(Path<?> path, CriteriaBuilder criteriaBuilder, F filter, String fieldName) {
+        Predicate predicate = combinePredicate(null, buildEqualsPredicate(filter, criteriaBuilder, path, fieldName),
+                                               criteriaBuilder);
+        predicate = combinePredicate(predicate, buildDifferentPredicate(filter, criteriaBuilder, path, fieldName),
+                                     criteriaBuilder);
+        predicate = combinePredicate(predicate, buildIsNullPredicate(filter, criteriaBuilder, path, fieldName),
+                                     criteriaBuilder);
+        predicate = combinePredicate(predicate, buildIsInPredicate(filter, criteriaBuilder, path, fieldName),
+                                     criteriaBuilder);
+        predicate = combinePredicate(predicate, buildIsNotInPredicate(filter, criteriaBuilder, path, fieldName),
+                                     criteriaBuilder);
+        return predicate;
+    }
 
-        if (filter.getIsDifferent() != null) {
-            filterPredicates.add(criteriaBuilder.notEqual(path.get(fieldName), filter.getIsDifferent()));
+    protected final Predicate combinePredicate(Predicate firstPredicate, Predicate secondPredicate,
+                                               CriteriaBuilder criteriaBuilder, CombineOperator operator) {
+        if (firstPredicate == null) {
+            return secondPredicate;
         }
-
-        if (Boolean.TRUE.equals(filter.getNull())) {
-            filterPredicates.add(criteriaBuilder.isNull(path.get(fieldName)));
+        if (secondPredicate == null) {
+            return firstPredicate;
         }
-
-        if (Boolean.FALSE.equals(filter.getNull())) {
-            filterPredicates.add(criteriaBuilder.isNotNull(path.get(fieldName)));
+        if (CombineOperator.OR.equals(operator)) {
+            return criteriaBuilder.or(firstPredicate, secondPredicate);
         }
+        return criteriaBuilder.and(firstPredicate, secondPredicate);
+    }
 
-        if (filter.getIsIn() != null) {
-            In inExpressions = criteriaBuilder.in(path.get(fieldName));
-            filterPredicates.add(inExpressions.in(filter.getIsIn().stream().toArray()));
+    protected final Predicate combinePredicate(Predicate firstPredicate, Predicate secondPredicate,
+                                               CriteriaBuilder criteriaBuilder) {
+        return combinePredicate(firstPredicate, secondPredicate, criteriaBuilder, CombineOperator.AND);
+    }
+
+    protected Predicate buildEqualsPredicate(F filter, CriteriaBuilder criteriaBuilder,
+                                             Path path, String fieldName) {
+        Object isEquals = filter.getIsEquals();
+        if (isEquals != null) {
+            return criteriaBuilder.equal(path.get(fieldName), isEquals);
         }
+        return null;
+    }
 
-        if (filter.getIsNotIn() != null) {
-            In inExpressions = criteriaBuilder.in(path.get(fieldName));
-            filterPredicates.add(inExpressions.in(filter.getIsNotIn().stream().toArray()).not());
+    protected Predicate buildDifferentPredicate(F filter, CriteriaBuilder criteriaBuilder,
+                                                Path path, String fieldName) {
+        Object isDifferent = filter.getIsDifferent();
+        if (isDifferent != null) {
+            return criteriaBuilder.notEqual(path.get(fieldName), isDifferent);
         }
+        return null;
+    }
 
-        return filterPredicates;
+    protected Predicate buildIsNullPredicate(F filter, CriteriaBuilder criteriaBuilder,
+                                             Path path, String fieldName) {
+        Boolean filterNull = filter.getNull();
+        if (filterNull != null) {
+            if (Boolean.TRUE.equals(filterNull)) {
+                return criteriaBuilder.isNull(path.get(fieldName));
+            } else {
+                return criteriaBuilder.isNotNull(path.get(fieldName));
+            }
+        }
+        return null;
+    }
+
+    protected Predicate buildIsInPredicate(F filter, CriteriaBuilder criteriaBuilder,
+                                           Path path, String fieldName) {
+        List isIn = filter.getIsIn();
+        if (isIn != null) {
+            return path.get(fieldName).in(isIn);
+        }
+        return null;
+    }
+
+    protected Predicate buildIsNotInPredicate(F filter, CriteriaBuilder criteriaBuilder,
+                                              Path path, String fieldName) {
+        List isNotIn = filter.getIsNotIn();
+        if (isNotIn != null) {
+            return path.get(fieldName).in(isNotIn).not();
+        }
+        return null;
     }
 
     @Override
@@ -65,5 +116,9 @@ public abstract class AbstractPredicateBuilder<F extends BaseFilter> implements 
             throw new IllegalArgumentException("Missing " + EntityFieldName.class.getSimpleName() + " annotation on the field " + field.getName());
         }
         return entityFieldName.value();
+    }
+
+    protected enum CombineOperator {
+        AND, OR;
     }
 }

@@ -1,25 +1,9 @@
 package io.github.binark.querypredicate.management;
 
 import io.github.binark.querypredicate.annotation.FilterClass;
-import io.github.binark.querypredicate.builder.BaseFilterPredicateBuilder;
-import io.github.binark.querypredicate.builder.BooleanFilterPredicateBuilder;
-import io.github.binark.querypredicate.builder.DateFilterPredicateBuilder;
-import io.github.binark.querypredicate.builder.DoubleFilterPredicateBuilder;
-import io.github.binark.querypredicate.builder.FloatFilterPredicateBuilder;
-import io.github.binark.querypredicate.builder.IntegerFilterPredicateBuilder;
-import io.github.binark.querypredicate.builder.LocalDateFilterPredicateBuilder;
-import io.github.binark.querypredicate.builder.LongFilterPredicateBuilder;
-import io.github.binark.querypredicate.builder.PredicateBuilder;
-import io.github.binark.querypredicate.builder.StringFilterPredicateBuilder;
-import io.github.binark.querypredicate.filter.BaseFilter;
-import io.github.binark.querypredicate.filter.BooleanFilter;
-import io.github.binark.querypredicate.filter.DateFilter;
-import io.github.binark.querypredicate.filter.DoubleFilter;
-import io.github.binark.querypredicate.filter.FloatFilter;
-import io.github.binark.querypredicate.filter.IntegerFilter;
-import io.github.binark.querypredicate.filter.LocalDateFilter;
-import io.github.binark.querypredicate.filter.LongFilter;
-import io.github.binark.querypredicate.filter.StringFilter;
+import io.github.binark.querypredicate.builder.*;
+import io.github.binark.querypredicate.filter.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,17 +25,17 @@ final class BasePredicateBuilderStorage implements PredicateBuilderStorage {
 
     private final Map<String, PredicateBuilder> predicateBuilderMap = new HashMap<>();
 
-    private static BasePredicateBuilderStorage INSTANCE;
+    private static BasePredicateBuilderStorage instance;
 
     private BasePredicateBuilderStorage() {
         initializeStorage();
     }
 
     static BasePredicateBuilderStorage getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new BasePredicateBuilderStorage();
+        if (instance == null) {
+            instance = new BasePredicateBuilderStorage();
         }
-        return INSTANCE;
+        return instance;
     }
 
     public PredicateBuilder getPredicateBuilder(String key) {
@@ -64,17 +48,36 @@ final class BasePredicateBuilderStorage implements PredicateBuilderStorage {
 
     public void initializeStorage() {
         predicateBuilderMap.put(BaseFilter.class.getSimpleName(), new BaseFilterPredicateBuilder());
+        predicateBuilderMap.put(OperatorFilter.class.getSimpleName(), new OperatorFilterPredicateBuilder());
+        predicateBuilderMap.put(BaseStringFilter.class.getSimpleName(), new BaseStringFilterPredicateBuilder());
         predicateBuilderMap.put(StringFilter.class.getSimpleName(), new StringFilterPredicateBuilder());
         predicateBuilderMap.put(
-            BooleanFilter.class.getSimpleName(), new BooleanFilterPredicateBuilder());
+                BaseBooleanFilter.class.getSimpleName(), new BaseBooleanFilterPredicateBuilder());
+        predicateBuilderMap.put(
+                BooleanFilter.class.getSimpleName(), new BooleanFilterPredicateBuilder());
+        predicateBuilderMap.put(BaseDateFilter.class.getSimpleName(), new BaseDateFilterPredicateBuilder());
         predicateBuilderMap.put(DateFilter.class.getSimpleName(), new DateFilterPredicateBuilder());
         predicateBuilderMap.put(
-            LocalDateFilter.class.getSimpleName(), new LocalDateFilterPredicateBuilder());
+                BaseLocalDateFilter.class.getSimpleName(), new BaseLocalDateFilterPredicateBuilder());
         predicateBuilderMap.put(
-            IntegerFilter.class.getSimpleName(), new IntegerFilterPredicateBuilder());
+                LocalDateFilter.class.getSimpleName(), new LocalDateFilterPredicateBuilder());
+        predicateBuilderMap.put(
+                BaseLocalDateTimeFilter.class.getSimpleName(), new BaseLocalDateTimeFilterPredicateBuilder());
+        predicateBuilderMap.put(
+                LocalDateTimeFilter.class.getSimpleName(), new LocalDateTimeFilterPredicateBuilder());
+        predicateBuilderMap.put(
+                BaseInstantFilter.class.getSimpleName(), new BaseInstantFilterPredicateBuilder());
+        predicateBuilderMap.put(
+                InstantFilter.class.getSimpleName(), new InstantFilterPredicateBuilder());
+        predicateBuilderMap.put(
+                BaseIntegerFilter.class.getSimpleName(), new BaseIntegerFilterPredicateBuilder());
+        predicateBuilderMap.put(
+                IntegerFilter.class.getSimpleName(), new IntegerFilterPredicateBuilder());
+        predicateBuilderMap.put(BaseLongFilter.class.getSimpleName(), new BaseLongFilterPredicateBuilder());
         predicateBuilderMap.put(LongFilter.class.getSimpleName(), new LongFilterPredicateBuilder());
+        predicateBuilderMap.put(BaseFloatFilter.class.getSimpleName(), new BaseFloatFilterPredicateBuilder());
         predicateBuilderMap.put(FloatFilter.class.getSimpleName(), new FloatFilterPredicateBuilder());
-        predicateBuilderMap.put(
-            DoubleFilter.class.getSimpleName(), new DoubleFilterPredicateBuilder());
+        predicateBuilderMap.put(BaseDoubleFilter.class.getSimpleName(), new BaseDoubleFilterPredicateBuilder());
+        predicateBuilderMap.put(DoubleFilter.class.getSimpleName(), new DoubleFilterPredicateBuilder());
     }
 }

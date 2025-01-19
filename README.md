@@ -14,9 +14,9 @@ The goal is to describe the query conditions in a Java class and let the query p
 
 ```
 <dependency>
-	    <groupId>io.github.binark</groupId>
-	    <artifactId>query-predicate</artifactId>
-	    <version>${version}</version>
+    <groupId>io.github.binark</groupId>
+	<artifactId>query-predicate</artifactId>
+	<version>${version}</version>
 </dependency>
 ```
 
@@ -29,7 +29,7 @@ The goal is to describe the query conditions in a Java class and let the query p
 </dependency>
 ```
 
-## 1.3 Maven
+## 1.3 Gradle
 
 * For Jakarta EE 9 +
 

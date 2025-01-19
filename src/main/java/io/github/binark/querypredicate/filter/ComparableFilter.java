@@ -6,7 +6,7 @@ package io.github.binark.querypredicate.filter;
  *
  * @author kenany (armelknyobe@gmail.com)
  */
-public abstract class ComparableFilter<T extends Comparable> extends BaseFilter<T>{
+public abstract class ComparableFilter<T extends Comparable, F extends BaseComparableFilter<T>> extends OperatorFilter<T, F> {
 
   private T isGreaterThan;
 
@@ -99,4 +99,24 @@ public abstract class ComparableFilter<T extends Comparable> extends BaseFilter<
   public void setIsBetween(Range<T> isBetween) {
     this.isBetween = isBetween;
   }
+
+    @Override
+    public F getOr() {
+        return super.getOr();
+    }
+
+    @Override
+    public void setOr(F or) {
+        super.setOr(or);
+    }
+
+    @Override
+    public F getAnd() {
+        return super.getAnd();
+    }
+
+    @Override
+    public void setAnd(F and) {
+        super.setAnd(and);
+    }
 }

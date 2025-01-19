@@ -1,22 +1,14 @@
 package io.github.binark.querypredicate.descriptor.converter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.github.binark.querypredicate.descriptor.FilterAndSubQueryDescriptor;
 import io.github.binark.querypredicate.descriptor.SimpleQueryDescriptor;
-import io.github.binark.querypredicate.filter.DateFilter;
-import io.github.binark.querypredicate.filter.LocalDateFilter;
-import io.github.binark.querypredicate.filter.StringFilter;
+import io.github.binark.querypredicate.filter.BaseDateFilter;
+import io.github.binark.querypredicate.filter.BaseLocalDateFilter;
+import io.github.binark.querypredicate.filter.BaseStringFilter;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Date;
-import java.util.List;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.query.criteria.internal.CriteriaBuilderImpl;
 import org.hibernate.query.criteria.internal.expression.LiteralExpression;
@@ -31,6 +23,14 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class QueryDescriptorConverterTest {
@@ -48,7 +48,7 @@ public class QueryDescriptorConverterTest {
 
     @Test
     public void interpretDescriptor_With_One_String_Filter_Field() {
-        StringFilter id = new StringFilter();
+        BaseStringFilter id = new BaseStringFilter();
         id.setStartWith(STRING_VALUE);
         SimpleQueryDescriptor simpleQueryDescriptor = new SimpleQueryDescriptor();
         simpleQueryDescriptor.setId(id);
@@ -70,11 +70,11 @@ public class QueryDescriptorConverterTest {
         root = Mockito.mock(Root.class, Mockito.RETURNS_SELF);
         Mockito.when(root.getJavaType()).thenReturn(LocalDateTime.class);
         Date today = new Date();
-        StringFilter id = new StringFilter();
+        BaseStringFilter id = new BaseStringFilter();
         id.setContains(STRING_VALUE);
-        DateFilter birthday = new DateFilter();
+        BaseDateFilter birthday = new BaseDateFilter();
         birthday.setIsGreaterThan(today);
-        LocalDateFilter<LocalDateTime> createdAt = new LocalDateFilter<>();
+        BaseLocalDateFilter createdAt = new BaseLocalDateFilter();
         createdAt.setIsYesterday(true);
         SimpleQueryDescriptor simpleQueryDescriptor = new SimpleQueryDescriptor();
         simpleQueryDescriptor.setId(id);
@@ -111,11 +111,11 @@ public class QueryDescriptorConverterTest {
 
     @Test
     public void interpretDescriptor_with_filter_fields_and_sub_descriptor() {
-        StringFilter id = new StringFilter();
+        BaseStringFilter id = new BaseStringFilter();
         id.setNotContains("nonId");
         SimpleQueryDescriptor subField = new SimpleQueryDescriptor();
         subField.setId(id);
-        StringFilter firstName = new StringFilter();
+        BaseStringFilter firstName = new BaseStringFilter();
         firstName.setContainsIgnoreCase(STRING_VALUE);
         FilterAndSubQueryDescriptor queryDescriptor = new FilterAndSubQueryDescriptor();
         queryDescriptor.setSubField(subField);

@@ -1,4 +1,4 @@
-package io.github.binark.querypredicate.utils;
+package io.github.binark.querypredicate.testdouble;
 
 public class TestObject {
 
